@@ -29,4 +29,33 @@ A Spring Boot web application to automate departmental academic activities:
 
 ---
 
+## Clone & Setup Instructions
 
+To get a local copy up and running, follow these simple steps:
+
+### Clone the Repository
+```bash
+git clone https://github.com/montasirfahim/academics-and-billing-automation.git
+cd academics-and-billing-automation
+```
+### Checkout main branch
+```bash
+git checkout main
+```
+
+### Setup application.properties with your own database credential
+```
+spring.datasource.url=jdbc:mysql://localhost:3306/db_name
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+spring.jpa.hibernate.ddl-auto=update
+```
+
+### Run the application
+```
+mvn spring-boot:run
+```
+### Visit URL
+```
+http://localhost:8080
+```
