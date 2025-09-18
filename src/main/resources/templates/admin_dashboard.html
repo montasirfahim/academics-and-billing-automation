@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .profile { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; width: 300px; }
+        .profile h2 { margin-top: 0; }
+        .btn-container { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<h1>Welcome, <span th:text="${user.name}">User</span>!</h1>
+
+<div class="profile">
+    <h2>Profile Information</h2>
+    <p><strong>Email:</strong> <span th:text="${user.email}">email@example.com</span></p>
+    <p><strong>Department:</strong> <span th:text="${user.department}">Department</span></p>
+    <p><strong>Designation:</strong> <span th:text="${user.designation}">Designation</span></p>
+    <p><strong>Role:</strong> <span th:text="${user.role}">Role</span></p>
+    <p><strong>Phone:</strong> <span th:text="${user.phone}">Phone</span></p>
+</div>
+
+<div class="course-container">
+
+</div>
+
+</body>
+</html>

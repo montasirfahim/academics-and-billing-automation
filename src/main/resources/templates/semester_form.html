@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Semester Form</title>
+    <style>
+        /* Basic reset */
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f9f9f9;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        form {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 18px;
+            border: 1.5px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Optional: spacing for hidden input */
+        input[type="hidden"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/semester/new}" th:object="${semester}" method="post">
+    <h2>Add New Semester</h2>
+
+    <label for="year_held"> Held Year:</label>
+    <select id="year_held" th:field="*{semesterHeldYear}" required>
+        <option value=""> Select Held Year </option>
+        <option th:each="i : ${#numbers.sequence(2024, 2050)}" th:value="${i}"> [[${i}]] </option>
+    </select>
+
+    <label for="year"> Scheduled Year:</label>
+    <select id="year" th:field="*{semesterScheduledYear}" required>
+        <option value=""> Select Scheduled Year </option>
+        <option th:each="i : ${#numbers.sequence(2023, 2050)}" th:value="${i}"> [[${i}]] </option>
+    </select>
+
+
+    <label for="semester_parity">Semester Name:</label>
+    <select id="semester_parity" th:field="*{semesterParity}" required>
+        <option value="">Select Semester Name</option>
+        <option th:value="'B.Sc(Engg.) 1st'"> B.Sc(Engg.) 1st Semester </option>
+        <option th:value="'B.Sc(Engg.) 2nd'"> B.Sc(Engg.) 2nd Semester </option>
+        <option th:value="'M.Sc(Engg.) 1st'"> M.Sc(Engg.) 1st Semester </option>
+        <option th:value="'M.Sc(Engg.) 2nd'"> M.Sc(Engg.) 2nd Semester </option>
+        <option th:value="'M.Sc(Engg.) 3rd'"> M.Sc(Engg.) 3rd Semester </option>
+        <option th:value="'M.Engineering 1st'"> M.Engineering 1st Semester </option>
+        <option th:value="'M.Engineering 2nd'"> M.Engineering 2nd Semester </option>
+        <option th:value="'M.Engineering 3rd'"> M.Engineering 3rd Semester </option>
+    </select>
+
+
+
+    <button type="submit">Save Semester</button>
+</form>
+</body>
+</html>

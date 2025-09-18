@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 40px;
+        }
+        .btn-container {
+            display: flex;
+            gap: 20px;
+        }
+        .btn {
+            background-color: rebeccapurple; <!--#4CAF50 -->
+            color: white;
+            padding: 14px 22px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color:black;
+        }
+        a{
+            color: white;
+        }
+
+        /* --- Navbar Styles --- */
+        .navbar {
+            width: 100%;
+            background: #0fda60;
+            padding: 15px 0;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            font-family: Arial, sans-serif;
+            margin-bottom: 50px;
+            margin-left: 0;
+        }
+        .nav-container {
+            /* This uses Flexbox to align the items horizontally */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            max-width: 100%;
+            margin: 0;
+        }
+        .nav-title {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/dashboard" id="dash" class="nav-link">Dashboard</a>
+        <h1 class="nav-title"> Billing Automation Software - ICT, MBSTU </h1>
+        <a href="/logout" id="home" class="nav-link">Logout</a>
+    </div>
+</nav>
+
+<div class="btn-container">
+    <a class="btn" href="/all_users">Manage Users</a>
+    <a class="btn" href="/courses/view">Manage Courses</a>
+    <a class="btn" href="/semesters/view">Manage Semesters</a>
+
+    <a class="btn" href="#">Create TD/DA Bill</a>
+
+</div>
+
+</body>
+</html>

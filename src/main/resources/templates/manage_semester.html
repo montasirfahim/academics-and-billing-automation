@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Manage Semester</title>
+    <style>
+        body, html{
+           width: 100%;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+        .body-container{
+            width: 90%;
+            margin-left: 5%;
+            margin-right: 5%;
+        }
+        a.new-btn{
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            padding: 14px 18px;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+        }
+        a.new-btn:hover{
+            background-color: #0fda60;
+        }
+        .card-container {
+            display: flex;           /* make children align horizontally */
+            flex-wrap: wrap;         /* wrap to next row if needed */
+            justify-content: center; /* center last row if fewer cards */
+            gap: 20px;               /* spacing between cards */
+        }
+
+        .committee-card {
+            flex: 0 1 calc(33% - 20px);
+            max-width: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .committee-card:hover {
+            transform: scale(1.03);
+        }
+
+        .card-body {
+            color: black;
+            font-weight: bold;
+            height: 100px;
+            padding: 20px;
+            text-align: center;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .committee-card:hover .card-body {
+            background-color: black;
+            color: white;
+        }
+
+        .card-footer {
+            background-color: #f8f9fc;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: black;
+        }
+
+        a.card-btn{
+            text-decoration: none;
+            cursor: pointer;
+        }
+        a.card-btn:hover{
+            transition: background-position .3s ease-in;
+        }
+        /* --- Navbar Styles --- */
+        .navbar {
+            width: 100%;
+            background: #0fda60;
+            padding: 15px 0;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            font-family: Arial, sans-serif;
+            margin-bottom: 50px;
+            margin-left: 0;
+        }
+        .nav-container {
+            /* This uses Flexbox to align the items horizontally */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            max-width: 100%;
+            margin: 0;
+        }
+        .nav-title {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/home" id="home" class="nav-link">Home</a>
+
+        <h1 class="nav-title">
+            <span th:text="${semester.semesterParity} + ' Semester Held in ' + ${semester.semesterHeldYear}">SEM_ID SEM_YEAR</span>
+        </h1>
+
+        <a href="/dashboard" id="dash" class="nav-link">Dashboard</a>
+    </div>
+</nav>
+
+<div class="body-container">
+
+    <a th:href="@{/committee/new/{id}(id=${semester.semesterId})}" class="new-btn">
+        Create New Exam Committee
+    </a>
+
+    <h2>Exam Committees:</h2>
+
+    <div class="card-container">
+
+        <a th:each="committee, iterStat : ${examCommittees}" href="/home" class="committee-card card-btn" th:style="'background-color: ' + ${colors[iterStat.index % colors.size()]}">
+
+            <div class="card-body">
+                <span th:text="${committee.semester.semesterParity + ' Session: ' + committee.session}"></span>
+            </div>
+
+            <div class="card-footer">
+                <span th:text="'Committee Chairman: '+ ${committee.chairman.name}"></span>
+            </div>
+
+        </a>
+
+    </div>
+
+
+
+</div>
+</body>
+</html>

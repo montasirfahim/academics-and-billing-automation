@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Form</title>
+    <style>
+        /* Basic reset */
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f9f9f9;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        form {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            width: 700px; /* Increased width to accommodate two columns */
+        }
+
+        /* Flexbox for the two-column layout */
+        .form-row {
+            display: flex;
+            gap: 20px; /* Space between the columns */
+            margin-bottom: 10px;
+        }
+
+        .form-row > div {
+            flex: 1; /* Each child div takes up equal space */
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Optional: spacing for hidden input */
+        input[type="hidden"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/users/new}" th:object="${user}" method="post">
+    <h2>New User</h2>
+    <input type="hidden" th:if="${user.user_id} != null" th:field="*{user_id}" />
+
+    <div class="form-row">
+        <div>
+            <label for="name">Name:</label>
+            <input id="name" type="text" th:field="*{name}" required/>
+        </div>
+        <div>
+            <label for="phone">Phone:</label>
+            <input id="phone" type="text" th:field="*{phone}" required/>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div>
+            <label for="email">Email:</label>
+            <input id="email" type="email" th:field="*{email}" required/>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input id="password" type="password" placeholder="At least 6 characters" th:field="*{password}" required/>
+        </div>
+
+    </div>
+
+    <div class="form-row">
+        <div>
+            <label for="university">University:</label>
+            <input id="university" type="text" placeholder="e.g: MBSTU,Tangail" th:field="*{university}" required/>
+        </div>
+        <div>
+            <label for="department">Department:</label>
+            <input id="department" type="text" placeholder="e.g: ICT" th:field="*{department}" required/>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div>
+            <label for="user_type">User Type:</label>
+            <select id="user_type" th:field="*{user_type}" required>
+                <option value="">Select Type</option>
+                <option value="faculty">Faculty</option>
+                <option value="officer">Officer</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <div>
+            <label for="designation">Designation:</label>
+            <input id="designation" type="text" th:field="*{designation}" required/>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div>
+            <label for="role">Role:</label>
+            <select id="role" th:field="*{role}" required>
+                <option value="">Select Role</option>
+                <option value="admin">Admin</option>
+                <option value="co-admin">Co-Admin</option>
+                <option value="internal">Internal Teacher</option>
+                <option value="external">External Teacher</option>
+            </select>
+        </div>
+        <div>
+            <label for="salaryGrade">Salary Grade:</label>
+            <select id="salaryGrade" th:field="*{salaryGrade}" required>
+                <option value="">Select Grade</option>
+                <option th:each="i : ${#numbers.sequence(1, 9)}" th:value="'Grade ' + ${i}">Grade [[${i}]]</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div>
+            <label for="gradingCategory">Grading Category:</label>
+            <select id="gradingCategory" th:field="*{gradingCategory}" required>
+                <option value="">Select Category</option>
+                <option th:each="i : ${#numbers.sequence(1, 4)}" th:value="'Category ' + ${i}">Category [[${i}]]</option>
+            </select>
+        </div>
+        <div>
+            <label for="distance"> Distance(km) from MBSTU </label>
+            <input id="distance" type="text" placeholder="e.g: 160 (only for external teacher" th:field="*{distanceFromMBSTU}">
+        </div>
+    </div>
+
+    <button type="submit">Save</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,119 @@
+package com.example.entity;
+import jakarta.persistence.*;
+
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long user_id;
+
+    private  String name;
+    private  String email;
+    private  String password;
+    private  String role;
+    private  String phone;
+    private  String university;
+    private String department;
+    private  String designation;
+    private String salaryGrade;
+    private String gradingCategory;
+    private  boolean isChairman = false;
+    private String user_type;
+    private Integer distanceFromMBSTU;
+
+
+    public User() {}
+
+    public Long getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public String getPhone(){
+        return phone;
+    }
+    public void setPhone(String phone){
+        this.phone = phone;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public String getDepartment() {
+        return department;
+    }
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+    public String getSalaryGrade() {
+        return salaryGrade;
+    }
+    public void setSalaryGrade(String salaryGrade) {
+        this.salaryGrade = salaryGrade;
+    }
+    public String getGradingCategory() {
+        return gradingCategory;
+    }
+    public void setGradingCategory(String gradingCategory) {
+        this.gradingCategory = gradingCategory;
+    }
+    public String getUniversity() {
+        return university;
+    }
+    public void setUniversity(String university) {
+        this.university = university;
+    }
+
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isChairman() {
+        return isChairman;
+    }
+    public void setChairman(boolean value) {
+        isChairman = value;
+    }
+
+    public void setUser_type(String user_type) {
+        this.user_type = user_type;
+    }
+    public String getUser_type() {
+        return user_type;
+    }
+
+    public Integer getDistanceFromMBSTU() {
+        return distanceFromMBSTU;
+    }
+
+    public void setDistanceFromMBSTU(Integer distanceFromMBSTU) {
+        this.distanceFromMBSTU = distanceFromMBSTU;
+    }
+}
