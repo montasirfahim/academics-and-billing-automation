@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.entity.Course;
+import com.example.entity.CourseId;
 import com.example.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,14 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public Course findById(String id) {
-        return courseRepository.findById(id).get();
+    public Course findById(CourseId id) {
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Course not found: " + id));
     }
 
-    public void deleteCourseByCode(String id) {
+
+
+    public void deleteCourseByCode(CourseId id) {
         courseRepository.deleteById(id);
     }
 }

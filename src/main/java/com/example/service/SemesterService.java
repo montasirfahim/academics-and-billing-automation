@@ -28,4 +28,8 @@ public class SemesterService {
     public Optional<Semester> findSemesterById(Long semesterId) {
         return Optional.ofNullable(semesterRepository.findSemesterBySemesterId(semesterId));
     }
+
+    public Semester findById(Long semesterId) {
+        return semesterRepository.findSemesterBySemesterId(semesterId);
+    }
 }

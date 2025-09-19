@@ -25,7 +25,9 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <itext.version>7.2.4</itext.version>
     </properties>
+
 
     <dependencies>
         <!-- Spring Boot Starter Web -->
@@ -57,7 +59,32 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- iText modules -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${itext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>io</artifactId>
+            <version>${itext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>layout</artifactId>
+            <version>${itext.version}</version>
+        </dependency>
+
     </dependencies>
+
+    <repositories>
+        <!-- Usually Maven Central is enough -->
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -67,4 +94,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

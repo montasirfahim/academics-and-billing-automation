@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Course Form</title>
+    <title>Assign Course Teacher</title>
     <style>
         /* Basic reset */
         * {
@@ -23,6 +23,7 @@
             text-align: center;
             color: #333;
             margin-bottom: 25px;
+            margin-top: 5px;
         }
 
         form {
@@ -72,45 +73,65 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+
         }
 
         button[type="submit"]:hover {
             background-color: #45a049;
         }
 
-        /*Optional: spacing for hidden input */
+        /* Optional: spacing for hidden input */
         input[type="hidden"] {
             display: none;
+        }
+        a.add-new{
+            font-size: 13px;
+            text-align: center;
+            align-content: center;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-<form th:action="@{/course/new}" th:object="${course}" method="post">
-    <h2>Add Course</h2>
+<form th:action="@{/semester/assign-course/{id}(id=${semester.semesterId})}"  th:object="${assignedCourse}" method="post">
+    <h2>Assign Course Teacher</h2>
 
-    <label for="course_name">Course Name:</label>
-    <input id="course_name" type="text" th:field="*{course_name}" required/>
+    <label for="session"> Session:</label>
+    <input id="session" type="text" placeholder="e.g: 2021-22" th:field="*{session}" required>
 
-    <label for="course_code">Course Code:</label>
-    <input id="course_code" type="text" th:field="*{course_code}" required/>
-
-    <label for="course_credit">Course Credit:</label>
-    <input id="course_credit" type="text" th:field="*{course_credit}" required/>
-
-    <label for="type">Course Type</label>
-    <select id="type" th:field="*{courseType}" required>
-        <option value="">--- Select Course Type ---</option>
-        <option value="Theory">Theory</option>
-        <option value="Lab">Lab</option>
-        <option value="Project">Project</option>
-        <option value="Viva">Oral & Viva</option>
+    <select id="course" name="course_key" required>
+        <option value="">-- Select Course --</option>
+        <option th:each="c : ${courses}"
+                th:value="${c.id.courser_code} + '|' + ${c.id.session}"
+                th:text="${c.course_name}">
+        </option>
     </select>
 
-    <label for="session">Session:</label>
-    <input id="session" type="text" placeholder="e.g: 2021-22" th:field="*{session}" required/>
 
 
-    <button type="submit">Save Course</button>
+
+
+    <label for="users">Course Teacher:</label>
+    <select id="users" th:field="*{user}" required>
+        <option value="">-- Select Course Teacher --</option>
+        <option th:each="u : ${users}"
+                th:value="${u.user_id}"
+                th:text="${u.name}">
+        </option>
+    </select>
+
+
+    <label for="semester">Semester:</label>
+    <select id="semester" disabled>
+        <option th:text="${semester.semesterParity}"></option>
+    </select>
+
+    <!-- Hidden input to actually submit -->
+    <input type="hidden" th:field="*{semester}" th:value="${semester.semesterId}" />
+
+
+    <button type="submit">Assign</button>
+    <a href="/course/new" class="add-new" style="margin-top: 10px; display: block">Add course if not found </a>
 </form>
 </body>
 </html>

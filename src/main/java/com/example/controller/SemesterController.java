@@ -1,8 +1,12 @@
 package com.example.controller;
+import com.example.entity.Course;
 import com.example.entity.ExamCommittee;
 import com.example.entity.Semester;
+import com.example.entity.User;
+import com.example.service.CourseService;
 import com.example.service.ExamCommitteeService;
 import com.example.service.SemesterService;
+import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +25,7 @@ public class SemesterController {
     private SemesterService semesterService;
     @Autowired
     private ExamCommitteeService examCommitteeService;
+
 
     @PostMapping("/semester/new")
     public String newSemester(@ModelAttribute Semester semester) {
@@ -54,5 +59,6 @@ public class SemesterController {
 
         return "manage_semester";
     }
+
 
 }

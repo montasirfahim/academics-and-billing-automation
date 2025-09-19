@@ -5,6 +5,7 @@ import com.example.entity.Semester;
 import com.example.repository.ExamCommitteeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,5 +20,19 @@ public class ExamCommitteeService {
 
     public void saveCommittee(ExamCommittee examCommittee){
         examCommitteeRepository.save(examCommittee);
+    }
+
+    public ExamCommittee findCommitteeByCommitteeId(Long committeeId){
+        return examCommitteeRepository.findBycommitteeId(committeeId);
+    }
+
+    @Transactional
+    public ExamCommittee updateStatus(Long id, boolean isComplete) {
+        return examCommitteeRepository.findById(id)
+                .map(committee -> {
+                    committee.setIsCompleted(isComplete);
+                    return examCommitteeRepository.save(committee);
+                })
+                .orElseThrow(() -> new RuntimeException("Committee not found with id " + id));
     }
 }

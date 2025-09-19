@@ -10,6 +10,7 @@ public class Course {
 
     private String course_name;
     private int course_credit;
+    private String courseType;
 
     public Course() {
         this.id = new CourseId();
@@ -40,6 +41,20 @@ public class Course {
 
     public void setSession(String session) {
         id.setSession(session);
+    }
+
+    public String getCourseType() {
+        return courseType;
+    }
+    public void setCourseType(String courseType) {
+        this.courseType = courseType;
+    }
+
+    public CourseId getId() {
+        return id;
+    }
+    public void setId(CourseId id) {
+        this.id = id;
     }
 }
 

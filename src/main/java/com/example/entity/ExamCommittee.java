@@ -10,8 +10,8 @@ public class ExamCommittee {
     private Long committeeId;
 
     private String session;
-    //Many committees can be formed for a single Semester
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "semester_id", nullable = false)
     private Semester semester;
 
@@ -96,11 +96,11 @@ public class ExamCommittee {
         this.semester = semester;
     }
 
-    public boolean isCompleted() {
+    public boolean getIsCompleted() {
         return isCompleted;
     }
 
-    public void setCompleted(boolean completed) {
+    public void setIsCompleted(boolean completed) {
         isCompleted = completed;
     }
 

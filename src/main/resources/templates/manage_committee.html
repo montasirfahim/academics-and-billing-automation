@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title> Manage Committee </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            padding: 30px 20px;
+            margin: 0;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .container {
+            max-width: 20%;
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        td.actions a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        td.actions a:hover {
+            color: #388e3c;
+        }
+        .btn{
+            margin-top: 25px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        a{
+            text-decoration: none;
+            display: inline;
+            background-color:  #4CAF50;
+            padding: 8px;
+            border-radius: 4px;
+            color: white;
+        }
+        a:hover{
+            background-color: black;
+        }
+        /* Responsive: horizontal scroll on small screens */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px 10px;
+            }
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                display: none; /* Hide table header on small */
+            }
+            tbody tr {
+                margin-bottom: 20px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 15px;
+            }
+            tbody td {
+                padding-left: 50%;
+                position: relative;
+                text-align: right;
+                border: none;
+                border-bottom: 1px solid #eee;
+            }
+            tbody td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                width: 45%;
+                padding-left: 10px;
+                font-weight: 700;
+                text-align: left;
+                color: #555;
+            }
+
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container" id="main-container">
+    <div class="container" id="card">
+        <h1>Committee Body</h1>
+        <div id = "sem-info"> </div>
+
+        <table border="1" th:object="${committee}">
+            <thead>
+            <tr>
+                <th>Members</th>
+                <th>Role</th>
+            </tr>
+            </thead>
+            <tbody id="course-table-body">
+            <!-- Rows will be injected here by JS -->
+            <tr>
+                <td data-label="Member" th:text="${committee.chairman.getName()}"></td>
+                <td data-label="Role"> Chairman</td>
+            </tr>
+            <tr>
+                <td data-label="Member" th:text="${committee.internalMember1.getName()}"></td>
+                <td data-label="Role"> Internal </td>
+            </tr>
+            <tr>
+                <td data-label="Member" th:text="${committee.internalMember2.getName()}"></td>
+                <td data-label="Role"> Internal </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="btn">
+            <a th:href="@{'/test/sample_pdf/' + ${committee.committeeId}}">Print Committee</a>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    var id = /*[[${committeeId}]]*/
+    fetch(`/committee/api/${id}`) //api call
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to fetch courses: " + response.status);
+            }
+            return response.json();
+        })
+        .then(committee => {
+            console.log(JSON.stringify(committee, null, 2));
+            const sem_info = document.getElementById("sem-info");
+            const h5 = document.createElement("h5");
+            h5.textContent = "Semester: " + committee.semester.semesterParity;
+            sem_info.appendChild(h5);
+
+            const h52 = document.createElement("h5");
+            h52.textContent = "Session: " + committee.session;
+            sem_info.appendChild(h52);
+            //debugged
+            const div = document.getElementById("card");
+
+            const h3 = document.createElement("h3");
+            var status = "Active";
+            const st = committee.isCompleted;
+            if(st) status = "Completed";
+            h3.textContent= 'Committee Status: ' + status;
+            const tbody = document.getElementById("course-table-body");
+            const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${committee.externalMember1.name}</td>
+                    <td>External</td>
+                `;
+
+
+            const toggleBtn = document.createElement("button");
+            toggleBtn.textContent = committee.isCompleted ? "Mark as Active" : "Mark as Completed";
+
+            toggleBtn.addEventListener('click', () => {
+                //Toggle the button text and status
+                const newStatus = !committee.isCompleted;
+                toggleBtn.textContent = newStatus ? "Mark as Active" : "Mark as Completed";
+                h3.textContent = `Committee Status: ${newStatus ? "Completed" : "Active"}`;
+
+                fetch(`/committee/api/updateStatus/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ isComplete: newStatus }) })
+                    .then(response => {
+                        if (response.ok) {
+                            committee.isCompleted = newStatus;
+                            console.log("Status updated successfully!");
+                        }
+                    });
+                });
+
+
+            tbody.appendChild(row);
+            div.appendChild(h3);
+            div.appendChild(toggleBtn);
+
+        })
+        .catch(error => {
+            console.error("Error loading courses:", error);
+        });
+</script>
+</body>
+
+</html>

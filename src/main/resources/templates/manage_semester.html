@@ -18,7 +18,7 @@
             text-decoration: none;
             display: inline-block;
             cursor: pointer;
-            background-color: black;
+            background-color: #0fda60;
             color: white;
             font-family: Arial, sans-serif;
             font-weight: bold;
@@ -27,7 +27,7 @@
             border-radius: 5px;
         }
         a.new-btn:hover{
-            background-color: #0fda60;
+            background-color: black;
         }
         .card-container {
             display: flex;           /* make children align horizontally */
@@ -133,15 +133,22 @@
 
 <div class="body-container">
 
-    <a th:href="@{/committee/new/{id}(id=${semester.semesterId})}" class="new-btn">
-        Create New Exam Committee
-    </a>
+    <div class="btn">
+        <a th:href="@{/committee/new/{id}(id=${semester.semesterId})}" class="new-btn">
+            Create New Exam Committee
+        </a>
+
+        <a th:href="@{/semester/assign-course/{id}(id=${semester.semesterId})}" class="new-btn">
+           Assign Course Teacher
+        </a>
+
+    </div>
 
     <h2>Exam Committees:</h2>
 
     <div class="card-container">
 
-        <a th:each="committee, iterStat : ${examCommittees}" href="/home" class="committee-card card-btn" th:style="'background-color: ' + ${colors[iterStat.index % colors.size()]}">
+        <a th:each="committee, iterStat : ${examCommittees}" th:href="@{/committee/manage/{id}(id=${committee.committeeId})}" class="committee-card card-btn" th:style="'background-color: ' + ${colors[iterStat.index % colors.size()]}">
 
             <div class="card-body">
                 <span th:text="${committee.semester.semesterParity + ' Session: ' + committee.session}"></span>
@@ -149,6 +156,8 @@
 
             <div class="card-footer">
                 <span th:text="'Committee Chairman: '+ ${committee.chairman.name}"></span>
+                <br>
+                <span th:text="'Committee Status: ' + (${committee.isCompleted} ? 'Completed' : 'Active')" style="margin-top: 10px; display: block"></span>
             </div>
 
         </a>

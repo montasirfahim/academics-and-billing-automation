@@ -12,6 +12,11 @@ public class CourseId implements Serializable {
     //Must have a no-argument constructor
     public CourseId() { }
 
+    public CourseId(String courseCode, String session) {
+        this.courser_code = courseCode;
+        this.session = session;
+    }
+
     //Implement equals() and hashCode()
     @Override
     public boolean equals(Object o) {

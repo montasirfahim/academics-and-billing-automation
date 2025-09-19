@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.entity.Course;
+import com.example.entity.CourseId;
 import com.example.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,8 +30,8 @@ public class CourseController {
     }
 
     @GetMapping("/course/delete/{id}")
-    public String deleteCourse(@PathVariable("id") String course_code) {
-        courseService.deleteCourseByCode(course_code);
+    public String deleteCourse(@PathVariable("id") CourseId course_id) {
+        courseService.deleteCourseByCode(course_id);
         return "redirect:/courses/view";
     }
 }

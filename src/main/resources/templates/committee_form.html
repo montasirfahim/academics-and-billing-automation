@@ -23,6 +23,7 @@
             text-align: center;
             color: #333;
             margin-bottom: 25px;
+            margin-top: 5px;
         }
 
         form {
@@ -72,6 +73,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+
         }
 
         button[type="submit"]:hover {
@@ -81,6 +83,12 @@
         /* Optional: spacing for hidden input */
         input[type="hidden"] {
             display: none;
+        }
+        a.add-new{
+           font-size: 13px;
+            text-align: center;
+            align-content: center;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -122,13 +130,14 @@
     <label for="external1">External Member1:</label>
     <select id="external1" th:field="*{externalMember1}" required>
         <option value="">-- Select External --</option>
-        <option th:each="u : ${users}"
+        <option th:each="u : ${externals}"
                 th:value="${u.user_id}"
                 th:text="${u.name}">
         </option>
     </select>
 
     <button type="submit">Save Committee</button>
+    <a href="/users/new" class="add-new" style="display: block; margin-top: 10px">Add user if not found </a>
 </form>
 </body>
 </html>

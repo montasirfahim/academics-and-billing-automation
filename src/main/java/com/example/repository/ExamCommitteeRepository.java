@@ -18,4 +18,5 @@ public interface ExamCommitteeRepository extends JpaRepository<ExamCommittee, Lo
     List<ExamCommittee> findBySemesterId(@Param("semesterId") Long semesterId);
 
 
+    ExamCommittee findBycommitteeId(Long committeeId);
 }

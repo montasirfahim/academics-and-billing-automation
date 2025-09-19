@@ -3,9 +3,8 @@ import com.example.entity.User;
 import com.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.service.PasswordEncryptor;
+
 import java.util.Optional;
-import javax.swing.text.html.Option;
 import java.util.List;
 @Service
 public class UserService {
@@ -40,5 +39,17 @@ public class UserService {
     }
     public User getUserById(Long id) {
         return userRepository.findByUser_id(id);
+    }
+
+    public List<User> getExternals() {
+        return userRepository.findExternalTeachers();
+    }
+
+    public List<User> getInternals(){
+        return userRepository.findInternalTeachers();
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 }
