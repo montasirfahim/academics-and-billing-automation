@@ -37,18 +37,13 @@ public class PdfService {
     public byte[] createPdf(ExamCommittee examCommittee, Semester semester, List<AssignedCourse> assignedCourses) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        try {
-            PdfWriter writer = new PdfWriter(baos);
-            PdfDocument pdfDoc = new PdfDocument(writer);
-            pdfDoc.setDefaultPageSize(PageSize.A4);
-            //pdfDoc.setDefaultPageSize(PageSize.A4.rotate());
+        try (PdfWriter writer = new PdfWriter(baos);
+             PdfDocument pdfDoc = new PdfDocument(writer);
+             Document document = new Document(pdfDoc)) {
 
-            Document document = new Document(pdfDoc);
+            pdfDoc.setDefaultPageSize(PageSize.A4);
 
             PdfFont font = PdfFontFactory.createFont("src/main/resources/fonts/times.ttf", PdfEncodings.IDENTITY_H);
-
-            document.setFont(font);
-
             document.setFont(font);
 
             addHeader(document, "Mawlana Bhashani Science and Technology University\nDept. of Information and Communication Technology, MBSTU");
@@ -57,20 +52,18 @@ public class PdfService {
             ls.setWidth(UnitValue.createPercentValue(100));
             document.add(ls);
             addHeader(document, "Exam Committee");
-            // Add some space after the divider
             document.add(new Paragraph("\n"));
 
-            addSemesterInfo(document,pdfDoc, semester, examCommittee);
-            //addHeader(document, "Committee Body\n");
-
+            addSemesterInfo(document, pdfDoc, semester, examCommittee);
             addTable(document, examCommittee);
             addFooter(pdfDoc, "Contact: 2nd Floor, 1st Academic Building, MBSTU. Email: chairman-ict@mbstu.ac.bd");
 
-            document.close();
         } catch (IOException e) {
             e.printStackTrace();
+            throw e; // Re-throw the exception to let the controller handle it
         }
 
+        // Now, after the try block, the document is guaranteed to be closed
         return baos.toByteArray();
     }
 
