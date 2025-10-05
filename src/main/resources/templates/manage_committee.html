@@ -15,20 +15,42 @@
             text-align: center;
             margin-bottom: 25px;
         }
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            gap: 40px;
+        }
 
         .container {
             max-width: 20%;
             background: white;
-            padding: 25px 30px;
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-
+            text-align: center;
+            align-content: center;
+            align-items: center;
+        }
+        #sem-info{
+            text-align: left; !important;
+            align-self: flex-start;
+            margin-left: 10px;
+            margin-right: auto;
+            align-content: flex-start;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        #course-table{
+            max-width: 900px;
+            margin-top: 50px;
         }
 
         thead {
@@ -63,18 +85,65 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            width: 70%;
         }
         a{
             text-decoration: none;
-            display: inline;
-            background-color:  #4CAF50;
+            display: inline-block;
+            background-color:  black;
             padding: 8px;
             border-radius: 4px;
             color: white;
+            width: 70%;
+
         }
         a:hover{
-            background-color: black;
+            background-color: #4CAF50;
         }
+        button.mod-btn{
+            text-decoration: none;
+            font-size: 15px;
+            display: inline-block;
+            background-color:  black;
+            padding: 10px;
+            border-radius: 4px;
+            color: white;
+            border: none;
+            width: 70%;
+        }
+        button.mod-btn:hover{
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .action{
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            text-align: center;
+            align-items: center;
+            align-content: center;
+
+        }
+        .actions{
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .drop-menu{
+            text-align: center;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+        #meeting-date{
+            padding: 5px;
+        }
+
+
         /* Responsive: horizontal scroll on small screens */
         @media (max-width: 600px) {
             .container {
@@ -116,9 +185,10 @@
 <body>
 
 <div class="main-container" id="main-container">
-    <div class="container" id="card">
-        <h1>Committee Body</h1>
-        <div id = "sem-info"> </div>
+    <div class="action" id="card">
+        <span style="text-align: center; font-weight: bold; font-size: 16px; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Committee Body</span>
+
+        <div id="sem-info"> </div>
 
         <table border="1" th:object="${committee}">
             <thead>
@@ -144,11 +214,84 @@
             </tbody>
         </table>
 
-        <div class="btn">
+        <div class="btn" style="display: inline-block; align-items: center; align-content: center; text-align: center">
             <a th:href="@{'/test/sample_pdf/' + ${committee.committeeId}}">Print Committee</a>
+
         </div>
     </div>
 
+    <div class="actions" id="actions">
+        <div id="moderation" class="action">
+            <span style="text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Question Moderation</span>
+            <label for="meeting-date">Select Meeting Date</label>
+            <input type="datetime-local" id="meeting-date">
+            <br>
+            <button type="submit" class="mod-btn" th:data-id="${committee.committeeId}" onclick="callModeration(this)">Call Meeting</button>
+        </div>
+
+        <div id="assign" class="action">
+            <span style="text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Assign Question Setter & Evaluator</span>
+            <label for="course">Select Course</label>
+            <select id="course" class="drop-menu">
+                <option value="">-- Select Course --</option>
+                <option th:each="course : ${assignedCourses}"
+                        th:value="${course.id}"
+                        th:text="${course.getCourse().getCourse_name()}">Course Name Placeholder</option>
+            </select>
+
+            <label for="internal">Select Teachers</label>
+            <select id="internal" class="drop-menu">
+                <option value="">-- Select Internal --</option>
+                <option th:each="course : ${assignedCourses}"
+                        th:value="${course.id}"
+                        th:text="${course.getCourse().getCourse_name()}">Course Name Placeholder</option>
+            </select>
+
+            <select id="external" class="drop-menu">
+                <option value="">-- Select External --</option>
+                <option th:each="course : ${assignedCourses}"
+                        th:value="${course.id}"
+                        th:text="${course.getCourse().getCourse_name()}">Course Name Placeholder</option>
+            </select>
+
+            <br>
+            <button type="submit" class="mod-btn">Assign</button>
+        </div>
+
+    </div>
+
+    <div class="activities" id="activities">
+        <table th:object="${committee}" id="activity-table" style="max-width: 770px; max-height: 1200px; overflow-y: auto;">
+            <thead>
+              <th>Date</th>
+              <th style="text-align: center">Committee Activities</th>
+            </thead>
+            <tbody>
+             <tr>
+                 <td th:text="*{#strings.substring(#object.moderationCallDateTime, 0, 10)}"></td>
+                 <td th:text="'Question moderation meeting has been called on ' + *{moderationScheduledDateTime}"></td>
+             </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div id="courses" class="course-table">
+    <table border="1" th:object="${assignedCourses}" id="course-table">
+        <thead>
+        <th>Course Code</th>
+        <th>Course Name </th>
+        <th>Credit Hour</th>
+        <th>Assigned Teacher</th>
+        </thead>
+        <tr th:each="assignedCourse: ${assignedCourses}">
+            <td th:text="${assignedCourse.getCourse().getCourse_code()}" data-label="Code"></td>
+            <td th:text="${assignedCourse.getCourse().getCourse_name()}" data-label="Name"></td>
+            <td th:text="${assignedCourse.getCourse().getCourse_credit()}" data-label="Credit"></td>
+            <td th:text="${assignedCourse.getUser().getName()}"></td>
+        </tr>
+    </table>
 </div>
 
 <script th:inline="javascript">
@@ -168,7 +311,7 @@
             sem_info.appendChild(h5);
 
             const h52 = document.createElement("h5");
-            h52.textContent = "Session: " + committee.session;
+            h52.textContent = "Session: " + committee.session + " (" + committee.semesterYearName + ")";
             sem_info.appendChild(h52);
             //debugged
             const div = document.getElementById("card");
@@ -218,6 +361,72 @@
         .catch(error => {
             console.error("Error loading courses:", error);
         });
+
+    function callModeration(element) {
+        const id = element.getAttribute("data-id");
+
+        const now = new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Dhaka",
+            hour12: true,             // AM/PM
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+        const callTime = now.replace(", ", ", ");
+        console.log("Call Time:", callTime);
+
+        const meetingTime = document.getElementById("meeting-date").value; // YYYY-MM-DDTHH:mm format
+        if(!meetingTime) {
+            alert("Please select a meeting date and time");
+            return;
+        }
+
+        const dateObj = new Date(meetingTime);
+        const datePart = dateObj.toLocaleDateString('en-GB', {
+            timeZone: "Asia/Dhaka",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }).replace(/\//g, '-');
+
+        //Using 'en-US' ensures the time uses the 12-hour format with AM/PM.
+        const timePart = dateObj.toLocaleTimeString('en-US', {
+            timeZone: "Asia/Dhaka",
+            hour12: true,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+
+        const formattedMeetingTime = `${datePart}, ${timePart}`;
+        console.log(formattedMeetingTime);
+
+        const payload = {
+            callTime: callTime,
+            meetingTime: formattedMeetingTime,
+            dateObj: dateObj
+        };
+
+        fetch(`/committee/api/moderation/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.text().then(message => {
+            alert(message);
+            if (response.status === 401) {
+            window.location.href = "/login";
+        }
+        }))
+            .catch(err => {
+            console.error("Error:", err);
+            alert("Something went wrong!");
+        });
+    }
+
 </script>
 </body>
 

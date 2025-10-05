@@ -43,6 +43,7 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s ease-in-out;
+
         }
 
         .committee-card:hover {
@@ -69,6 +70,8 @@
             text-align: center;
             font-weight: bold;
             color: black;
+            border: 1px solid yellow;
+            border-top: none; !important;
         }
 
         a.card-btn{
@@ -151,7 +154,9 @@
         <a th:each="committee, iterStat : ${examCommittees}" th:href="@{/committee/manage/{id}(id=${committee.committeeId})}" class="committee-card card-btn" th:style="'background-color: ' + ${colors[iterStat.index % colors.size()]}">
 
             <div class="card-body">
-                <span th:text="${committee.semester.semesterParity + ' Session: ' + committee.session}"></span>
+                <span th:text="${committee.semester.semesterParity + ' Semester, Session: ' + committee.session}"></span>
+                <br>
+                <span th:text="${committee.semesterYearName}" style="text-align: center; font-weight: bold"></span>
             </div>
 
             <div class="card-footer">

@@ -98,7 +98,7 @@
 <body>
 <form th:action="@{/users/new}" th:object="${user}" method="post">
     <h2>New User</h2>
-    <input type="hidden" th:if="${user.user_id} != null" th:field="*{user_id}" />
+    <input type="hidden" th:if="${user.userId} != null" th:field="*{userId}" />
 
     <div class="form-row">
         <div>
@@ -137,7 +137,7 @@
     <div class="form-row">
         <div>
             <label for="user_type">User Type:</label>
-            <select id="user_type" th:field="*{user_type}" required>
+            <select id="user_type" th:field="*{userType}" required>
                 <option value="">Select Type</option>
                 <option value="faculty">Faculty</option>
                 <option value="officer">Officer</option>

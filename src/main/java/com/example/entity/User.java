@@ -2,38 +2,45 @@ package com.example.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
 
-    private  String name;
-    private  String email;
+    private String name;
+    private String email;
 
     @JsonIgnore
-    private  String password;
+    private String password;
 
-    private  String role;
-    private  String phone;
-    private  String university;
+    private String role;
+    private String phone;
+    private String university;
     private String department;
-    private  String designation;
+    private String designation;
     private String salaryGrade;
     private String gradingCategory;
     private  boolean isChairman = false;
-    private String user_type;
+    private String userType;
     private Integer distanceFromMBSTU;
+
+    @JsonIgnore
+    private Long loginOTP;
+    @JsonIgnore
+    private LocalDateTime otpExpiryTime;
 
 
     public User() {}
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUserId(Long user_id) {
+        this.userId = user_id;
     }
 
     public String getName() {
@@ -106,11 +113,11 @@ public class User {
         isChairman = value;
     }
 
-    public void setUser_type(String user_type) {
-        this.user_type = user_type;
+    public void setUserType(String user_type) {
+        this.userType = user_type;
     }
-    public String getUser_type() {
-        return user_type;
+    public String getUserType() {
+        return userType;
     }
 
     public Integer getDistanceFromMBSTU() {
@@ -119,5 +126,21 @@ public class User {
 
     public void setDistanceFromMBSTU(Integer distanceFromMBSTU) {
         this.distanceFromMBSTU = distanceFromMBSTU;
+    }
+
+    public Long getLoginOTP() {
+        return loginOTP;
+    }
+
+    public void setLoginOTP(Long loginOTP) {
+        this.loginOTP = loginOTP;
+    }
+
+    public LocalDateTime getOtpExpiryTime() {
+        return otpExpiryTime;
+    }
+
+    public void setOtpExpiryTime(LocalDateTime otpExpiryTime) {
+        this.otpExpiryTime = otpExpiryTime;
     }
 }

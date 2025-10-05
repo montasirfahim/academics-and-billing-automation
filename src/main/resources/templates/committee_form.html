@@ -99,6 +99,16 @@
     <label for="session"> Session:</label>
     <input id="session" type="text" placeholder="e.g: 2021-22" th:field="*{session}" required>
 
+    <label for="year">Year:</label>
+    <select id="year" th:field="*{semesterYearName}" required>
+        <option value="">-- Select Year --</option>
+       <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+        <option value="3rd Year">3rd Year</option>
+        <option value="4th Year">4th Year</option>
+        <option value="Msc">M.Sc</option>
+    </select>
+
     <label for="chairman">Committee Chairman:</label>
     <select id="chairman" th:field="*{chairman}" required>
         <option value="">-- Select Chairman --</option>

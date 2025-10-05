@@ -9,7 +9,7 @@ public class Course {
     private CourseId id;
 
     private String course_name;
-    private int course_credit;
+    private double course_credit;
     private String courseType;
 
     public Course() {
@@ -28,10 +28,10 @@ public class Course {
     public void setCourse_name(String course_name) {
         this.course_name = course_name;
     }
-    public int getCourse_credit() {
+    public double getCourse_credit() {
         return course_credit;
     }
-    public void setCourse_credit(int course_credit) {
+    public void setCourse_credit(double course_credit) {
         this.course_credit = course_credit;
     }
 

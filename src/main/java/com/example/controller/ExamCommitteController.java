@@ -1,12 +1,10 @@
 package com.example.controller;
 
+import com.example.entity.AssignedCourse;
 import com.example.entity.ExamCommittee;
 import com.example.entity.Semester;
 import com.example.entity.User;
-import com.example.service.ExamCommitteeService;
-import com.example.service.PdfService;
-import com.example.service.SemesterService;
-import com.example.service.UserService;
+import com.example.service.*;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +28,9 @@ public class ExamCommitteController {
     UserService userService;
     @Autowired
     private SemesterService semesterService;
+
+    @Autowired
+    AssignedCourseService assignedCourseService;
 
     private final PdfService pdfService;
     public ExamCommitteController(PdfService pdfService) {
@@ -61,10 +62,10 @@ public class ExamCommitteController {
                 .orElseThrow(() -> new RuntimeException("Semester not found"));
 
         examCommittee.setSemester(semester);
-        examCommittee.setChairman(userService.getUserById(examCommittee.getChairman().getUser_id()));
-        examCommittee.setInternalMember1(userService.getUserById(examCommittee.getInternalMember1().getUser_id()));
-        examCommittee.setInternalMember2(userService.getUserById(examCommittee.getInternalMember2().getUser_id()));
-        examCommittee.setExternalMember1(userService.getUserById(examCommittee.getExternalMember1().getUser_id()));
+        examCommittee.setChairman(userService.getUserById(examCommittee.getChairman().getUserId()));
+        examCommittee.setInternalMember1(userService.getUserById(examCommittee.getInternalMember1().getUserId()));
+        examCommittee.setInternalMember2(userService.getUserById(examCommittee.getInternalMember2().getUserId()));
+        examCommittee.setExternalMember1(userService.getUserById(examCommittee.getExternalMember1().getUserId()));
 
         examCommitteeService.saveCommittee(examCommittee);
 
@@ -75,6 +76,11 @@ public class ExamCommitteController {
     public String manageCommittee(@PathVariable Long id, Model model) {
         ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(id);
         model.addAttribute("committee", examCommittee);
+
+
+        List<AssignedCourse> assignedCourses = assignedCourseService.findAllAssignedCourse();
+        model.addAttribute("assignedCourses", assignedCourses);
+
         model.addAttribute("committeeId", id);
         return "manage_committee";
     }

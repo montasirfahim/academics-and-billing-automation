@@ -2,6 +2,8 @@ package com.example.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class ExamCommittee {
 
@@ -31,11 +33,14 @@ public class ExamCommittee {
     @ManyToOne
     @JoinColumn(name = "external_member1_id")
     private User externalMember1;
-    private boolean isModerated = false;
-    private boolean isCompleted = false;
 
-    public ExamCommittee() {
-    }
+    private boolean isModerated = false;
+    private String moderationCallDateTime;
+    private String moderationScheduledDateTime;
+    private boolean isCompleted = false;
+    private String semesterYearName;
+
+    public ExamCommittee() {}
 
     public ExamCommittee(Semester semester, String session, User chairman, User internal_member1, User internal_member2, User external_member1) {
         this.semester = semester;
@@ -104,11 +109,37 @@ public class ExamCommittee {
         isCompleted = completed;
     }
 
+
+
+    public String getSemesterYearName() {
+        return semesterYearName;
+    }
+
+    public void setSemesterYearName(String semesterYearName) {
+        this.semesterYearName = semesterYearName;
+    }
+
     public boolean isModerated() {
         return isModerated;
     }
 
     public void setModerated(boolean moderated) {
         isModerated = moderated;
+    }
+
+    public String getModerationCallDateTime() {
+        return moderationCallDateTime;
+    }
+
+    public void setModerationCallDateTime(String moderationDateTime) {
+        this.moderationCallDateTime = moderationDateTime;
+    }
+
+    public String getModerationScheduledDateTime() {
+        return moderationScheduledDateTime;
+    }
+
+    public void setModerationScheduledDateTime(String moderationScheduledDateTime) {
+        this.moderationScheduledDateTime = moderationScheduledDateTime;
     }
 }

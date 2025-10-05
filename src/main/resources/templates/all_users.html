@@ -141,7 +141,7 @@
         </thead>
         <tbody>
         <tr th:each="user : ${users}">
-            <td data-label="ID" th:text="${user.user_id}"></td>
+            <td data-label="ID" th:text="${user.userId}"></td>
             <td data-label="Name" th:text="${user.name}"></td>
             <td data-label="Department" th:text="${user.department}"></td>
             <td data-label="University" th:text="${user.university}"></td>
@@ -149,8 +149,8 @@
             <td data-label="Phone" th:text="${user.phone}"></td>
             <td data-label="Phone" th:text="${user.email}"></td>
             <td class="actions" data-label="Actions">
-                <a th:href="@{'/users/records/' + ${user.user_id}}"> View </a> |
-                <a th:href="@{'/users/delete/' + ${user.user_id}}"
+                <a th:href="@{'/users/records/' + ${user.userId}}"> View </a> |
+                <a th:href="@{'/users/delete/' + ${user.userId}}"
                    onclick="return confirm('Are you sure?')" class="delete">Delete</a>
             </td>
         </tr>

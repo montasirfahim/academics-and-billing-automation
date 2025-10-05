@@ -59,7 +59,7 @@ public class AssignedCourseController {
 
         assignedCourse.setCourse(course);
         assignedCourse.setSemester(semester);
-        assignedCourse.setUser(userService.getUserById(assignedCourse.getUser().getUser_id()));
+        assignedCourse.setUser(userService.getUserById(assignedCourse.getUser().getUserId()));
 
         assignedCourseService.saveAssignedCourse(assignedCourse);
         return "redirect:/semester/manage/" + semesterId;
