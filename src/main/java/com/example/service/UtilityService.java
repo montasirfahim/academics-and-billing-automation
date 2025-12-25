@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 public class UtilityService {
 
     public String calendarLink(LocalDateTime meetingDateTime) {
-        // --- 1. Define Constants and Event Details ---
         final ZoneId DHAKA_ZONE = ZoneId.of("Asia/Dhaka");
         final DateTimeFormatter GOOGLE_CAL_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
 
@@ -46,5 +45,40 @@ public class UtilityService {
             e.printStackTrace();
             return "#error";
         }
+    }
+
+    public String generateCustomSemesterCode(String semesterParity, Integer semesterScheduledYear) {
+        String customCode = "";
+        if(semesterParity.contains("B.Sc")){
+            customCode = "B.Sc_";
+            if(semesterParity.contains("1st")){
+                customCode += "1st_";
+            }
+            else customCode += "2nd_";
+        }
+        else if(semesterParity.contains("M.Sc")){
+            customCode = "M.Sc_";
+            if(semesterParity.contains("1st")){
+                customCode += "1st_";
+            }
+            else if(semesterParity.contains("2nd")){
+                customCode += "2nd_";
+            }
+            else customCode += "3rd_";
+        }
+        else if(semesterParity.contains("M.Engineering")){
+            customCode = "M.Engineering_";
+            if(semesterParity.contains("1st")){
+                customCode += "1st_";
+            }
+            else if(semesterParity.contains("2nd")){
+                customCode += "2nd_";
+            }
+            else customCode += "3rd_";
+        }
+
+        customCode += String.valueOf(semesterScheduledYear);
+
+        return customCode;
     }
 }

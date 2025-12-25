@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Assign Course Teacher</title>
+    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f9f9f9;
+            min-height: 100vh;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        form {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            width: 100%;
+            justify-content: center;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 18px;
+            border: 1.5px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: black;
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container justify-content-center mt-md-5">
+    <div class="row justify-content-center">
+        <div class="form-container col-12 col-md-10 col-lg-8">
+            <form th:onsubmit="|assignCourseTeacher(event, ${courseId})|">
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h2 class="display-6">Assign Course Teacher</h2>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h4 class="text-secondary text-center" th:text="${courseName}"></h4>
+                    </div>
+                </div>
+                <div class="col-md-8 mx-auto">
+                    <label for="teacher-menu" class="form-label">Internal Teacher</label>
+                    <select id="teacher-menu" class="form-select" required>
+                        <option value="">--- Select Teacher ---</option>
+                        <option id="drop-menu" th:each="user: ${users}"
+                                th:value="${user.userId}"
+                                th:text="${user.name}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <button type="submit">Assign</button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 text-center d-flex flex-row justify-content-center gap-1">
+                        <a href="/users/new">Add Teacher</a>
+                        <p>If you did not find any teacher</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    async function assignCourseTeacher(event, courseId){
+        event.preventDefault();
+        const teacherId = document.getElementById("teacher-menu").value;
+        if(!teacherId){
+            alert("Please select a teacher")
+            return;
+        }
+        try{
+            const response = await fetch(`/api/course/assign/${courseId}/${teacherId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if(response.ok){
+                alert("Course teacher has been assigned successfully");
+                window.location.href = "/courses/view";
+            }
+            else{
+                alert("Failed to assign course teacher");
+            }
+        }catch (err){
+            console.log(err);
+            alert("An error occurred!");
+        }
+    }
+</script>
+</body>
+</html>

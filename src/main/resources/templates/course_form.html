@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Course Form</title>
+    <title>New Course</title>
+    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">
     <style>
-        /* Basic reset */
         * {
             box-sizing: border-box;
             font-family: Arial, sans-serif;
@@ -11,11 +11,6 @@
 
         body {
             background: #f9f9f9;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
             min-height: 100vh;
         }
 
@@ -30,7 +25,8 @@
             padding: 30px 40px;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            width: 350px;
+            width: 100%;
+            justify-content: center;
         }
 
         label {
@@ -62,7 +58,7 @@
         }
 
         button[type="submit"] {
-            background-color: #4CAF50;
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             padding: 12px;
@@ -75,42 +71,78 @@
         }
 
         button[type="submit"]:hover {
-            background-color: #45a049;
+            background: black;
         }
 
-        /*Optional: spacing for hidden input */
         input[type="hidden"] {
             display: none;
         }
     </style>
+
 </head>
 <body>
-<form th:action="@{/course/new}" th:object="${course}" method="post">
-    <h2>Add Course</h2>
+<div class="container justify-content-center mt-md-5">
+    <div class="row justify-content-center">
+        <div class="form-container col-12 col-md-10 col-lg-8">
+            <form th:action="@{/course/new}" th:object="${course}" method="post">
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h2 class="display-6">Add Course</h2>
+                    </div>
+                </div>
 
-    <label for="course_name">Course Name:</label>
-    <input id="course_name" type="text" th:field="*{course_name}" required/>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="course_name" class="form-label">Course Name</label>
+                        <input id="course_name" type="text" class="form-control" th:field="*{courseName}" placeholder="e.g. Database Systems" required/>
+                    </div>
 
-    <label for="course_code">Course Code:</label>
-    <input id="course_code" type="text" th:field="*{course_code}" required/>
+                    <div class="col-md-6">
+                        <label for="course_code" class="form-label">Course Code</label>
+                        <input id="course_code" type="text" class="form-control" th:field="*{courseCode}" placeholder="e.g. ICT3200" required/>
+                    </div>
 
-    <label for="course_credit">Course Credit:</label>
-    <input id="course_credit" type="text" th:field="*{course_credit}" required/>
+                    <div class="col-md-6">
+                        <label for="course_credit" class="form-label">Course Credit</label>
+                        <input id="course_credit" type="text" class="form-control" th:field="*{courseCredit}" placeholder="e.g. 3.00" required/>
+                    </div>
 
-    <label for="type">Course Type</label>
-    <select id="type" th:field="*{courseType}" required>
-        <option value="">--- Select Course Type ---</option>
-        <option value="Theory">Theory</option>
-        <option value="Lab">Lab</option>
-        <option value="Project">Project</option>
-        <option value="Viva">Oral & Viva</option>
-    </select>
+                    <div class="col-md-6">
+                        <label for="type" class="form-label">Course Type</label>
+                        <select id="type" class="form-select" th:field="*{courseType}" required>
+                            <option value="">--- Select Type ---</option>
+                            <option value="Theory">Theory</option>
+                            <option value="Lab">Lab</option>
+                            <option value="Project">Project</option>
+                            <option value="Viva">Oral & Viva</option>
+                        </select>
+                    </div>
 
-    <label for="session">Session:</label>
-    <input id="session" type="text" placeholder="e.g: 2021-22" th:field="*{session}" required/>
+                    <div class="col-md-6">
+                        <label for="session" class="form-label">Session</label>
+                        <input id="session" type="text" class="form-control" placeholder="e.g: 2021-22" th:field="*{session}" required/>
+                    </div>
 
+                    <div class="col-md-6">
+                        <label for="semester-menu" class="form-label">Semester</label>
+                        <select id="semester-menu" class="form-select" th:field="*{semester}" required>
+                            <option value="">--- Select Semester ---</option>
+                            <option th:each="sem: ${semesters}"
+                                    th:value="${sem.semesterId}"
+                                    th:text="${sem.customSemesterCode}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
 
-    <button type="submit">Save Course</button>
-</form>
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <button type="submit">Save Course</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

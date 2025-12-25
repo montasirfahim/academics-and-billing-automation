@@ -3,7 +3,6 @@
 <head>
     <title>Semester Form</title>
     <style>
-        /* Basic reset */
         * {
             box-sizing: border-box;
             font-family: Arial, sans-serif;
@@ -78,7 +77,6 @@
             background-color: #45a049;
         }
 
-        /* Optional: spacing for hidden input */
         input[type="hidden"] {
             display: none;
         }
@@ -94,11 +92,18 @@
         <option th:each="i : ${#numbers.sequence(2024, 2050)}" th:value="${i}"> [[${i}]] </option>
     </select>
 
+    <label for="held-month">Held Month</label>
+    <input type="text" id="held-month" th:field="*{semesterHeldMonths}" placeholder="e.g: January-February" required>
+
     <label for="year"> Scheduled Year:</label>
     <select id="year" th:field="*{semesterScheduledYear}" required>
         <option value=""> Select Scheduled Year </option>
         <option th:each="i : ${#numbers.sequence(2023, 2050)}" th:value="${i}"> [[${i}]] </option>
     </select>
+
+    <label for="scheduled-month">Scheduled Month</label>
+    <input type="text" id="scheduled-month" th:field="*{semesterScheduledMonths}" placeholder="e.g: January-February" required>
+
 
 
     <label for="semester_parity">Semester Name:</label>
@@ -113,8 +118,6 @@
         <option th:value="'M.Engineering 2nd'"> M.Engineering 2nd Semester </option>
         <option th:value="'M.Engineering 3rd'"> M.Engineering 3rd Semester </option>
     </select>
-
-
 
     <button type="submit">Save Semester</button>
 </form>

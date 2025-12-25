@@ -1,46 +1,59 @@
 package com.example.entity;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 @Entity
 public class Course {
-    @EmbeddedId
-    private CourseId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String course_name;
-    private double course_credit;
+    String courseCode;
+    String session;
+    private String courseName;
+    private double courseCredit;
     private String courseType;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "semester_id", referencedColumnName = "semesterId")
+    private Semester semester;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "internal_teacher_id", referencedColumnName = "userId" )
+    private User internalTeacher;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "external_teacher_id", referencedColumnName = "userId")
+    private User externalTeacher;
+
     public Course() {
-        this.id = new CourseId();
     }
 
-    public String getCourse_code() {
-        return id.getCourser_code();
+    public String getCourseCode() {
+        return courseCode;
     }
-    public void setCourse_code(String courser_code) {
-        id.setCourser_code(courser_code);
+    public void setCourseCode(String courseCode) {
+        this.courseCode = courseCode;
     }
-    public String getCourse_name() {
-        return course_name;
+    public String getCourseName() {
+        return courseName;
     }
-    public void setCourse_name(String course_name) {
-        this.course_name = course_name;
+    public void setCourseName(String course_name) {
+        this.courseName = course_name;
     }
-    public double getCourse_credit() {
-        return course_credit;
+    public double getCourseCredit() {
+        return courseCredit;
     }
-    public void setCourse_credit(double course_credit) {
-        this.course_credit = course_credit;
+    public void setCourseCredit(double courseCredit) {
+        this.courseCredit = courseCredit;
     }
 
     public String getSession() {
-        return id.getSession();
+        return session;
     }
 
     public void setSession(String session) {
-        id.setSession(session);
+        this.session = session;
     }
 
     public String getCourseType() {
@@ -50,11 +63,35 @@ public class Course {
         this.courseType = courseType;
     }
 
-    public CourseId getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(CourseId id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getInternalTeacher() {
+        return internalTeacher;
+    }
+
+    public void setInternalTeacher(User internalTeacher) {
+        this.internalTeacher = internalTeacher;
+    }
+
+    public User getExternalTeacher() {
+        return externalTeacher;
+    }
+
+    public void setExternalTeacher(User externalTeacher) {
+        this.externalTeacher = externalTeacher;
+    }
+
+    public Semester getSemester() {
+        return semester;
+    }
+
+    public void setSemester(Semester semester) {
+        this.semester = semester;
     }
 }
 

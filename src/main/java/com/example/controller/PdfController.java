@@ -1,34 +1,30 @@
 package com.example.controller;
 
-import com.example.entity.AssignedCourse;
+import com.example.entity.Course;
 import com.example.entity.ExamCommittee;
 import com.example.entity.Semester;
-import com.example.service.AssignedCourseService;
+import com.example.service.CourseService;
 import com.example.service.ExamCommitteeService;
 import com.example.service.PdfService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Controller
 public class PdfController {
     @Autowired
     ExamCommitteeService examCommitteeService;
-    @Autowired
-    AssignedCourseService assignedCourseService;
+
 
     private final PdfService pdfService;
+
+    @Autowired
+    private CourseService courseService;
 
     public PdfController(PdfService pdfService) {
         this.pdfService = pdfService;
@@ -40,7 +36,7 @@ public class PdfController {
         Semester semester = examCommittee.getSemester();
         String committeeSession = examCommittee.getSession(); //need to query matched courses for any committee
 
-        List<AssignedCourse> assignedCourses = assignedCourseService.findAllAssignedCourse();
+        List<Course> assignedCourses = courseService.findAll();
 
         byte[] pdfBytes = pdfService.createPdf(examCommittee, semester, assignedCourses);
 

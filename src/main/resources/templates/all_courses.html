@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title> Courses </title>
+    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,10 +27,10 @@
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
         }
 
-        a.add-new {
+        .add-new {
             display: inline-block;
             margin-bottom: 20px;
-            background-color: #4CAF50;
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
             color: white;
             text-decoration: none;
             padding: 10px 18px;
@@ -38,10 +40,10 @@
             cursor: pointer;
         }
 
-        a.add-new:hover {
-            background-color: black;
+        .add-new:hover {
+            background: black;
+            color: white;
         }
-
 
         table {
             width: 100%;
@@ -50,7 +52,7 @@
         }
 
         thead {
-            background-color: #4CAF50;
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
@@ -65,23 +67,13 @@
         }
 
         td.actions a {
-            margin-right: 10px;
+            margin-right: 5px;
             text-decoration: none;
-            color: #4CAF50;
-            font-weight: 600;
+            font-weight: bold;
             cursor: pointer;
             transition: color 0.3s ease;
         }
 
-        td.actions a:hover {
-            color: #388e3c;
-        }
-
-        a.delete:hover {
-            color: red;
-        }
-
-        /* Responsive: horizontal scroll on small screens */
         @media (max-width: 600px) {
             .container {
                 padding: 15px 10px;
@@ -90,7 +82,7 @@
                 display: block;
             }
             thead tr {
-                display: none; /* Hide table header on small */
+                display: none;
             }
             tbody tr {
                 margin-bottom: 20px;
@@ -130,14 +122,16 @@
         <thead>
         <tr>
             <th>Course Code</th>
-            <th>Session</th>
             <th>Course Name</th>
             <th>Course Credit</th>
+            <th>Session</th>
+            <th>Semester</th>
+            <th>Assigned Teacher</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody id="course-table-body">
-        <!-- Rows will be injected here by JS -->
+
         </tbody>
     </table>
 </div>
@@ -157,15 +151,17 @@
             courses.forEach(course => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>${course.course_code}</td>
+                    <td>${course.courseCode}</td>
+                    <td>${course.courseName}</td>
+                    <td>${parseFloat(course.courseCredit).toFixed(2)}</td>
                     <td>${course.session}</td>
-                    <td>${course.course_name}</td>
-                    <td>${course.course_credit}</td>
+                    <td>${course.semester.customSemesterCode}</td>
+                    <td>${course.internalTeacher?.name || 'N/A'}</td>
                     <td class="actions">
-                        <a href="/course/edit/${course.course_code}">Edit</a> |
-                        <a href="/course/delete/${course.course_code}"
-                           onclick="return confirm('Are you sure?')"
-                           class="delete">Delete</a>
+                        <a class="btn btn-outline-primary btn-sm" href="/course/assign/${course.id}">Assign Faculty</a> |
+                        <a href="/course/delete/${course.id}"
+                           onclick="return confirm('Are you sure to Delete this course?')"
+                           class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i> </a>
                     </td>
                 `;
 

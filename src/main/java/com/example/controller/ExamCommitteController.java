@@ -1,11 +1,9 @@
 package com.example.controller;
 
-import com.example.entity.AssignedCourse;
 import com.example.entity.ExamCommittee;
 import com.example.entity.Semester;
 import com.example.entity.User;
 import com.example.service.*;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class ExamCommitteController {
@@ -29,8 +23,6 @@ public class ExamCommitteController {
     @Autowired
     private SemesterService semesterService;
 
-    @Autowired
-    AssignedCourseService assignedCourseService;
 
     private final PdfService pdfService;
     public ExamCommitteController(PdfService pdfService) {
@@ -78,8 +70,8 @@ public class ExamCommitteController {
         model.addAttribute("committee", examCommittee);
 
 
-        List<AssignedCourse> assignedCourses = assignedCourseService.findAllAssignedCourse();
-        model.addAttribute("assignedCourses", assignedCourses);
+
+        model.addAttribute("assignedCourses",null);
 
         model.addAttribute("committeeId", id);
         return "manage_committee";

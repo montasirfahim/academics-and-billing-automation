@@ -60,5 +60,10 @@ public class SemesterController {
         return "manage_semester";
     }
 
+    @PostMapping("/semester/delete/{id}")
+    public String deleteSemester(@PathVariable("id") Long semesterId) {
+        semesterService.deleteBySemesterId(semesterId);
+        return "redirect:/semesters/view";
+    }
 
 }

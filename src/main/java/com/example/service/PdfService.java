@@ -30,7 +30,7 @@ import java.util.List;
 @Service
 public class PdfService {
 
-    public byte[] createPdf(ExamCommittee examCommittee, Semester semester, List<AssignedCourse> assignedCourses) throws IOException {
+    public byte[] createPdf(ExamCommittee examCommittee, Semester semester, List<Course> assignedCourses) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try (PdfWriter writer = new PdfWriter(baos);
@@ -177,7 +177,7 @@ public class PdfService {
         document.add(table);
     }
 
-    private void addCommitteeCourseTable(Document document, List<AssignedCourse> courseList) {
+    private void addCommitteeCourseTable(Document document, List<Course> courseList) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{1.5F, 4.5F, 1.5F, 3.5F}));
         table.setWidth(UnitValue.createPercentValue(100));
         table.addHeaderCell(createStyledHeaderCell("Course Code"));
@@ -187,12 +187,12 @@ public class PdfService {
 
         //Collections.sort(courseList, course_name );
         for (int i = 0; i < courseList.size(); i++) {
-            AssignedCourse assignedCourse = courseList.get(i);
+            Course assignedCourse = courseList.get(i);
 
-            table.addCell(createStyledCell(assignedCourse.getCourse().getCourse_code()));
-            table.addCell(createStyledCell(assignedCourse.getCourse().getCourse_name()));
-            table.addCell(createStyledCell(String.valueOf(assignedCourse.getCourse().getCourse_credit())));
-            table.addCell(createStyledCell(assignedCourse.getUser().getName()));
+            table.addCell(createStyledCell(assignedCourse.getCourseCode()));
+            table.addCell(createStyledCell(assignedCourse.getCourseName()));
+            table.addCell(createStyledCell(String.valueOf(assignedCourse.getCourseCredit())));
+            table.addCell(createStyledCell(assignedCourse.getInternalTeacher().getName()));
         }
 
         document.add(table);

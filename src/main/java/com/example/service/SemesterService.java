@@ -12,13 +12,17 @@ import java.util.Optional;
 public class SemesterService {
     @Autowired
     private SemesterRepository semesterRepository;
+    @Autowired
+    private UtilityService utilityService;
 
     public void saveSemester(Semester semester) {
+        String customCode = utilityService.generateCustomSemesterCode(semester.getSemesterParity(), semester.getSemesterScheduledYear());
+        semester.setCustomSemesterCode(customCode);
         semesterRepository.save(semester);
     }
 
     public List<Semester> findAllSemesters() {
-        return semesterRepository.findAll();
+        return semesterRepository.findAllByOrderBySemesterIdDesc();
     }
 
     public void deleteBySemesterId(Long semesterId) {
@@ -31,5 +35,9 @@ public class SemesterService {
 
     public Semester findById(Long semesterId) {
         return semesterRepository.findSemesterBySemesterId(semesterId);
+    }
+
+    public Semester findByCustomSemesterCode(String customSemesterCode) {
+        return semesterRepository.findByCustomSemesterCode(customSemesterCode);
     }
 }

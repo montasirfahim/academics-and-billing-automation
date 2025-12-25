@@ -39,7 +39,7 @@ public class EmailService {
     }
 
     @Async
-    public void sendOTPViaEmail(String to, String subject, String otp, File attachment)
+    public void sendOTPViaEmail(String to, String subject, String otp)
             throws MessagingException, UnsupportedEncodingException {
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -60,10 +60,6 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true);
-
-        if(attachment != null) {
-            helper.addAttachment(attachment.getName(), attachment);
-        }
 
         mailSender.send(message);
     }

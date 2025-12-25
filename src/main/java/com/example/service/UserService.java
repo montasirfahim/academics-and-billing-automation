@@ -37,7 +37,7 @@ public class UserService {
     public void generateAndSendOTP(User user) throws MessagingException, UnsupportedEncodingException {
         String otp = String.valueOf(ThreadLocalRandom.current().nextInt(10000, 100000));
 
-        emailService.sendOTPViaEmail(user.getEmail(), "Login Verification OTP", otp, null);
+        emailService.sendOTPViaEmail(user.getEmail(), "Login Verification OTP", otp);
         user.setLoginOTP(otp);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(3));
         userRepository.save(user);

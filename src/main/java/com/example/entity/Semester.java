@@ -6,15 +6,18 @@ public class Semester {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long semesterId;
+
+    private String customSemesterCode;
+
     private Integer semesterHeldYear;
+    private String semesterHeldMonths;
+
     private Integer semesterScheduledYear;
+    private String semesterScheduledMonths;
+
     private String semesterParity; //odd-1st semester or even-2nd semester
 
-    public Semester(Integer semesterYear,Integer semesterScheduledYear, String semesterParity) {
-        this.semesterHeldYear = semesterYear;
-        this.semesterScheduledYear = semesterScheduledYear;
-        this.semesterParity = semesterParity;
-    }
+
     public Semester() {}
 
     public Integer getSemesterHeldYear() {
@@ -46,5 +49,29 @@ public class Semester {
 
     public void setSemesterScheduledYear(Integer semesterScheduledYear) {
         this.semesterScheduledYear = semesterScheduledYear;
+    }
+
+    public String getSemesterHeldMonths() {
+        return semesterHeldMonths;
+    }
+
+    public void setSemesterHeldMonths(String semesterHeldMonths) {
+        this.semesterHeldMonths = semesterHeldMonths;
+    }
+
+    public String getSemesterScheduledMonths() {
+        return semesterScheduledMonths;
+    }
+
+    public void setSemesterScheduledMonths(String semesterScheduledMonths) {
+        this.semesterScheduledMonths = semesterScheduledMonths;
+    }
+
+    public String getCustomSemesterCode() {
+        return customSemesterCode;
+    }
+
+    public void setCustomSemesterCode(String customSemesterCode) {
+        this.customSemesterCode = customSemesterCode;
     }
 }

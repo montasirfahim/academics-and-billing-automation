@@ -7,7 +7,7 @@ import java.sql.Time;
 @Entity
 public class TourAllowanceBill {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long billId;
 
     @JoinColumn(name = "user_id")
