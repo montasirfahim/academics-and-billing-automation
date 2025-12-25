@@ -31,7 +31,7 @@
             padding: 30px 40px;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            width: 350px;
+            width: 450px;
         }
 
         label {
@@ -113,7 +113,7 @@
     <select id="chairman" th:field="*{chairman}" required>
         <option value="">-- Select Chairman --</option>
         <option th:each="u : ${users}"
-                th:value="${u.user_id}"
+                th:value="${u.userId}"
                 th:text="${u.name}">
         </option>
     </select>
@@ -123,7 +123,7 @@
     <select id="internal1" th:field="*{internalMember1}" required>
         <option value="">-- Select Internal1 --</option>
         <option th:each="u : ${users}"
-                th:value="${u.user_id}"
+                th:value="${u.userId}"
                 th:text="${u.name}">
         </option>
     </select>
@@ -132,7 +132,7 @@
     <select id="internal2" th:field="*{internalMember2}" required>
         <option value="">-- Select Internal2 --</option>
         <option th:each="u : ${users}"
-                th:value="${u.user_id}"
+                th:value="${u.userId}"
                 th:text="${u.name}">
         </option>
     </select>
@@ -141,10 +141,13 @@
     <select id="external1" th:field="*{externalMember1}" required>
         <option value="">-- Select External --</option>
         <option th:each="u : ${externals}"
-                th:value="${u.user_id}"
+                th:value="${u.userId}"
                 th:text="${u.name}">
         </option>
     </select>
+
+    <label for="stu_count">Number of Students</label>
+    <input type="text" id="stu_count" th:field="*{studentCount}" required>
 
     <button type="submit">Save Committee</button>
     <a href="/users/new" class="add-new" style="display: block; margin-top: 10px">Add user if not found </a>

@@ -28,9 +28,10 @@ public class User {
     private Integer distanceFromMBSTU;
 
     @JsonIgnore
-    private Long loginOTP;
+    private String loginOTP;
     @JsonIgnore
     private LocalDateTime otpExpiryTime;
+    private Boolean isOTPVerified = false;
 
 
     public User() {}
@@ -128,11 +129,11 @@ public class User {
         this.distanceFromMBSTU = distanceFromMBSTU;
     }
 
-    public Long getLoginOTP() {
+    public String getLoginOTP() {
         return loginOTP;
     }
 
-    public void setLoginOTP(Long loginOTP) {
+    public void setLoginOTP(String loginOTP) {
         this.loginOTP = loginOTP;
     }
 
@@ -142,5 +143,13 @@ public class User {
 
     public void setOtpExpiryTime(LocalDateTime otpExpiryTime) {
         this.otpExpiryTime = otpExpiryTime;
+    }
+
+    public Boolean getOTPVerified() {
+        return isOTPVerified;
+    }
+
+    public void setOTPVerified(Boolean OTPVerified) {
+        isOTPVerified = OTPVerified;
     }
 }

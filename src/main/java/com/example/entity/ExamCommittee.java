@@ -39,6 +39,7 @@ public class ExamCommittee {
     private String moderationScheduledDateTime;
     private boolean isCompleted = false;
     private String semesterYearName;
+    private Long studentCount;
 
     public ExamCommittee() {}
 
@@ -141,5 +142,13 @@ public class ExamCommittee {
 
     public void setModerationScheduledDateTime(String moderationScheduledDateTime) {
         this.moderationScheduledDateTime = moderationScheduledDateTime;
+    }
+
+    public Long getStudentCount() {
+        return studentCount;
+    }
+
+    public void setStudentCount(Long studentCount) {
+        this.studentCount = studentCount;
     }
 }

@@ -1,0 +1,125 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background:  linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    flex-direction: row;
+    gap: 30px;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+form {
+    background: white;
+    margin-top: 25px;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    width: 350px;
+    text-align: center;
+}
+
+#otp-form{
+    display: none;
+}
+#otp-submit-btn{
+    cursor: pointer;
+    padding: 5px;
+    background: red;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    width: 100px;
+}
+
+#otp-submit-btn:hover{
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;
+    text-align: left;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    border: 1.5px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+button[type="submit"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background: black;
+}
+
+/*Optional: spacing for hidden input */
+input[type="hidden"] {
+    display: none;
+}
+
+.status{
+    display: none;
+}
+
+.error{
+    color:#991b1b;
+    background: #fee2e2;
+    padding: 10px;
+    border-radius: 5px;
+}
+.waiting{
+    background: #fff7ed;
+    color: #b45309;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.success{
+    background: #d1fae5;
+    color: #065f46;
+    padding: 10px;
+    border-radius: 5px;
+}

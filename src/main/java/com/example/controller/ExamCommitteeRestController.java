@@ -153,7 +153,7 @@ public class ExamCommitteeRestController {
 
 
         emailService.sendEmail(
-                new String[] {"montasirtuhin1128@gmail.com", "nusratbeva1824@gmail.com", "zia@mbstu.ac.bd"},
+                new String[] {"montasirtuhin1128@gmail.com", "it22016@mbstu.ac.bd"},
                 "Question Moderation Meeting",
                 htmlBody,
                 null

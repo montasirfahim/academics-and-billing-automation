@@ -2,101 +2,112 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 40px;
-        }
-        .btn-container {
-            display: flex;
-            gap: 20px;
-        }
-        .btn {
-            background-color: rebeccapurple; <!--#4CAF50 -->
-            color: white;
-            padding: 14px 22px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-        .btn:hover {
-            background-color:black;
-        }
-        a{
-            color: white;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
 
-        /* --- Navbar Styles --- */
-        .navbar {
-            width: 100%;
-            background: #0fda60;
-            padding: 15px 0;
-            color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            font-family: Arial, sans-serif;
-            margin-bottom: 50px;
-            margin-left: 0;
-        }
-        .nav-container {
-            /* This uses Flexbox to align the items horizontally */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+    <link rel="stylesheet" th:href="@{/style/landing.css}">
 
-            max-width: 100%;
-            margin: 0;
-        }
-        .nav-title {
-            margin: 0;
-            font-size: 1.8em;
-            font-weight: bold;
-        }
-        .nav-link {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1em;
-            padding: 8px 16px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-        .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: black;
-        }
-
-    </style>
 </head>
 <body>
-<nav class="navbar">
-    <div class="nav-container">
-        <a href="/dashboard" id="dash" class="nav-link">Dashboard</a>
-        <h1 class="nav-title"> Billing Automation Software - ICT, MBSTU </h1>
-        <a href="/logout" id="home" class="nav-link">Logout</a>
+<nav class="navbar navbar-expand-lg shadow fixed-top" style="background: linear-gradient(to left, #667eea 0%, #764ba2 100%);">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white fw-bold" href="/home">Academics Automation Software</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                   <button class="dash-btn" > <a href="/home" style="text-decoration: none">Home</a></button>
+                </li>
+                <li class="nav-item">
+                    <button id="dash-btn" class="dash-btn"><a href="/dashboard" style="text-decoration: none">Dashboard</a></button>
+                </li>
+                <li class="nav-item">
+                    <button class="custom-yellow-btn" onclick="logout()">Logout</button>
+                </li>
+            </ul>
+
+        </div>
     </div>
 </nav>
 
-<div class="btn-container">
-    <a class="btn" href="/all_users">Manage Users</a>
-    <a class="btn" href="/courses/view">Manage Courses</a>
-    <a class="btn" href="/semesters/view">Manage Semesters</a>
+<div id="carouselExampleDark" class="carousel carousel-dark slide position-relative h-100" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="2000">
+            <img src="/icpc2025.jpg" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>ICPC 2025</h5>
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+            <img src="/icpc25_2.jpg" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>ICPC 2025</h5>
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+            <img src="/icpc2025.jpg" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>ICPC 2025</h5>
+            </div>
+        </div>
+    </div>
 
-    <a class="btn" href="#">Create TD/DA Bill</a>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
 
+    <div class="position-absolute top-50 start-50 translate-middle d-flex flex-column flex-lg-row gap-2">
+        <a class="btn btn-outline-light w-75 w-lg-auto btn-fixed-md" href="/all_users">Manage Users</a>
+        <a class="btn btn-outline-light w-75 w-lg-auto btn-fixed-md" href="/courses/view">Manage Courses</a>
+        <a class="btn btn-outline-light w-75 w-lg-auto btn-fixed-md" href="/semesters/view">Manage Semesters</a>
+        <a class="btn btn-outline-light w-75 w-lg-auto btn-fixed-md" href="#">Create TA/DA Bill</a>
+    </div>
 </div>
 
+
+<div class="mt-5 pt-5"></div>
+
+<footer class="bg-dark text-white p-4">
+    <div class="text-left mb-3">
+        <h4>Links</h4>
+        <a href="https://ict.mbstu.ac.bd/" class="link text-primary">ICT, MBSTU</a> <br>
+        <a href="" class="link text-primary">ICT Alumni Association</a>
+    </div>
+    <div class="container text-center align-items-center mx-auto">
+        <p class="mb-1">Dept. of ICT, MBSTU © 2025 All Rights Reserved </p>
+        <div class="d-flex justify-content-center align-items-center gap-1 text-center">
+            <p class="mb-0">Developed by</p>
+            <p class="mb-0">
+                <a href="https://www.linkedin.com/in/montasirfahim/" class="link text-primary">
+                    Montasir Fahim,
+                </a>
+            </p>
+            <p class="mb-0">ICT'19</p>
+            <a href="https://www.linkedin.com/in/montasirfahim/" class="li-icon">
+               <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="https://www.facebook.com/fahim.ffff/" class="fb-icon">
+                <i class="fab fa-facebook"></i>
+            </a>
+        </div>
+
+    </div>
+</footer>
+<script th:src="@{/lib/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/auth.js}"></script>
 </body>
 </html>
