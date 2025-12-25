@@ -2,11 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Semesters</title>
+    <link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/style/navbar.css}">
     <style>
         body {
             font-family: Arial, sans-serif;
             background: #f9f9f9;
-            padding: 30px 20px;
+            padding: 110px 20px;
             margin: 0;
             color: #333;
         }
@@ -28,7 +31,7 @@
         a.add-new {
             display: inline-block;
             margin-bottom: 20px;
-            background-color: #4CAF50;
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
             color: white;
             text-decoration: none;
             padding: 10px 18px;
@@ -38,10 +41,10 @@
             cursor: pointer;
         }
 
-        a.add-new:hover {
-            background-color: black;
+        .add-new:hover {
+            background: black;
+            color: white;
         }
-
 
         table {
             width: 100%;
@@ -50,7 +53,7 @@
         }
 
         thead {
-            background-color: #4CAF50;
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
@@ -67,21 +70,11 @@
         td.actions a {
             margin-right: 10px;
             text-decoration: none;
-            color: #4CAF50;
             font-weight: 600;
             cursor: pointer;
             transition: color 0.3s ease;
         }
 
-        td.actions a:hover {
-            color: #388e3c;
-        }
-
-        a.delete:hover {
-            color: red;
-        }
-
-        /* Responsive: horizontal scroll on small screens */
         @media (max-width: 600px) {
             .container {
                 padding: 15px 10px;
@@ -90,7 +83,7 @@
                 display: block;
             }
             thead tr {
-                display: none; /* Hide table header on small */
+                display: none;
             }
             tbody tr {
                 margin-bottom: 20px;
@@ -123,6 +116,30 @@
     </style>
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-dark shadow fixed-top" style="background: linear-gradient(to left, #667eea 0%, #764ba2 100%);">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white fw-bold" href="/home">Academics Automation Software</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <button class="dash-btn" > <a href="/home" style="text-decoration: none">Home</a></button>
+                </li>
+                <li class="nav-item">
+                    <button id="dash-btn" class="dash-btn"><a href="/dashboard" style="text-decoration: none">Dashboard</a></button>
+                </li>
+                <li class="nav-item">
+                    <button class="custom-yellow-btn" onclick="logout()">Logout</button>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
 <div class="container">
     <h1>All Semesters</h1>
     <a href="/semester/new" class="add-new">Add New Semester</a>
@@ -165,10 +182,10 @@
                      <td>${semester.semesterScheduledYear}</td>
                     <td>${semester.semesterParity}</td>
                     <td class="actions">
-                        <a href="/semester/manage/${semester.semesterId}">Manage</a> |
+                        <a class="btn btn-outline-primary btn-sm" href="/semester/manage/${semester.semesterId}">Manage</a> |
                         <a href="/semester/delete/${semester.semesterId}"
                            onclick="return confirm('Are you sure?')"
-                           class="delete">Delete</a>
+                           class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i> </a>
                     </td>
                 `;
 
@@ -179,6 +196,7 @@
             console.error("Error loading semesters:", error);
         });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script th:src="@{/js/auth.js}"></script>
 </body>
-
 </html>

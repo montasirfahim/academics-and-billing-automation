@@ -2,15 +2,26 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title> Courses </title>
-    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">
+<!--    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">-->
     <link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/style/navbar.css}">
     <style>
         body {
             font-family: Arial, sans-serif;
             background: #f9f9f9;
-            padding: 30px 20px;
+            padding: 80px 20px 30px 20px;
             margin: 0;
             color: #333;
+        }
+
+        #filter-btn{
+            border: none;
+            text-decoration: none;
+        }
+        #year, #parity{
+            max-height: 43px;
+            min-height: 30px;
         }
 
         h1 {
@@ -20,7 +31,7 @@
 
         .container {
             max-width: 90%;
-            margin: 0 auto;
+            margin: 100px auto !important;
             background: white;
             padding: 25px 30px;
             border-radius: 8px;
@@ -115,9 +126,46 @@
     </style>
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-dark shadow fixed-top" style="background: linear-gradient(to left, #667eea 0%, #764ba2 100%);">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white fw-bold" href="/home">Academics Automation Software</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <button class="dash-btn" > <a href="/home" style="text-decoration: none">Home</a></button>
+                </li>
+                <li class="nav-item">
+                    <button id="dash-btn" class="dash-btn"><a href="/dashboard" style="text-decoration: none">Dashboard</a></button>
+                </li>
+                <li class="nav-item">
+                    <button class="custom-yellow-btn" onclick="logout()">Logout</button>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
 <div class="container">
     <h1>All Courses</h1>
-    <a href="/course/new" class="add-new">Add New Course</a>
+    <div class="btn-container d-flex flex-column flex-md-row justify-content-between mb-4">
+        <a href="/course/new" class="add-new">Add New Course</a>
+        <form class="d-flex flex-column flex-md-row gap-2">
+            <select id="parity">
+                <option>Select Semester</option>
+                <option th:value="BSc_1st">B.Sc 1st</option>
+            </select>
+            <select id="year">
+                <option>Select Scheduled Year</option>
+                <option th:value="2024">2024</option>
+            </select>
+            <button type="submit" id="filter-btn" class="add-new text-decoration-none border-0">Filter Courses</button>
+        </form>
+    </div>
     <table border="1">
         <thead>
         <tr>
@@ -126,7 +174,7 @@
             <th>Course Credit</th>
             <th>Session</th>
             <th>Semester</th>
-            <th>Assigned Teacher</th>
+            <th>Course Teacher</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -156,7 +204,7 @@
                     <td>${parseFloat(course.courseCredit).toFixed(2)}</td>
                     <td>${course.session}</td>
                     <td>${course.semester.customSemesterCode}</td>
-                    <td>${course.internalTeacher?.name || 'N/A'}</td>
+                    <td>${course.internalTeacher?.name || 'Not Assigned'}</td>
                     <td class="actions">
                         <a class="btn btn-outline-primary btn-sm" href="/course/assign/${course.id}">Assign Faculty</a> |
                         <a href="/course/delete/${course.id}"
@@ -172,6 +220,9 @@
             console.error("Error loading courses:", error);
         });
 </script>
+<!--<script th:src="@{/lib/bootstrap/js/bootstrap.bundle.min.js}"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script th:src="@{/js/auth.js}"></script>
 </body>
 
 </html>
