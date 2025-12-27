@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reset Password</title>
+    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">
+    <style>
+        body {
+            background: #f9f9f9;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        form {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            width: 100%;
+            justify-content: center;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: black;
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container justify-content-center mt-md-5">
+    <div class="row justify-content-center">
+        <div class="form-container col-12 col-md-10 col-lg-8">
+            <form th:onsubmit="|resetPassword(event, ${user.userId})|">
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h2 class="display-6">Reset Password</h2>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h4 class="text-secondary text-center" th:text="${user.name}"></h4>
+                    </div>
+                    <div class="col-12 text-center">
+                        <h4 class="text-secondary text-center" th:text="${user.designation}"></h4>
+                    </div>
+                </div>
+                <div class="col-md-8 mx-auto">
+                    <label for="current-pass" class="form-label">Current Password</label>
+                    <input id="current-pass" type="password" class="form-control" placeholder="Enter your current password" required>
+
+                </div>
+                <div class="col-md-8 mx-auto">
+                    <label for="new-pass" class="form-label">New Password</label>
+                    <input id="new-pass" class="form-control" placeholder="Enter your new password" required>
+                </div>
+                <div class="col-md-8 mx-auto">
+                    <label for="confirm-pass" class="form-label">Confirm Password</label>
+                    <input id="confirm-pass" class="form-control" placeholder="Confirm your new password" required>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <button type="submit">Update Password</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/auth.js}"></script>
+</body>
+</html>

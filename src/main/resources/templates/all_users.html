@@ -176,8 +176,8 @@
             <td data-label="Phone" th:text="${user.phone}"></td>
             <td data-label="Phone" th:text="${user.email}"></td>
             <td class="actions" data-label="Actions">
-                <a th:href="@{'/users/records/' + ${user.userId}}"> View </a> |
-                <a th:href="@{'/users/delete/' + ${user.userId}}"
+                <a th:href="@{'/user/profile/' + ${user.userId}}"> View </a> |
+                <a th:href="@{'/user/delete/' + ${user.userId}}"
                    onclick="return confirm('Are you sure?')" class="delete">Delete</a>
             </td>
         </tr>

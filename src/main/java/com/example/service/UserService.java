@@ -4,6 +4,7 @@ import com.example.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
@@ -58,8 +59,36 @@ public class UserService {
 
         return null;
     }
+
+    public Boolean checkPassword(Long userId, String password) {
+        User user = userRepository.findByUserId(userId);
+        return user != null && passwordEncryptor.verifyPassword(password, user.getPassword());
+    }
+
+    @Transactional
+    public Boolean updatePassword(Long userId, String newPassword) {
+        User user = userRepository.findByUserId(userId);
+        if(user == null){
+            return false;
+        }
+        String hashedPassword = passwordEncryptor.hashPassword(newPassword);
+        user.setPassword(hashedPassword);
+        userRepository.save(user);
+        return true;
+    }
+
+    public Boolean updateDesignation(Long userId, String newDesignation) {
+        User user = userRepository.findByUserId(userId);
+        if(user != null){
+            user.setDesignation(newDesignation);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
     public User getUserById(Long id) {
-        return userRepository.findByUser_id(id);
+        return userRepository.findByUserId(id);
     }
 
     public List<User> getExternals() {

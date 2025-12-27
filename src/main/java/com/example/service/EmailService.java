@@ -48,11 +48,11 @@ public class EmailService {
         String htmlBody = """
             <p>Your secret one time login verification code is: <b>%s</b></p>
             <p style="color: red;">Please do not share this private code with anyone</p>
-            <div style="margin-top: 25px; display:flex; flex-direction: column;">
-            <p><b>Regards,</b></p>
-            <p>Dept. of ICT, MBSTU</p>
-            <p>Santosh, Tangail-1902</p>
-            </div>
+                <div style="margin-top: 25px; line-height: 1.5;">
+                       <p style="margin: 0;"><b>Regards,</b></p>
+                       <p style="margin: 0;">Dept. of ICT, MBSTU</p>
+                       <p style="margin: 0;">Santosh, Tangail-1902</p>
+                </div>
             """.formatted(otp);
 
 

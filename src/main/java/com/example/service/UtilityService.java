@@ -67,7 +67,7 @@ public class UtilityService {
             else customCode += "3rd_";
         }
         else if(semesterParity.contains("M.Engineering")){
-            customCode = "M.Engineering_";
+            customCode = "M.Engg_";
             if(semesterParity.contains("1st")){
                 customCode += "1st_";
             }

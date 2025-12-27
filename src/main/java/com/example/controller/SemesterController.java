@@ -54,8 +54,19 @@ public class SemesterController {
         List<ExamCommittee> examCommittees = examCommitteeService.findAllBySemesterId(semesterId);
         model.addAttribute("examCommittees", examCommittees);
 
-        List<String> colors = Arrays.asList("#ffff99", "#aa80ff", "#ff0066", "#00e699",  "#FF5733", "#8c7386", "#ffbf00", "#0fda60");
+        List<String> colors = Arrays.asList(
+                "linear-gradient(to right, #f5e6a8, #f0f0e8)",
+                "linear-gradient(to right, #c471f5, #fa71cd)",
+                "linear-gradient(to right, #ff512f, #dd2476)",
+                "linear-gradient(to right, #11998e, #38ef7d)",
+                "linear-gradient(to right, #ff8008, #ffc837)",
+                "linear-gradient(to right, #8e9eab, #eef2f3)",
+                "linear-gradient(to right, #f7971e, #ffd200)",
+                "linear-gradient(to right, #00b09b, #96c93d)"
+        );
+
         model.addAttribute("colors", colors);
+
 
         return "manage_semester";
     }

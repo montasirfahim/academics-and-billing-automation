@@ -19,12 +19,16 @@ public class Course {
     private Semester semester;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "internal_teacher_id", referencedColumnName = "userId" )
-    private User internalTeacher;
+    @JoinColumn(name = "course_teacher_id", referencedColumnName = "userId" )
+    private User courseTeacher;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "external_teacher_id", referencedColumnName = "userId")
-    private User externalTeacher;
+    @JoinColumn(name = "external_ques_setter_id", referencedColumnName = "userId")
+    private User externalQuesSetterEvaluator;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "internal_ques_setter_id", referencedColumnName = "userId")
+    private User internalQuesSetterEvaluator;
 
     public Course() {
     }
@@ -70,20 +74,20 @@ public class Course {
         this.id = id;
     }
 
-    public User getInternalTeacher() {
-        return internalTeacher;
+    public User getCourseTeacher() {
+        return courseTeacher;
     }
 
-    public void setInternalTeacher(User internalTeacher) {
-        this.internalTeacher = internalTeacher;
+    public void setCourseTeacher(User courseTeacher) {
+        this.courseTeacher = courseTeacher;
     }
 
-    public User getExternalTeacher() {
-        return externalTeacher;
+    public User getExternalQuesSetterEvaluator() {
+        return externalQuesSetterEvaluator;
     }
 
-    public void setExternalTeacher(User externalTeacher) {
-        this.externalTeacher = externalTeacher;
+    public void setExternalQuesSetterEvaluator(User externalTeacher) {
+        this.externalQuesSetterEvaluator = externalTeacher;
     }
 
     public Semester getSemester() {
@@ -92,6 +96,14 @@ public class Course {
 
     public void setSemester(Semester semester) {
         this.semester = semester;
+    }
+
+    public User getInternalQuesSetterEvaluator() {
+        return internalQuesSetterEvaluator;
+    }
+
+    public void setInternalQuesSetterEvaluator(User internalQuesSetterEvaluator) {
+        this.internalQuesSetterEvaluator = internalQuesSetterEvaluator;
     }
 }
 

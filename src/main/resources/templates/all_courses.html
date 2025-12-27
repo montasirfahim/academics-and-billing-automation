@@ -19,7 +19,7 @@
             border: none;
             text-decoration: none;
         }
-        #year, #parity{
+        #year, #parity, #session{
             max-height: 43px;
             min-height: 30px;
         }
@@ -153,17 +153,28 @@
 <div class="container">
     <h1>All Courses</h1>
     <div class="btn-container d-flex flex-column flex-md-row justify-content-between mb-4">
-        <a href="/course/new" class="add-new">Add New Course</a>
-        <form class="d-flex flex-column flex-md-row gap-2">
-            <select id="parity">
-                <option>Select Semester</option>
-                <option th:value="BSc_1st">B.Sc 1st</option>
+        <a href="/course/new" class="add-new text-nowrap">Add New Course</a>
+        <form class="d-flex flex-column flex-md-row gap-2" onsubmit="filterCourses(event)">
+            <input id="session" type="text" placeholder="Session e.g: 2021-22" required class="form-control">
+            <select id="parity" class="form-select" required>
+                <option value="">Select Semester</option>
+                <option th:value="B.Sc_1st">B.Sc(Engg.) 1st</option>
+                <option th:value="B.Sc_2nd">B.Sc(Engg.) 2nd</option>
+                <option th:value="M.Sc_1st">M.Sc(Engg.) 1st</option>
+                <option th:value="M.Sc_2nd">M.Sc(Engg.) 2nd</option>
+                <option th:value="M.Sc_3rd">M.Sc(Engg.) 3rd</option>
+                <option th:value="M.Engg_1st">M.Engineering 1st</option>
+                <option th:value="M.Engg_2nd">M.Engineering 2nd</option>
+                <option th:value="M.Engg_3rd">M.Engineering 3rd</option>
             </select>
-            <select id="year">
-                <option>Select Scheduled Year</option>
-                <option th:value="2024">2024</option>
+            <select id="year" class="form-select" required>
+                <option value="">Select Scheduled Year</option>
+                <option th:each="i : ${#numbers.sequence(2020, 2050)}"
+                        th:value="${i}"
+                        th:text="${i}">
+                </option>
             </select>
-            <button type="submit" id="filter-btn" class="add-new text-decoration-none border-0">Filter Courses</button>
+            <button type="submit" id="filter-btn" class="add-new text-decoration-none border-0 text-nowrap">Filter Courses</button>
         </form>
     </div>
     <table border="1">
@@ -204,7 +215,7 @@
                     <td>${parseFloat(course.courseCredit).toFixed(2)}</td>
                     <td>${course.session}</td>
                     <td>${course.semester.customSemesterCode}</td>
-                    <td>${course.internalTeacher?.name || 'Not Assigned'}</td>
+                    <td>${course.courseTeacher?.name || 'Not Assigned'}</td>
                     <td class="actions">
                         <a class="btn btn-outline-primary btn-sm" href="/course/assign/${course.id}">Assign Faculty</a> |
                         <a href="/course/delete/${course.id}"
@@ -219,6 +230,65 @@
         .catch(error => {
             console.error("Error loading courses:", error);
         });
+
+    async function filterCourses(event){
+        event.preventDefault();
+        const semesterParity = document.getElementById("parity").value;
+        const scheduledYear = document.getElementById("year").value;
+        const session = document.getElementById("session").value;
+        if(!semesterParity || !scheduledYear ||!session){
+            alert("Please provide all required query parameters.");
+            return;
+        }
+
+        const customCode = `${semesterParity}_${scheduledYear}`;
+        console.log("custom code: " + customCode);
+        try{
+            const response = await fetch("/api/courses/view/filter", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({customCode, session})
+            });
+
+            if(response.ok){
+                const tableBody = document.getElementById("course-table-body");
+                const data = await response.json();
+                tableBody.innerHTML = "";
+                if(data.courses && data.courses.length > 0){
+                    data.courses.forEach(course => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${course.courseCode}</td>
+                            <td>${course.courseName}</td>
+                            <td>${parseFloat(course.courseCredit).toFixed(2)}</td>
+                            <td>${course.session}</td>
+                            <td>${course.semester.customSemesterCode}</td>
+                            <td>${course.courseTeacher?.name || 'Not Assigned'}</td>
+                            <td class="actions">
+                                <a class="btn btn-outline-primary btn-sm" href="/course/assign/${course.id}">Assign Faculty</a> |
+                                <a href="/course/delete/${course.id}"
+                                   onclick="return confirm('Are you sure to Delete this course?')"
+                                   class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i> </a>
+                            </td>
+                        `;
+
+                        tableBody.appendChild(row);
+                    });
+                }
+                else{
+                    tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4 fw-bold">No courses found matching your filter</td></tr>`;
+                }
+            }
+            else{
+                alert("Course not found based on your query!");
+            }
+        }catch (err){
+            console.log(err);
+            alert("An error occurred");
+        }
+    }
 </script>
 <!--<script th:src="@{/lib/bootstrap/js/bootstrap.bundle.min.js}"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

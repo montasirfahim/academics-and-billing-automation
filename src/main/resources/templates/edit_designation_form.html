@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Update Designation</title>
+    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f9f9f9;
+            min-height: 100vh;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        form {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            width: 100%;
+            justify-content: center;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: black;
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container justify-content-center mt-md-5">
+    <div class="row justify-content-center">
+        <div class="form-container col-12 col-md-10 col-lg-8">
+            <form th:onsubmit="|editDesignation(event, ${user.userId})|">
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h2 class="display-6">Update Designation</h2>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12 text-center">
+                        <h4 class="text-secondary text-center" th:text="${user.name}"></h4>
+                    </div>
+                    <div class="col-12 text-center">
+                        <h4 class="text-secondary text-center" th:text="${user.designation}"></h4>
+                    </div>
+                </div>
+                <div class="col-md-8 mx-auto">
+                    <label for="designation-menu" class="form-label">Designation</label>
+                    <select id="designation-menu" class="form-select" required>
+                        <option value="">--- Select New Designation ---</option>
+                        <option value="Lecturer">Lecturer</option>
+                        <option value="Assistant Professor">Assistant Professor</option>
+                        <option value="Associate Professor">Associate Professor</option>
+                        <option value="Professor">Professor</option>
+                        <option value="Registrar">Registrar</option>
+                        <option value="Deputy Registrar">Deputy Registrar</option>
+                    </select>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <button type="submit">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    async function  editDesignation(event, userId){
+        event.preventDefault();
+        const newDesignation = document.getElementById("designation-menu").value;
+        if(!newDesignation){
+            alert("Please select new designation")
+            return;
+        }
+        try{
+            const response = await fetch(`/api/user/edit-designation/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({newDesignation})
+            });
+            const data = await response.json();
+            if(response.ok){
+                alert("Designation has been updated successfully");
+                window.location.href = `/user/profile/${userId}`;
+            }
+            else{
+                alert(data.message);
+            }
+        }catch (err){
+            console.log(err);
+            alert("An error occurred!");
+        }
+    }
+</script>
+</body>
+</html>

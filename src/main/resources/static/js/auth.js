@@ -87,3 +87,51 @@ async function logout() {
         window.location.href = '/login';
     }
 }
+
+async function  resetPassword(event, userId){
+    event.preventDefault();
+    const currentPassword = document.getElementById("current-pass").value;
+    const newPassword = document.getElementById("new-pass").value;
+    const confirmedPassword = document.getElementById("confirm-pass").value;
+
+    if(!currentPassword || !newPassword || !confirmedPassword){
+        alert("Provide all required data.");
+        return;
+    }
+    if(newPassword.length < 6){
+        alert("Password must be at least 6 characters long.")
+        return;
+    }
+    if(newPassword.includes(" ")){
+        alert("Password can not contain spaces.")
+        return;
+    }
+    if(newPassword.toString() !== confirmedPassword.toString()){
+        alert("Passwords do not match.")
+        return;
+    }
+    if(currentPassword === newPassword){
+        alert("New password can not be same as your current password.");
+        return;
+    }
+    try{
+        const response = await fetch(`/api/user/reset-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({userId, currentPassword, newPassword})
+        });
+        const data = await response.json();
+        if(response.ok){
+            alert("Password has been updated successfully");
+            window.location.href = `/dashboard`;
+        }
+        else{
+            alert(data.message);
+        }
+    }catch (err){
+        console.log(err);
+        alert("An error occurred!");
+    }
+}

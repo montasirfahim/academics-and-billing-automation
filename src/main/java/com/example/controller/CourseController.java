@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.support.ResourceTransactionManager;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +28,7 @@ public class CourseController {
     private SemesterService semesterService;
     @Autowired
     private UserService userService;
+
 
     @PostMapping("/course/new")
     public String addNewCourse(@ModelAttribute Course course) {
@@ -65,12 +69,34 @@ public class CourseController {
     @ResponseBody
     public ResponseEntity<Object> assignCourseTeacher(@PathVariable("courseId") Long courseId, @PathVariable("teacherId") Long teacherId){
         Course course = courseService.findById(courseId);
-        User internalTeacher = userService.getUserById(teacherId);
-        if(internalTeacher == null || course == null) {
+        User courseTeacher = userService.getUserById(teacherId);
+        if(courseTeacher == null || course == null) {
             return new ResponseEntity<>("Course or Teacher not found!", HttpStatus.NOT_FOUND);
         }
-        course.setInternalTeacher(internalTeacher);
+        course.setCourseTeacher(courseTeacher);
         courseService.saveCourse(course);
         return new ResponseEntity<>(Map.of("message", "Successfully assigned!"), HttpStatus.OK);
+    }
+
+    @PostMapping("/api/courses/view/filter")
+    @ResponseBody
+    public ResponseEntity<Object> filterCourses(@RequestBody Map<String, String> payload) {
+        String customCode = payload.get("customCode");
+        String session = payload.get("session");
+        Map<Object, Object> map = new HashMap<>();
+        if(customCode == null || session == null) {
+            map.put("message", "Custom Code or Session Not Found!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+        List<Course> courses = courseService.getFilteredCourses(customCode, session);
+        if(courses == null || courses.isEmpty()) {
+            map.put("message", "No courses found based on your query!");
+            map.put("courses", new ArrayList<>());
+            return ResponseEntity.status(HttpStatus.OK).body(map);
+        }
+
+        map.put("courses", courses);
+        map.put("message", "successfully filtered!");
+        return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 }

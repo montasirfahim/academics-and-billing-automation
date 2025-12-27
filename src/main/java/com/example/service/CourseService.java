@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.entity.Course;
+import com.example.entity.Semester;
 import com.example.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import java.util.List;
 public class CourseService {
     @Autowired
     CourseRepository courseRepository;
+    @Autowired
+    private SemesterService semesterService;
 
     public void saveCourse(Course course) {
         courseRepository.save(course);
@@ -28,5 +31,13 @@ public class CourseService {
 
     public void deleteCourseById(Long id) {
         courseRepository.deleteById(id);
+    }
+
+    public List<Course> getFilteredCourses(String customCode, String session) {
+        Semester semester = semesterService.findByCustomSemesterCode(customCode);
+        if(semester == null || session == null) {
+            return null;
+        }
+        return courseRepository.findBySemesterAndSession(semester, session);
     }
 }

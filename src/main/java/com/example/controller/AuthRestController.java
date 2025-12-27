@@ -37,7 +37,7 @@ public class AuthRestController {
 
         Map<String, Object> response = new HashMap<>();
         if(user != null) {
-            userService.generateAndSendOTP(user);
+            //userService.generateAndSendOTP(user); //will enable later
             session.setAttribute("userId", user.getUserId()); //safer
             session.setAttribute("user", user); //will be deleted later
             response.put("status", "success");
