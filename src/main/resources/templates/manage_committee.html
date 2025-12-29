@@ -2,11 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title> Manage Committee </title>
+    <link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/style/navbar.css}">
     <style>
         body {
             font-family: Arial, sans-serif;
             background: #f9f9f9;
-            padding: 30px 20px;
+            padding: 120px 30px 20px;
             margin: 0;
             color: #333;
         }
@@ -49,12 +52,12 @@
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
         #course-table{
-            max-width: 900px;
+            max-width: max-content;
             margin-top: 50px;
         }
 
         thead {
-            background-color: #4CAF50;
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
@@ -86,34 +89,6 @@
             justify-content: center;
             text-align: center;
             width: 70%;
-        }
-        a{
-            text-decoration: none;
-            display: inline-block;
-            background-color:  black;
-            padding: 8px;
-            border-radius: 4px;
-            color: white;
-            width: 70%;
-
-        }
-        a:hover{
-            background-color: #4CAF50;
-        }
-        button.mod-btn{
-            text-decoration: none;
-            font-size: 15px;
-            display: inline-block;
-            background-color:  black;
-            padding: 10px;
-            border-radius: 4px;
-            color: white;
-            border: none;
-            width: 70%;
-        }
-        button.mod-btn:hover{
-            background-color: #4CAF50;
-            color: white;
         }
 
         .action{
@@ -184,6 +159,31 @@
 </head>
 <body>
 
+
+<nav class="navbar navbar-expand-lg navbar-dark shadow fixed-top" style="background: linear-gradient(to left, #667eea 0%, #764ba2 100%);">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white fw-bold" href="/home">Academics Automation Software</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <button class="dash-btn" > <a href="/home" style="text-decoration: none">Home</a></button>
+                </li>
+                <li class="nav-item">
+                    <button id="dash-btn" class="dash-btn"><a href="/dashboard" style="text-decoration: none">Dashboard</a></button>
+                </li>
+                <li class="nav-item">
+                    <button class="custom-yellow-btn" onclick="logout()">Logout</button>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+
 <div class="main-container" id="main-container">
     <div class="action" id="card">
         <span style="text-align: center; font-weight: bold; font-size: 16px; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Committee Body</span>
@@ -214,48 +214,50 @@
             </tbody>
         </table>
 
-        <div class="btn" style="display: inline-block; align-items: center; align-content: center; text-align: center">
-            <a th:href="@{'/test/sample_pdf/' + ${committee.committeeId}}">Print Committee</a>
-
+        <div class="btn d-flex justify-content-center">
+            <a class="btn btn-outline-primary" th:href="@{'/test/sample_pdf/' + ${committee.committeeId}}">Print Committee</a>
         </div>
     </div>
 
     <div class="actions" id="actions">
         <div id="moderation" class="action">
             <span style="text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Question Moderation</span>
-            <label for="meeting-date">Select Meeting Date</label>
-            <input type="datetime-local" id="meeting-date">
-            <br>
-            <button type="submit" class="mod-btn" th:data-id="${committee.committeeId}" onclick="callModeration(this)">Call Meeting</button>
+            <label for="meeting-date" class="form-label fw-bold">Select Meeting Date Time</label>
+            <input type="datetime-local" id="meeting-date" class="form-control" required>
+            <button type="submit" class="btn btn-outline-primary" th:data-id="${committee.committeeId}" onclick="callModeration(this)">Call Meeting</button>
         </div>
 
-        <div id="assign" class="action">
-            <span style="text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Assign Question Setter & Evaluator</span>
-            <label for="course">Select Course</label>
-            <select id="course" class="drop-menu">
-                <option value="">-- Select Course --</option>
-                <option th:each="course : ${assignedCourses}"
-                        th:value="${course.id}"
-                        th:text="${course.getCourse().getCourse_name()}">Course Name Placeholder</option>
-            </select>
+        <div id="div-assign-qes">
+            <form id="assign-qse" class="px-2 pb-2 shadow" th:onsubmit="|assignQuesSetter(event, ${committee.committeeId})|">
+                <span style="text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Assign Question Setter & Evaluator</span>
+                <br> <br>
+                <label for="course" class="form-label fw-bold">Course</label>
+                <select id="course" class="drop-menu form-select" required>
+                    <option value="">-- Select Course --</option>
+                    <option th:each="course : ${committeeCourses}"
+                            th:value="${course.id}"
+                            th:text="${course.courseName}">Course Name Placeholder</option>
+                </select>
 
-            <label for="internal">Select Teachers</label>
-            <select id="internal" class="drop-menu">
-                <option value="">-- Select Internal --</option>
-                <option th:each="course : ${assignedCourses}"
-                        th:value="${course.id}"
-                        th:text="${course.getCourse().getCourse_name()}">Course Name Placeholder</option>
-            </select>
+                <label for="internal" class="form-label fw-bold">Internal Teacher</label>
+                <select id="internal" class="drop-menu form-select" required>
+                    <option value="">-- Select Internal --</option>
+                    <option th:each="internal : ${internals}"
+                            th:value="${internal.userId}"
+                            th:text="${internal.name}">Placeholder</option>
+                </select>
 
-            <select id="external" class="drop-menu">
-                <option value="">-- Select External --</option>
-                <option th:each="course : ${assignedCourses}"
-                        th:value="${course.id}"
-                        th:text="${course.getCourse().getCourse_name()}">Course Name Placeholder</option>
-            </select>
-
-            <br>
-            <button type="submit" class="mod-btn">Assign</button>
+                <label for="external" class="form-label fw-bold">External Teacher</label>
+                <select id="external" class="drop-menu form-select" required>
+                    <option value="">-- Select External --</option>
+                    <option th:each="external : ${externals}"
+                            th:value="${external.userId}"
+                            th:text="${external.name}">Placeholder</option>
+                </select>
+                <div class="d-grid gap-2 d-flex justify-content-center mt-3">
+                    <button type="submit" id="assign-btn" class="btn btn-outline-primary px-5">Assign</button>
+                </div>
+            </form>
         </div>
 
     </div>
@@ -278,21 +280,29 @@
 </div>
 
 <div id="courses" class="course-table">
-    <table border="1" th:object="${assignedCourses}" id="course-table">
+    <table border="1" th:object="${committeeCourses}" id="course-table" class="shadow">
         <thead>
         <th>Course Code</th>
         <th>Course Name </th>
         <th>Credit Hour</th>
-        <th>Assigned Teacher</th>
+        <th>Course Teacher</th>
+        <th>Internal Question Setter and Evaluator</th>
+        <th>External Question Setter and Evaluator</th>
         </thead>
-        <tr th:each="assignedCourse: ${assignedCourses}">
-            <td th:text="${assignedCourse.getCourse().getCourse_code()}" data-label="Code"></td>
-            <td th:text="${assignedCourse.getCourse().getCourse_name()}" data-label="Name"></td>
-            <td th:text="${assignedCourse.getCourse().getCourse_credit()}" data-label="Credit"></td>
-            <td th:text="${assignedCourse.getUser().getName()}"></td>
+        <tr th:each="committeeCourse: ${committeeCourses}">
+            <td th:text="${committeeCourse.courseCode}" data-label="Code"></td>
+            <td th:text="${committeeCourse.courseName}" data-label="Name"></td>
+            <td th:text="${committeeCourse.courseCredit}" data-label="Credit"></td>
+            <td th:text="${committeeCourse.courseTeacher?.name ?: 'Not Assigned'}"></td>
+            <td th:text="${committeeCourse.internalQuesSetterEvaluator?.name ?: 'Not Assigned'}"></td>
+            <td th:text="${committeeCourse.externalQuesSetterEvaluator?.name ?: 'Not Assigned'}"></td>
         </tr>
     </table>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script th:src="@{/js/auth.js}"></script>
+<script th:src="@{/js/committee.js}"></script>
 
 <script th:inline="javascript">
     var id = /*[[${committeeId}]]*/
@@ -428,6 +438,7 @@
     }
 
 </script>
+
 </body>
 
 </html>

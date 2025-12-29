@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.entity.Course;
 import com.example.entity.ExamCommittee;
 import com.example.entity.Semester;
 import com.example.entity.User;
@@ -25,6 +26,9 @@ public class ExamCommitteController {
 
 
     private final PdfService pdfService;
+    @Autowired
+    private CourseService courseService;
+
     public ExamCommitteController(PdfService pdfService) {
         this.pdfService = pdfService;
     }
@@ -69,9 +73,13 @@ public class ExamCommitteController {
         ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(id);
         model.addAttribute("committee", examCommittee);
 
+        List<Course> committeeCourses = courseService.findByCommitteeId(id);
+        model.addAttribute("committeeCourses",committeeCourses);
 
-
-        model.addAttribute("assignedCourses",null);
+        List<User> internals = userService.getInternals();
+        List<User> externals = userService.getExternals();
+        model.addAttribute("internals", internals);
+        model.addAttribute("externals", externals);
 
         model.addAttribute("committeeId", id);
         return "manage_committee";

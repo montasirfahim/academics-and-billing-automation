@@ -32,6 +32,9 @@
             color: #764ba2;
             transition: 0.2s;
         }
+        .card{
+           background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+        }
     </style>
 </head>
 
@@ -60,17 +63,50 @@
 
 <div class="body-container flex-grow-1">
     <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>
-    <div class="profile shadow text-dark">
-        <div class="user-icon-container d-flex justify-content-center">
-            <i class="fas fa-user-alt me-2 user-icon"></i>
+    <div class="at-a-glance d-flex flex-column flex-md-row justify-content-between gap-md-5">
+        <div class="profile shadow text-dark">
+            <div class="user-icon-container d-flex justify-content-center">
+                <i class="fas fa-user-alt me-2 user-icon"></i>
+            </div>
+            <p class="d-flex flex-row gap-1"><strong>Designation:</strong> <span th:text="${user.designation}">Designation</span> <a class="edit-desig" th:href="@{/user/edit-designation/{id}(id=${user.userId})}"><i class="fas fa-edit"></i> </a> </p>
+            <p><strong>Department:</strong> <span th:text="${user.department}">Department</span></p>
+            <p><strong>University:</strong> <span th:text="${user.university}">University</span></p>
+            <p><strong>Role:</strong> <span th:text="${user.role}">Role</span></p>
+            <p><strong>Phone:</strong> <span th:text="${user.phone}">Phone</span></p>
+            <p><strong>Email:</strong> <span th:text="${user.email}">email@example.com</span></p>
+            <a id="password-reset" th:if="${owner} == 'self'" class="btn btn-sm btn-outline-danger" href="/user/reset-password">Reset Password</a>
         </div>
-        <p class="d-flex flex-row gap-1"><strong>Designation:</strong> <span th:text="${user.designation}">Designation</span> <a class="edit-desig" th:href="@{/user/edit-designation/{id}(id=${user.userId})}"><i class="fas fa-edit"></i> </a> </p>
-        <p><strong>Department:</strong> <span th:text="${user.department}">Department</span></p>
-        <p><strong>University:</strong> <span th:text="${user.university}">University</span></p>
-        <p><strong>Role:</strong> <span th:text="${user.role}">Role</span></p>
-        <p><strong>Phone:</strong> <span th:text="${user.phone}">Phone</span></p>
-        <p><strong>Email:</strong> <span th:text="${user.email}">email@example.com</span></p>
-        <a id="password-reset" th:if="${owner} == 'self'" class="btn btn-sm btn-outline-danger" href="/user/reset-password">Reset Password</a>
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            <div class="col">
+                <div class="card shadow-sm p-4 pb-1 text-center border-0 h-100">
+                    <h5 class="text-white fw-bold mb-1">Total Courses</h5>
+                    <h2 class="fw-bold text-white pt-4" th:text="${totalCourses}">0</h2>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm p-4 pb-1 text-center border-0 h-100">
+                    <h5 class="text-white fw-bold mb-1">Total Committees</h5>
+                    <h2 class="fw-bold text-white pt-4" th:text="${totalCommittees}">0</h2>
+                    <div class="d-flex justify-content-between">
+                        <p class="text-white pb-0" th:text="'Chairman: ' + ${committeeChairman}">0</p>
+                        <p class="text-white pb-0" th:text="'Member: ' + ${committeeMember}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm p-4 text-center border-0 h-100">
+                    <h5 class="text-white fw-bold mb-1">Total Semesters</h5>
+                    <h2 class="fw-bold text-white pt-4" th:text="${totalSemesters}">0</h2>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm p-4 text-center border-0 h-100">
+                    <h5 class="text-white fw-bold mb-1">Total Bills</h5>
+                    <h2 class="fw-bold text-white pt-4" th:text="${totalBills} + ' BDT' ">0</h2>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -78,7 +114,7 @@
     <div class="text-left mb-3">
         <h4>Links</h4>
         <a href="https://ict.mbstu.ac.bd/" class="link text-primary">ICT, MBSTU</a> <br>
-        <a href="" class="link text-primary">ICT Alumni Association</a>
+        <a href="https://www.aaictmbstu.org/" class="link text-primary">ICT Alumni Association</a>
     </div>
     <div class="container text-center align-items-center mx-auto">
         <p class="mb-1">Dept. of ICT, MBSTU © 2025 All Rights Reserved </p>

@@ -2,6 +2,7 @@ package com.example.repository;
 
 import com.example.entity.ExamCommittee;
 import com.example.entity.Semester;
+import com.example.entity.User;
 import com.example.service.SemesterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,9 @@ public interface ExamCommitteeRepository extends JpaRepository<ExamCommittee, Lo
 
 
     ExamCommittee findBycommitteeId(Long committeeId);
+
+    long countExamCommitteeByChairman(User user);
+    long countExamCommitteeByInternalMember1OrInternalMember2(User user1, User user2);
+    long countExamCommitteeByExternalMember1(User user);
+
 }

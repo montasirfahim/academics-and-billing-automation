@@ -40,4 +40,8 @@ public class SemesterService {
     public Semester findByCustomSemesterCode(String customSemesterCode) {
         return semesterRepository.findByCustomSemesterCode(customSemesterCode);
     }
+
+    public long countAllSemesters() {
+        return semesterRepository.count();
+    }
 }

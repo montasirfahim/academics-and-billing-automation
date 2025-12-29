@@ -33,12 +33,14 @@ public class PdfController {
     @GetMapping("test/sample_pdf/{id}")
     public void generateCommitteePdf(HttpServletResponse response, @PathVariable Long id) throws IOException {
         ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(id);
+        if(examCommittee == null) {
+            return;
+        }
         Semester semester = examCommittee.getSemester();
-        String committeeSession = examCommittee.getSession(); //need to query matched courses for any committee
 
-        List<Course> assignedCourses = courseService.findAll();
+        List<Course> committeeCourses = courseService.findByCommitteeId(id);
 
-        byte[] pdfBytes = pdfService.createPdf(examCommittee, semester, assignedCourses);
+        byte[] pdfBytes = pdfService.createPdf(examCommittee, semester, committeeCourses);
 
         // Set response headers
         String filePath = "committee" + id + ".pdf";

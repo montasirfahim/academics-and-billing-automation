@@ -1,4 +1,7 @@
 package com.example.controller;
+import com.example.service.CourseService;
+import com.example.service.ExamCommitteeService;
+import com.example.service.SemesterService;
 import jakarta.servlet.http.HttpSession;
 
 import com.example.entity.User;
@@ -19,6 +22,12 @@ public class UserController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    private CourseService courseService;
+    @Autowired
+    private SemesterService semesterService;
+    @Autowired
+    private ExamCommitteeService examCommitteeService;
 
     @GetMapping("/")
     public String landingPage(HttpSession session) {
@@ -45,6 +54,22 @@ public class UserController {
         User user = (User) session.getAttribute("user");
         model.addAttribute("user", user);
         model.addAttribute("owner", "self");
+
+        long totalCourses = courseService.getTotalCoursesByUser(user);
+        long totalSemesters = semesterService.countAllSemesters();
+        long totalCommitteeChairman = examCommitteeService.getTotalCommitteesAsChairman(user);
+        long totalCommitteeInternalMember = examCommitteeService.getTotalCommitteesAsInternalMember(user);
+        long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(user);
+        long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
+
+        double totalBills = 0.0;
+        model.addAttribute("totalCourses", totalCourses);
+        model.addAttribute("totalSemesters", totalSemesters);
+        model.addAttribute("totalCommittees", totalCommittees);
+        model.addAttribute("committeeChairman", totalCommitteeChairman);
+        model.addAttribute("committeeMember", totalCommitteeInternalMember + totalCommitteeExternalMember);
+        model.addAttribute("totalBills", totalBills);
+
         return "admin_dashboard";
     }
 

@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 70%;
+            max-width: max-content;
             margin: 0 auto;
             background: white;
             padding: 25px 30px;
@@ -148,8 +148,9 @@
         <tr>
             <th>Semester ID</th>
             <th>Held Year</th>
-            <th>Held Months</th>
+            <th>Held Month</th>
             <th>Scheduled Year</th>
+            <th>Scheduled Month</th>
             <th>Semester</th>
             <th>Actions</th>
         </tr>
@@ -179,7 +180,8 @@
                     <td>${semester.semesterId}</td>
                     <td>${semester.semesterHeldYear}</td>
                     <td>${semester.semesterHeldMonths}</td>
-                     <td>${semester.semesterScheduledYear}</td>
+                    <td>${semester.semesterScheduledYear}</td>
+                    <td>${semester.semesterScheduledMonths}</td>
                     <td>${semester.semesterParity}</td>
                     <td class="actions">
                         <a class="btn btn-outline-primary btn-sm" href="/semester/manage/${semester.semesterId}">Manage</a> |

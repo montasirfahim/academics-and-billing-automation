@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.entity.ExamCommittee;
 import com.example.entity.Semester;
+import com.example.entity.User;
 import com.example.repository.ExamCommitteeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,17 @@ public class ExamCommitteeService {
                     return examCommitteeRepository.save(committee);
                 })
                 .orElseThrow(() -> new RuntimeException("Committee not found with id " + id));
+    }
+
+    public long getTotalCommitteesAsChairman(User user){
+        return examCommitteeRepository.countExamCommitteeByChairman(user);
+    }
+
+    public long getTotalCommitteesAsInternalMember(User user){
+        return examCommitteeRepository.countExamCommitteeByInternalMember1OrInternalMember2(user, user);
+    }
+
+    public long getTotalCommitteesAsExternalMember(User user){
+        return examCommitteeRepository.countExamCommitteeByExternalMember1(user);
     }
 }

@@ -63,7 +63,7 @@ public class PdfService {
             addSemesterInfo(document, pdfDoc, semester, examCommittee);
             addCommitteeMemberTable(document, examCommittee);
 
-            addSubHeader(document, "\nCourse Teacher\n");
+            addSubHeader(document, "\nCourses\n");
             addCommitteeCourseTable(document, assignedCourses);
 
             addSignatureSpace(document, "-----------------------\nChairman\nDepartmental Academic Committee, Dept. of ICT, MBSTU");
@@ -183,7 +183,7 @@ public class PdfService {
         table.addHeaderCell(createStyledHeaderCell("Course Code"));
         table.addHeaderCell(createStyledHeaderCell("Course Name"));
         table.addHeaderCell(createStyledHeaderCell("Credit Hour"));
-        table.addHeaderCell(createStyledHeaderCell("Assigned Teacher"));
+        table.addHeaderCell(createStyledHeaderCell("Course Teacher"));
 
         //Collections.sort(courseList, course_name );
         for (int i = 0; i < courseList.size(); i++) {

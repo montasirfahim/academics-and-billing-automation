@@ -2,9 +2,7 @@ package com.example.controller;
 
 import com.example.entity.ExamCommittee;
 import com.example.entity.User;
-import com.example.service.EmailService;
-import com.example.service.ExamCommitteeService;
-import com.example.service.UtilityService;
+import com.example.service.*;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,6 +30,10 @@ public class ExamCommitteeRestController {
 
     @Autowired
     private UtilityService utilityService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CourseService courseService;
 
     @GetMapping("/api/{id}")
     public ResponseEntity<ExamCommittee> getCommittee(@PathVariable Long id) {
@@ -166,6 +169,55 @@ public class ExamCommitteeRestController {
         examCommitteeService.saveCommittee(committee);
 
         return new  ResponseEntity<>("Moderation meeting has been called successfully!", HttpStatus.OK);
+
+    }
+
+    @PostMapping("/api/assign-setter")
+    public ResponseEntity<Object> assignQuesSetterAndEvaluator(HttpSession session, @RequestBody Map<String, String> payload) {
+        User user = (User) session.getAttribute("user");
+        Map<Object, Object> map = new HashMap<>();
+        if (user == null) {
+            map.put("status", "Unauthorized");
+            map.put("message", "You are not logged in!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+        }
+
+        try {
+            Long committeeId = Long.parseLong(payload.get("committeeId"));
+            Long courseId = Long.parseLong(payload.get("courseId"));
+            Long internalTeacherId = Long.parseLong(payload.get("internalTeacherId"));
+            Long externalTeacherId = Long.parseLong(payload.get("externalTeacherId"));
+
+            ExamCommittee committee = examCommitteeService.findCommitteeByCommitteeId(committeeId);
+            User internalTeacher = userService.getUserById(internalTeacherId);
+            User externalTeacher = userService.getUserById(externalTeacherId);
+            User loggedInUser = (User) session.getAttribute("user");
+            if(committee == null || internalTeacher == null || externalTeacher == null || loggedInUser == null) {
+                map.put("message", "Not Found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+            }
+
+            if(committee.getChairman().getUserId().equals(loggedInUser.getUserId()) || loggedInUser.getRole().equals("admin") || loggedInUser.getRole().equals("co-admin")) {
+                if(courseService.updateQuesSetterAndEvaluator(courseId, internalTeacher, externalTeacher, committee)){
+                    map.put("message", "Question Setter & Script Evaluator has been assigned successfully for selected course!");
+                    return ResponseEntity.status(HttpStatus.OK).body(map);
+                }
+                else{
+                    map.put("message", "Could not assign question setter and script evaluator for selected course!");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+                }
+
+            }
+            else{
+                map.put("message", "Forbidden: You are not allowed to perform this action!");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
+            }
+
+        }catch (Exception e){
+            map.put("status", "Error");
+            map.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
 
     }
 
