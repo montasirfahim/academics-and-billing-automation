@@ -7,6 +7,7 @@ import com.example.service.CourseService;
 import com.example.service.ExamCommitteeService;
 import com.example.service.SemesterService;
 import com.example.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,24 +29,51 @@ public class SemesterController {
 
 
     @PostMapping("/semester/new")
-    public String newSemester(@ModelAttribute Semester semester) {
+    public String newSemester(@ModelAttribute Semester semester, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+
         semesterService.saveSemester(semester);
         return "redirect:/semesters/view";
     }
 
     @GetMapping("/semester/new")
-    public String newSemesterForm(Model model) {
+    public String newSemesterForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to visit this page");
+            return "error_page";
+        }
         model.addAttribute("semester", new Semester());
         return "semester_form";
     }
 
     @GetMapping("/semesters/view")
-    public String viewAllSemesters() {
+    public String viewAllSemesters(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
         return "all_semesters";
     }
 
     @GetMapping("/semester/manage/{semesterId}")
-    public String manageSemesters(Model model, @PathVariable("semesterId") Long semesterId) {
+    public String manageSemesters(Model model, @PathVariable("semesterId") Long semesterId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
         model.addAttribute("semesterId", semesterId);
         Semester semester = semesterService.findSemesterById(semesterId)
                 .orElseThrow(() -> new RuntimeException("Semester not found"));
@@ -72,7 +100,18 @@ public class SemesterController {
     }
 
     @PostMapping("/semester/delete/{id}")
-    public String deleteSemester(@PathVariable("id") Long semesterId) {
+    public String deleteSemester(@PathVariable("id") Long semesterId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+
         semesterService.deleteBySemesterId(semesterId);
         return "redirect:/semesters/view";
     }

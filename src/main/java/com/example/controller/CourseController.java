@@ -6,6 +6,7 @@ import com.example.entity.User;
 import com.example.service.CourseService;
 import com.example.service.SemesterService;
 import com.example.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +32,33 @@ public class CourseController {
 
 
     @PostMapping("/course/new")
-    public String addNewCourse(@ModelAttribute Course course) {
+    public String addNewCourse(@ModelAttribute Course course, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
         courseService.saveCourse(course);
         return "redirect:/courses/view";
     }
 
     @GetMapping("/course/assign/{id}")
-    public String courseAssignForm(@PathVariable("id") Long id, Model model) {
+    public String courseAssignForm(@PathVariable("id") Long id, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+
         List<User> users = userService.getInternals();
         model.addAttribute("courseId", id);
         model.addAttribute("courseName", courseService.findById(id).getCourseName());
@@ -47,7 +68,17 @@ public class CourseController {
 
 
     @GetMapping("/course/new")
-    public String newCourseForm(Model model) {
+    public String newCourseForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+
         model.addAttribute("course", new Course());
         List<Semester> semesters = semesterService.findAllSemesters();
         model.addAttribute("semesters", semesters);
@@ -55,19 +86,41 @@ public class CourseController {
     }
 
     @GetMapping("/courses/view")
-    public String viewCourses() {
+    public String viewCourses(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
         return "all_courses";
     }
 
     @GetMapping("/course/delete/{id}")
-    public String deleteCourse(@PathVariable("id") Long courseId) {
+    public String deleteCourse(@PathVariable("id") Long courseId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+
         courseService.deleteCourseById(courseId);
         return "redirect:/courses/view";
     }
 
     @PostMapping("/api/course/assign/{courseId}/{teacherId}")
     @ResponseBody
-    public ResponseEntity<Object> assignCourseTeacher(@PathVariable("courseId") Long courseId, @PathVariable("teacherId") Long teacherId){
+    public ResponseEntity<Object> assignCourseTeacher(@PathVariable("courseId") Long courseId, @PathVariable("teacherId") Long teacherId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return new ResponseEntity<>(Map.of("message", "Please login first!"), HttpStatus.UNAUTHORIZED);
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+                return new ResponseEntity<>(Map.of("message", "You are not allowed to perform this action!"), HttpStatus.FORBIDDEN);
+        }
+
         Course course = courseService.findById(courseId);
         User courseTeacher = userService.getUserById(teacherId);
         if(courseTeacher == null || course == null) {

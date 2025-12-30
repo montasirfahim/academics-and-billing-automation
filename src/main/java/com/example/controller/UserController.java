@@ -80,14 +80,47 @@ public class UserController {
         }
         User targetUser = userService.getUserById(id);
         User currentUser = (User) session.getAttribute("user");
+
         if(targetUser.getUserId().equals(currentUser.getUserId())) {
             model.addAttribute("owner", "self");
             model.addAttribute("user", targetUser);
+
+            long totalCourses = courseService.getTotalCoursesByUser(targetUser);
+            long totalSemesters = semesterService.countAllSemesters();
+            long totalCommitteeChairman = examCommitteeService.getTotalCommitteesAsChairman(targetUser);
+            long totalCommitteeInternalMember = examCommitteeService.getTotalCommitteesAsInternalMember(targetUser);
+            long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(targetUser);
+            long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
+
+            double totalBills = 0.0;
+            model.addAttribute("totalCourses", totalCourses);
+            model.addAttribute("totalSemesters", totalSemesters);
+            model.addAttribute("totalCommittees", totalCommittees);
+            model.addAttribute("committeeChairman", totalCommitteeChairman);
+            model.addAttribute("committeeMember", totalCommitteeInternalMember + totalCommitteeExternalMember);
+            model.addAttribute("totalBills", totalBills);
+
             return "admin_dashboard";
         }
         else if(currentUser.getRole().equals("admin") || currentUser.getRole().equals("co-admin")) {
             model.addAttribute("user", targetUser);
             model.addAttribute("owner", "admins");
+
+            long totalCourses = courseService.getTotalCoursesByUser(targetUser);
+            long totalSemesters = semesterService.countAllSemesters();
+            long totalCommitteeChairman = examCommitteeService.getTotalCommitteesAsChairman(targetUser);
+            long totalCommitteeInternalMember = examCommitteeService.getTotalCommitteesAsInternalMember(targetUser);
+            long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(targetUser);
+            long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
+
+            double totalBills = 0.0;
+            model.addAttribute("totalCourses", totalCourses);
+            model.addAttribute("totalSemesters", totalSemesters);
+            model.addAttribute("totalCommittees", totalCommittees);
+            model.addAttribute("committeeChairman", totalCommitteeChairman);
+            model.addAttribute("committeeMember", totalCommitteeInternalMember + totalCommitteeExternalMember);
+            model.addAttribute("totalBills", totalBills);
+
             return "admin_dashboard";
         }
         else{

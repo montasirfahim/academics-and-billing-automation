@@ -5,6 +5,7 @@ import com.example.entity.ExamCommittee;
 import com.example.entity.Semester;
 import com.example.entity.User;
 import com.example.service.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,7 +35,18 @@ public class ExamCommitteController {
     }
 
     @GetMapping("/committee/new/{semesterId}")
-    public String newCommittee(@PathVariable("semesterId") Long semesterId, Model model) {
+    public String newCommittee(@PathVariable("semesterId") Long semesterId, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+
         List<User> users = userService.getInternals();
         List<User> externals = userService.getExternals();
 
@@ -53,7 +65,17 @@ public class ExamCommitteController {
     }
 
     @PostMapping("/committee/new/{semesterId}")
-    public String createCommittee(@ModelAttribute ExamCommittee examCommittee, @PathVariable Long semesterId) {
+    public String createCommittee(@ModelAttribute ExamCommittee examCommittee, @PathVariable Long semesterId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+
         Semester semester = semesterService.findSemesterById(semesterId)
                 .orElseThrow(() -> new RuntimeException("Semester not found"));
 
@@ -69,7 +91,12 @@ public class ExamCommitteController {
     }
 
     @GetMapping("/committee/manage/{id}")
-    public String manageCommittee(@PathVariable Long id, Model model) {
+    public String manageCommittee(@PathVariable Long id, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        //extra validation needed to implement so that only admins & committee members can enter into a committee
         ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(id);
         model.addAttribute("committee", examCommittee);
 
