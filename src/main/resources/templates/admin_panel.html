@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>User Dashboard</title>
+    <title>Admin Panel</title>
     <link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/style/navbar.css}">
@@ -33,7 +33,7 @@
             transition: 0.2s;
         }
         .card{
-           background: linear-gradient(to right, #ec77ab 0%, #7873f5 100%);
+            background: linear-gradient(to right, #ec77ab 0%, #7873f5 100%);
         }
         table {
             width: 80%;
@@ -147,11 +147,11 @@
         <div class="row row-cols-1 row-cols-md-2 g-3">
             <div class="col">
                 <div class="card shadow-sm p-4 pb-1 text-center border-0 h-100">
-                    <h5 class="text-white fw-bold mb-1">Conducted Courses</h5>
+                    <h5 class="text-white fw-bold mb-1">Total Courses</h5>
                     <h2 class="fw-bold text-white pt-4" th:text="${totalCourses}">0</h2>
                     <div class="d-flex justify-content-between">
-                        <p class="text-white mb-0" th:text="'Theory: ' + ${theoryCourses}">0</p>
-                        <p class="text-white mb-0" th:text="'Lab: ' + ${labCourses}">0</p>
+                        <p class="text-white mb-0" th:text="'Theory: ' + ${totalTheoryCourses}">0</p>
+                        <p class="text-white mb-0" th:text="'Lab: ' + ${totalCourses - totalTheoryCourses}">0</p>
                     </div>
                 </div>
             </div>
@@ -160,8 +160,8 @@
                     <h5 class="text-white fw-bold mb-1">Exam Committees</h5>
                     <h2 class="fw-bold text-white pt-4" th:text="${totalCommittees}">0</h2>
                     <div class="d-flex justify-content-between">
-                        <p class="text-white mb-0" th:text="'Chairman: ' + ${committeeChairman}">0</p>
-                        <p class="text-white mb-0" th:text="'Member: ' + ${committeeMember}">0</p>
+                        <p class="text-white mb-0" th:text="'Active: ' + ${totalActiveCommittees}">0</p>
+                        <p class="text-white mb-0" th:text="'Completed: ' + ${totalCompletedCommittees}">0</p>
                     </div>
                 </div>
             </div>
@@ -183,55 +183,6 @@
 </div>
 
 
-<div class="sem-container d-flex flex-column justify-content-center align-items-center flex-grow-1 shadow gap-5">
-    <table border="1" class="shadow">
-        <thead>
-        <tr>
-            <td colspan="7" class="text-center"><h1>All Semesters</h1></td>
-        </tr>
-        <tr>
-            <th>Semester ID</th>
-            <th>Held Year</th>
-            <th>Held Month</th>
-            <th>Scheduled Year</th>
-            <th>Scheduled Month</th>
-            <th>Semester</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody id="semester-table-body">
-
-        </tbody>
-    </table>
-
-    <table th:if="${user.role == 'external'}" border="1" class="shadow">
-        <thead>
-        <tr>
-            <td colspan="7" class="text-center"><h1>All TA/DA Bills</h1></td>
-        </tr>
-        <tr>
-            <th>Started At</th>
-            <th>Reached Back</th>
-            <th>Travel Intention</th>
-            <th>Travel Distance</th>
-            <th>Fare Rate</th>
-            <th>Daily Allowance</th>
-            <th>Total Payable</th>
-        </tr>
-        </thead>
-        <tbody id="tada-bill-table-body">
-            <tr th:each="bill : ${tadaBills}">
-                <td th:text="${bill.departureTimeFromHisUniversity}"></td>
-                <td th:text="${bill.arrivalTimeAtHisUniversity}"></td>
-                <td th:text="${bill.travelIntention} ? ${bill.travelIntention} : 'N/A'"></td>
-                <td th:text="${bill.totalTravelDistance} + ' Km'"></td>
-                <td th:text="${bill.perKmFareRate} + ' BDT'"></td>
-                <td th:text="${bill.dailyAllowance} + ' BDT'"></td>
-                <td th:text="${bill.totalBillAmount} + ' BDT'"></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
 
 <footer class="bg-dark text-white p-4">
     <div class="text-left mb-3">
@@ -266,41 +217,8 @@
 <script th:inline="javascript">
     var userId = /*[[${user.userId}]]*/
 
-    console.log("uid: " + userId);
+        console.log("uid: " + userId);
 
-    fetch("/semesters/api/all")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to fetch semesters: " + response.status);
-            }
-            return response.json();
-        })
-        .then(semesters => {
-            const tbody = document.getElementById("semester-table-body");
-
-            semesters.forEach(semester => {
-                const row = document.createElement("tr");
-
-                row.innerHTML = `
-                    <td>${semester.semesterId}</td>
-                    <td>${semester.semesterHeldYear}</td>
-                    <td>${semester.semesterHeldMonths}</td>
-                    <td>${semester.semesterScheduledYear}</td>
-                    <td>${semester.semesterScheduledMonths}</td>
-                    <td>${semester.semesterParity}</td>
-                    <td class="actions">
-                        <a class="btn btn-outline-primary btn-sm" href="/details/${userId}/${semester.semesterId}">Details</a> |
-                        <a href="/bill/${userId}/${semester.semesterId}"
-                           class="btn btn-outline-primary btn-sm"> Print Bill </a>
-                    </td>
-                `;
-
-                tbody.appendChild(row);
-            });
-        })
-        .catch(error => {
-            console.error("Error loading semesters:", error);
-        });
 </script>
 </body>
 </html>

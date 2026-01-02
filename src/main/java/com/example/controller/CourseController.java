@@ -152,4 +152,40 @@ public class CourseController {
         map.put("message", "successfully filtered!");
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
+
+    @GetMapping("/details/{userId}/{semesterId}")
+    public String getDetailedCourseInfoPerUserAndSemester(@PathVariable("userId") Long userId, @PathVariable("semesterId") Long semesterId, HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("user");
+        if (loggedInUser == null) {
+            return "redirect:/login";
+        }
+        if(!loggedInUser.getRole().equals("admin") && !loggedInUser.getRole().equals("co-admin") && !loggedInUser.getUserId().equals(userId)) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+        User targetUser = userService.getUserById(userId);
+        Semester semester = semesterService.findById(semesterId);
+        if(targetUser == null || semester == null) {
+            model.addAttribute("status", "Not Found");
+            model.addAttribute("error", "Semester or User not found!");
+            return "error_page";
+        }
+
+        if(targetUser.getRole().equals("admin") || targetUser.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Not Found");
+            model.addAttribute("error", "Admins are not associated with academic activities.");
+            return "error_page";
+        }
+
+        List<Course> conductedCourses = courseService.findByCourseTeacherAndSemester(targetUser, semester);
+        List<Course> coursesAsSetter = courseService.findBySemesterAndTeacherAsQuesSetter(semester, targetUser);
+        model.addAttribute("conductedCourses", conductedCourses);
+        model.addAttribute("coursesAsSetter", coursesAsSetter);
+        model.addAttribute("semester", semester);
+        model.addAttribute("teacherName", targetUser.getName());
+        model.addAttribute("role", targetUser.getRole());
+
+        return "semester_user_details";
+    }
 }

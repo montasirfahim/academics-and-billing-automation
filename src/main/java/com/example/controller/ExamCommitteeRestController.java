@@ -1,6 +1,8 @@
 package com.example.controller;
 
+import com.example.entity.Course;
 import com.example.entity.ExamCommittee;
+import com.example.entity.Semester;
 import com.example.entity.User;
 import com.example.service.*;
 import jakarta.mail.MessagingException;
@@ -50,18 +52,32 @@ public class ExamCommitteeRestController {
     }
 
     @PutMapping("/api/updateStatus/{id}")
-    public ResponseEntity<ExamCommittee> updateCommitteeStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> statusUpdate) {
+    public ResponseEntity<ExamCommittee> updateCommitteeStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> statusUpdate, HttpSession session) {
         Boolean isComplete = statusUpdate.get("isComplete");
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         if(isComplete == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        try {
-            ExamCommittee updatedCommittee = examCommitteeService.updateStatus(id, isComplete);
-            return new ResponseEntity<>(updatedCommittee, HttpStatus.OK); // 200 OK
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+        ExamCommittee committee = examCommitteeService.findCommitteeByCommitteeId(id);
+        if (committee == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        if(user.getUserId().equals(committee.getChairman().getUserId()) || ((user.getRole().equals("admin")) || user.getRole().equals("co-admin"))) {
+            try {
+                ExamCommittee updatedCommittee = examCommitteeService.updateStatus(id, isComplete);
+                return new ResponseEntity<>(updatedCommittee, HttpStatus.OK); // 200 OK
+            } catch (RuntimeException e) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+            }
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
     }
 
     @PutMapping("api/moderation/{id}")
@@ -71,7 +87,7 @@ public class ExamCommitteeRestController {
             return new ResponseEntity<>("Unauthorized: Please login first.", HttpStatus.UNAUTHORIZED);
         }
         ExamCommittee committee = examCommitteeService.findCommitteeByCommitteeId(id);
-        if(!"co-admin".equals(user.getRole()) && !(Objects.equals(user.getUserId(), committee.getChairman().getUserId()))) {
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin") && !(user.getUserId().equals(committee.getChairman().getUserId())) ) {
             return  new ResponseEntity<>("Forbidden: You are not allowed to call this meeting", HttpStatus.FORBIDDEN);
         }
         if(committee == null) {
@@ -81,6 +97,10 @@ public class ExamCommitteeRestController {
         if(committee.isModerated()){
             return  new ResponseEntity<>("Already Moderated!", HttpStatus.CONFLICT);
         }
+
+       if(!examCommitteeService.checkQuesModerationEligibility(committee)) {
+           return  new ResponseEntity<>("Please assign course teacher, question setter and script evaluator for all courses!", HttpStatus.BAD_REQUEST);
+       }
 
         String meetingDateTime = payload.get("meetingTime");
         String callTime = payload.get("callTime");
@@ -195,6 +215,16 @@ public class ExamCommitteeRestController {
             if(committee == null || internalTeacher == null || externalTeacher == null || loggedInUser == null) {
                 map.put("message", "Not Found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+            }
+
+            Course course = courseService.findById(courseId);
+            if(course == null) {
+                map.put("message", "Course Not Found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+            }
+            if(course.getCourseTeacher() == null){
+                map.put("message", "Please assign course teacher at first.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
 
             if(committee.getChairman().getUserId().equals(loggedInUser.getUserId()) || loggedInUser.getRole().equals("admin") || loggedInUser.getRole().equals("co-admin")) {

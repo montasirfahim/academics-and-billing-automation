@@ -96,8 +96,19 @@ public class ExamCommitteController {
         if (user == null) {
             return "redirect:/login";
         }
-        //extra validation needed to implement so that only admins & committee members can enter into a committee
+
         ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(id);
+        if(examCommittee == null) {
+            model.addAttribute("status", "404");
+            model.addAttribute("error", "Committee not found");
+            return "error_page";
+        }
+        if(!examCommitteeService.checkViewPermission(user, examCommittee)){
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to view this committee. Only committee members or admins have this permission.");
+            return "error_page";
+        }
+
         model.addAttribute("committee", examCommittee);
 
         List<Course> committeeCourses = courseService.findByCommitteeId(id);

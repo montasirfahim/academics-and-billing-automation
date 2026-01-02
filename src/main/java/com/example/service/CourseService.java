@@ -26,7 +26,7 @@ public class CourseService {
     }
 
     public List<Course> findAll() {
-        return courseRepository.findAll();
+        return courseRepository.findAllByOrderByIdDesc(); //findAll()
     }
 
     public Course findById(Long id) {
@@ -43,7 +43,7 @@ public class CourseService {
         if(semester == null || session == null) {
             return null;
         }
-        return courseRepository.findBySemesterAndSession(semester, session);
+        return courseRepository.findBySemesterAndSessionOrderByCourseCodeAsc(semester, session);
     }
 
     public List<Course> findByCommitteeId(Long committeeId) {//committee courses
@@ -53,7 +53,7 @@ public class CourseService {
         }
         String committeeSession = committee.getSession();
         Semester semester = committee.getSemester();
-        return courseRepository.findBySemesterAndSession(semester, committeeSession);
+        return courseRepository.findBySemesterAndSessionOrderByCourseCodeAsc(semester, committeeSession);
     }
 
     @Transactional
@@ -80,5 +80,25 @@ public class CourseService {
 
     public long getTotalCoursesByUser(User user) {
         return courseRepository.countByCourseTeacher(user);
+    }
+
+    public long getTotalCoursesByUserAndType(User user, String type) {
+        return courseRepository.countByCourseTeacherAndCourseType(user, type);
+    }
+
+    public List<Course> findByCourseTeacherAndSemester(User targetUser, Semester semester) {
+        return courseRepository.findBySemesterAndCourseTeacherOrderByCourseCodeAsc(semester, targetUser);
+    }
+
+    public List<Course> findBySemesterAndTeacherAsQuesSetter(Semester semester, User teacher) {
+        return courseRepository.findBySemesterAndInternalQuesSetterEvaluatorOrExternalQuesSetterEvaluatorOrderByCourseCodeAsc(semester, teacher, teacher);
+    }
+
+    public long getTotalCoursesCount() {
+        return courseRepository.count();
+    }
+
+    public long getTotalTheoryCoursesCount() {
+        return courseRepository.countByCourseType("Theory");
     }
 }

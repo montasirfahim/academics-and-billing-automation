@@ -10,13 +10,19 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     void deleteById(Long id);
 
-    List<Course> findBySemesterAndSession(Semester semester, String session);
+    List<Course> findBySemesterAndSessionOrderByCourseCodeAsc(Semester semester, String session);
+    List<Course> findBySemesterAndCourseTeacherOrderByCourseCodeAsc(Semester semester, User courseTeacher);
+    List<Course> findBySemesterAndInternalQuesSetterEvaluatorOrExternalQuesSetterEvaluatorOrderByCourseCodeAsc(Semester semester, User internal, User external);
 
     long countByCourseTeacher(User user);
 
-    // List<Course> findByCommittee();
+    long countByCourseTeacherAndCourseType(User user, String type);
 
-   // List<Course> findBySessionAndSemester(String committeeSession, Semester semester);
+    List<Course> findAllByOrderByIdDesc();
+
+    long countByCourseType(String type);
+
+    // List<Course> findBySessionAndSemester(String committeeSession, Semester semester);
 
 
 }

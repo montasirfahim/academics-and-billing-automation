@@ -1,11 +1,9 @@
 package com.example.controller;
-import com.example.service.CourseService;
-import com.example.service.ExamCommitteeService;
-import com.example.service.SemesterService;
+import com.example.entity.TourAllowanceBill;
+import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
 
 import com.example.entity.User;
-import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +26,8 @@ public class UserController {
     private SemesterService semesterService;
     @Autowired
     private ExamCommitteeService examCommitteeService;
+    @Autowired
+    private TourAllowanceBillService tourAllowanceBillService;
 
     @GetMapping("/")
     public String landingPage(HttpSession session) {
@@ -55,20 +55,51 @@ public class UserController {
         model.addAttribute("user", user);
         model.addAttribute("owner", "self");
 
+
+        if(user.getRole().equals("admin") || user.getRole().equals("co-admin")) {
+            long totalSemesters = semesterService.countAllSemesters();
+            model.addAttribute("totalSemesters", totalSemesters);
+
+            long totalCommittees = examCommitteeService.getTotalCommitteesCount();
+            long totalCompletedCommittees = examCommitteeService.getTotalCompletedCommitteesCount();
+            long totalActiveCommittees = examCommitteeService.getTotalActiveCommitteesCount();
+            model.addAttribute("totalCommittees", totalCommittees);
+            model.addAttribute("totalCompletedCommittees", totalCompletedCommittees);
+            model.addAttribute("totalActiveCommittees", totalActiveCommittees);
+
+            long totalCourses = courseService.getTotalCoursesCount();
+            long totalTheoryCourses = courseService.getTotalTheoryCoursesCount();
+            model.addAttribute("totalCourses", totalCourses);
+            model.addAttribute("totalTheoryCourses", totalTheoryCourses);
+
+            double totalBills = tourAllowanceBillService.getTotalTaDaBillSoFar();
+            model.addAttribute("totalBills", totalBills);
+
+            return "admin_panel";
+        }
+
         long totalCourses = courseService.getTotalCoursesByUser(user);
+        long theoryCourses = courseService.getTotalCoursesByUserAndType(user, "Theory");
+        long labCourses = courseService.getTotalCoursesByUserAndType(user, "Lab");
+        System.out.println("theory: " + theoryCourses + user.getName());
         long totalSemesters = semesterService.countAllSemesters();
         long totalCommitteeChairman = examCommitteeService.getTotalCommitteesAsChairman(user);
         long totalCommitteeInternalMember = examCommitteeService.getTotalCommitteesAsInternalMember(user);
         long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(user);
         long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
-
         double totalBills = 0.0;
+
+        List<TourAllowanceBill> tadaBills = tourAllowanceBillService.getAllTourAllowanceBillByUser(user);
+
         model.addAttribute("totalCourses", totalCourses);
+        model.addAttribute("theoryCourses", theoryCourses);
+        model.addAttribute("labCourses", labCourses);
         model.addAttribute("totalSemesters", totalSemesters);
         model.addAttribute("totalCommittees", totalCommittees);
         model.addAttribute("committeeChairman", totalCommitteeChairman);
         model.addAttribute("committeeMember", totalCommitteeInternalMember + totalCommitteeExternalMember);
         model.addAttribute("totalBills", totalBills);
+        model.addAttribute("tadaBills", tadaBills);
 
         return "admin_dashboard";
     }
@@ -86,62 +117,105 @@ public class UserController {
             model.addAttribute("user", targetUser);
 
             long totalCourses = courseService.getTotalCoursesByUser(targetUser);
+            long theoryCourses = courseService.getTotalCoursesByUserAndType(targetUser, "Theory");
+            long labCourses = courseService.getTotalCoursesByUserAndType(targetUser, "Lab");
             long totalSemesters = semesterService.countAllSemesters();
             long totalCommitteeChairman = examCommitteeService.getTotalCommitteesAsChairman(targetUser);
             long totalCommitteeInternalMember = examCommitteeService.getTotalCommitteesAsInternalMember(targetUser);
             long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(targetUser);
             long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
 
-            double totalBills = 0.0;
+            double totalBills = tourAllowanceBillService.getTotalTaDaBillByUser(targetUser);
+            List<TourAllowanceBill> tadaBills = tourAllowanceBillService.getAllTourAllowanceBillByUser(targetUser);
             model.addAttribute("totalCourses", totalCourses);
+            model.addAttribute("theoryCourses", theoryCourses);
+            model.addAttribute("labCourses", labCourses);
             model.addAttribute("totalSemesters", totalSemesters);
             model.addAttribute("totalCommittees", totalCommittees);
             model.addAttribute("committeeChairman", totalCommitteeChairman);
             model.addAttribute("committeeMember", totalCommitteeInternalMember + totalCommitteeExternalMember);
             model.addAttribute("totalBills", totalBills);
+            model.addAttribute("tadaBills", tadaBills);
 
             return "admin_dashboard";
+        }
+        else if(targetUser.getRole().equals("admin") || targetUser.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to visit any administrator's profile.");
+            return "error_page";
         }
         else if(currentUser.getRole().equals("admin") || currentUser.getRole().equals("co-admin")) {
             model.addAttribute("user", targetUser);
             model.addAttribute("owner", "admins");
 
             long totalCourses = courseService.getTotalCoursesByUser(targetUser);
+            long theoryCourses = courseService.getTotalCoursesByUserAndType(targetUser, "Theory");
+            long labCourses = courseService.getTotalCoursesByUserAndType(targetUser, "Lab");
             long totalSemesters = semesterService.countAllSemesters();
             long totalCommitteeChairman = examCommitteeService.getTotalCommitteesAsChairman(targetUser);
             long totalCommitteeInternalMember = examCommitteeService.getTotalCommitteesAsInternalMember(targetUser);
             long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(targetUser);
             long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
 
-            double totalBills = 0.0;
+            double totalBills = tourAllowanceBillService.getTotalTaDaBillByUser(targetUser);
+
+            List<TourAllowanceBill> tadaBills = tourAllowanceBillService.getAllTourAllowanceBillByUser(targetUser);
+
             model.addAttribute("totalCourses", totalCourses);
+            model.addAttribute("theoryCourses", theoryCourses);
+            model.addAttribute("labCourses", labCourses);
             model.addAttribute("totalSemesters", totalSemesters);
             model.addAttribute("totalCommittees", totalCommittees);
             model.addAttribute("committeeChairman", totalCommitteeChairman);
             model.addAttribute("committeeMember", totalCommitteeInternalMember + totalCommitteeExternalMember);
             model.addAttribute("totalBills", totalBills);
+            model.addAttribute("tadaBills", tadaBills);
 
             return "admin_dashboard";
         }
         else{
             model.addAttribute("status", "Access Denied");
-            model.addAttribute("error", "You are not allowed to visit this profile");
+            model.addAttribute("error", "You are not allowed to visit other's profile");
             return "error_page";
         }
     }
 
     @GetMapping("/all_users")
-    public String viewAllUsers(Model model) {
+    public String viewAllUsers(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if(user == null) {
+            return "redirect:/login";
+        }
         model.addAttribute("users", userService.getAllUsers());
         return "all_users";
     }
+
     @GetMapping("/users/new")
-    public String viewNewUserForm(Model model) {
+    public String viewNewUserForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if(user == null) {
+            return "redirect:/login";
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action.");
+            return "error_page";
+        }
         model.addAttribute("user", new User());
         return "user_form";
     }
+
     @PostMapping("/users/new")
-    public String saveNewUser(@ModelAttribute User user) {
+    public String saveNewUser(@ModelAttribute User user, HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("user");
+        if(loggedInUser == null) {
+            return "redirect:/login";
+        }
+        if(!loggedInUser.getRole().equals("admin") || !loggedInUser.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action.");
+            return "error_page";
+        }
         if(user.getDistanceFromMBSTU() == null){
             user.setDistanceFromMBSTU(0);
         }
@@ -149,8 +223,18 @@ public class UserController {
        return "redirect:/all_users";
     }
 
-    @GetMapping("/user/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
+    @PostMapping("/user/delete/{id}")
+    public String deleteUser(@PathVariable("id") Long id, HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("user");
+        if(loggedInUser == null) {
+            return "redirect:/login";
+        }
+        if(!loggedInUser.getRole().equals("admin") || !loggedInUser.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action.");
+            return "error_page";
+        }
+
         userService.deleteUserById(id);
         return "redirect:/all_users";
     }

@@ -1,8 +1,7 @@
 package com.example.entity;
 
 import jakarta.persistence.*;
-
-import java.sql.Time;
+import java.time.LocalDateTime;
 
 @Entity
 public class TourAllowanceBill {
@@ -11,27 +10,136 @@ public class TourAllowanceBill {
     private Long billId;
 
     @JoinColumn(name = "user_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
-    private Time departureTimeFromHisUniversity;
-    private Time arrivalTimeAtTangail1;
-    private Time arrivalTimeAtMbstu;
+    private String travelIntention;
 
-    private Time departureTimeFromMbstu;
-    private Time arrivalTimeAtTangail2;
-    private Time arrivalTimeAtHisUniversity;
+    private LocalDateTime departureTimeFromHisUniversity;
+    private LocalDateTime arrivalTimeAtTangail1;
+    private LocalDateTime arrivalTimeAtMbstu;
+    private LocalDateTime departureTimeFromMbstu;
+    private LocalDateTime arrivalTimeAtTangail2;
+    private LocalDateTime arrivalTimeAtHisUniversity;
 
     private Long dailyAllowance;
     private Long totalDayCount;
-
-    private Long perKmFareRate;
+    private double perKmFareRate;
     private Long totalTravelDistance;
-
-    private Long totalBillAmount;
+    private double totalBillAmount;
 
     public TourAllowanceBill() {}
 
+    // Getters and Setters
+    public Long getBillId() {
+        return billId;
+    }
 
+    public void setBillId(Long billId) {
+        this.billId = billId;
+    }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public LocalDateTime getDepartureTimeFromHisUniversity() {
+        return departureTimeFromHisUniversity;
+    }
+
+    public void setDepartureTimeFromHisUniversity(LocalDateTime departureTimeFromHisUniversity) {
+        this.departureTimeFromHisUniversity = departureTimeFromHisUniversity;
+    }
+
+    public LocalDateTime getArrivalTimeAtTangail1() {
+        return arrivalTimeAtTangail1;
+    }
+
+    public void setArrivalTimeAtTangail1(LocalDateTime arrivalTimeAtTangail1) {
+        this.arrivalTimeAtTangail1 = arrivalTimeAtTangail1;
+    }
+
+    public LocalDateTime getArrivalTimeAtMbstu() {
+        return arrivalTimeAtMbstu;
+    }
+
+    public void setArrivalTimeAtMbstu(LocalDateTime arrivalTimeAtMbstu) {
+        this.arrivalTimeAtMbstu = arrivalTimeAtMbstu;
+    }
+
+    public LocalDateTime getDepartureTimeFromMbstu() {
+        return departureTimeFromMbstu;
+    }
+
+    public void setDepartureTimeFromMbstu(LocalDateTime departureTimeFromMbstu) {
+        this.departureTimeFromMbstu = departureTimeFromMbstu;
+    }
+
+    public LocalDateTime getArrivalTimeAtTangail2() {
+        return arrivalTimeAtTangail2;
+    }
+
+    public void setArrivalTimeAtTangail2(LocalDateTime arrivalTimeAtTangail2) {
+        this.arrivalTimeAtTangail2 = arrivalTimeAtTangail2;
+    }
+
+    public LocalDateTime getArrivalTimeAtHisUniversity() {
+        return arrivalTimeAtHisUniversity;
+    }
+
+    public void setArrivalTimeAtHisUniversity(LocalDateTime arrivalTimeAtHisUniversity) {
+        this.arrivalTimeAtHisUniversity = arrivalTimeAtHisUniversity;
+    }
+
+    public Long getDailyAllowance() {
+        return dailyAllowance;
+    }
+
+    public void setDailyAllowance(Long dailyAllowance) {
+        this.dailyAllowance = dailyAllowance;
+    }
+
+    public Long getTotalDayCount() {
+        return totalDayCount;
+    }
+
+    public void setTotalDayCount(Long totalDayCount) {
+        this.totalDayCount = totalDayCount;
+    }
+
+    public double getPerKmFareRate() {
+        return perKmFareRate;
+    }
+
+    public void setPerKmFareRate(double perKmFareRate) {
+        this.perKmFareRate = perKmFareRate;
+    }
+
+    public Long getTotalTravelDistance() {
+        return totalTravelDistance;
+    }
+
+    public void setTotalTravelDistance(Long totalTravelDistance) {
+        this.totalTravelDistance = totalTravelDistance;
+    }
+
+    public double getTotalBillAmount() {
+        return totalBillAmount;
+    }
+
+    public void setTotalBillAmount(double totalBillAmount) {
+        this.totalBillAmount = totalBillAmount;
+    }
+
+    public String getTravelIntention() {
+        return travelIntention;
+    }
+
+    public void setTravelIntention(String travelIntention) {
+        this.travelIntention = travelIntention;
+    }
 }

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bill Created Successfully</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            font-family: Arial, sans-serif;
+        }
+        .content-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .success-card {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            border-top: 8px solid #28a745;
+            background: white;
+        }
+        .success-icon {
+            font-size: 70px;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        .bill-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px inset #eee;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .label { font-weight: 600; color: #555; }
+        .value { font-weight: 700; color: #000; }
+
+        .btn-print {
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+        .btn-print:hover {
+            opacity: 0.9; color: white;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="content-wrap">
+    <div class="card success-card shadow-lg text-center">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 class="fw-bold text-dark">Bill Generated!</h2>
+        <p class="text-muted">The TA/DA bill has been calculated and saved.</p>
+
+        <div class="bill-details">
+            <div class="detail-row">
+                <span class="label">Teacher/User:</span>
+                <span class="value" th:text="${billuser.name}">John Doe</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">From:</span>
+                <span class="value" th:text="${billuser.university}">University</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Total Travel Distance:</span>
+                <span class="value" th:text="${bill.totalTravelDistance} + ' KM'">0</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Started at:</span>
+                <span class="value" th:text="${bill.departureTimeFromHisUniversity}">time</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Reached at:</span>
+                <span class="value" th:text="${bill.arrivalTimeAtHisUniversity}">time</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Total Days:</span>
+                <span class="value" th:text="${bill.totalDayCount} + ' Day(s)'">1</span>
+            </div>
+            <hr>
+            <div class="detail-row">
+                <span class="label">Total Payable Amount:</span>
+                <span class="value text-primary" th:text="'৳ ' + ${bill.totalBillAmount}">0.00</span>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <a th:href="@{'/print/tada/' + ${bill.billId}}" class="btn btn-print text-white">
+                <i class="fas fa-print me-2"></i> Print Bill Now
+            </a>
+            <a th:href="@{/ta-da/new}" class="btn btn-outline-secondary">
+                Create Another Bill
+            </a>
+        </div>
+    </div>
+</div>
+
+<footer class="bg-dark text-white p-4 d-flex flex-column justify-content-center align-items-center">
+    <div class="container text-center">
+        <p class="mb-0">Dept. of ICT, MBSTU © 2026</p>
+    </div>
+    <div class="container text-center d-flex flex-row gap-1 justify-content-center">
+        <p class="mb-0">Developed by</p>
+        <a href="https://www.facebook.com/fahim.ffff" class="text-decoration-none">Montasir Fahim</a>
+        <p>ICT'19</p>
+    </div>
+</footer>
+
+</body>
+</html>

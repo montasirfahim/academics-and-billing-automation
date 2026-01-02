@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bill</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .content-wrap {
+            flex: 1;
+            display: flex;
+            max-width: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+        .bill-container{
+            width: 98%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="content-wrap mt-0 pt-0 d-flex flex-column">
+    <div class="bill-container d-flex justify-content-center shadow p-5 d-flex flex-column">
+        <div class="text-center m-auto">
+            <img src="/logo.PNG" class="img-fluid" style="height: 80px; width: 80px">
+        </div>
+        <h1 class="title text-center">Mawlana Bhashani Science and Technology University</h1>
+        <h2 class="sub-title text-center">Dept. of Information and Communication Technology</h2>
+        <hr>
+        <div class="info d-flex flex-row justify-content-between">
+            <div class="faculty-info d-flex flex-column">
+                <h4 th:text="'Name: ' + ${user.name}">Teacher Name</h4>
+                <h5 th:text="'Designation: ' + ${user.designation}">Designation</h5>
+                <h5 th:text="'Dept: ' + ${user.department} + ', ' + ${user.university}">Dept</h5>
+            </div>
+            <div class="sem-info d-flex flex-column">
+                <h4 th:text="'Semester: ' + ${semester.semesterParity}">Semester</h4>
+                <h5 th:text="'Held on: ' + ${semester.semesterHeldYear} + ', ' + ${semester.semesterScheduledMonths}">Held</h5>
+                <h5 th:text="'Scheduled on: ' + ${semester.semesterScheduledYear} + ', ' + ${semester.semesterScheduledMonths}">Scheduled</h5>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer class="bg-dark text-white p-4 d-flex flex-column justify-content-center align-items-center">
+    <div class="container text-center">
+        <p class="mb-0">Dept. of ICT, MBSTU © 2026</p>
+    </div>
+    <div class="container text-center d-flex flex-row gap-1 justify-content-center">
+        <p class="mb-0">Developed by</p>
+        <a href="https://www.facebook.com/fahim.ffff" class="text-decoration-none">Montasir Fahim</a>
+        <p>ICT'19</p>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -25,4 +25,5 @@ public interface ExamCommitteeRepository extends JpaRepository<ExamCommittee, Lo
     long countExamCommitteeByInternalMember1OrInternalMember2(User user1, User user2);
     long countExamCommitteeByExternalMember1(User user);
 
+    long countExamCommitteeByIsCompleted(boolean b);
 }
