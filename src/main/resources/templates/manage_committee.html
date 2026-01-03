@@ -71,18 +71,6 @@
             background-color: #f1f1f1;
         }
 
-        td.actions a {
-            margin-right: 10px;
-            text-decoration: none;
-            color: #4CAF50;
-            font-weight: 600;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        td.actions a:hover {
-            color: #388e3c;
-        }
         .btn{
             margin-top: 25px;
             align-items: center;
@@ -215,7 +203,7 @@
         </table>
 
         <div class="btn d-flex justify-content-center">
-            <a class="btn btn-outline-primary" th:href="@{'/test/sample_pdf/' + ${committee.committeeId}}">Print Committee</a>
+            <a class="btn btn-outline-primary" th:href="@{'/print/committee/' + ${committee.committeeId}}">Print Committee</a>
         </div>
     </div>
 
@@ -260,21 +248,6 @@
             </form>
         </div>
 
-    </div>
-
-    <div class="activities" id="activities">
-        <table th:object="${committee}" id="activity-table" style="max-width: 770px; max-height: 1200px; overflow-y: auto;">
-            <thead>
-              <th>Date</th>
-              <th style="text-align: center">Committee Activities</th>
-            </thead>
-            <tbody>
-             <tr>
-                 <td th:text="*{#strings.substring(#object.moderationCallDateTime, 0, 10)}"></td>
-                 <td th:text="'Question moderation meeting has been called on ' + *{moderationScheduledDateTime}"></td>
-             </tr>
-            </tbody>
-        </table>
     </div>
 
 </div>
@@ -323,6 +296,14 @@
             const h52 = document.createElement("h5");
             h52.textContent = "Session: " + committee.session + " (" + committee.semesterYearName + ")";
             sem_info.appendChild(h52);
+
+            const h53 = document.createElement("h5");
+            h53.innerHTML = `Student: ${committee.studentCount}
+                 <a href="/committee/update-student/${committee.committeeId}" class="edit-link">
+                    <i class="fas fa-edit"></i>
+                 </a>`;
+
+            sem_info.appendChild(h53);
             //debugged
             const div = document.getElementById("card");
 

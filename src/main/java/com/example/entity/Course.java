@@ -13,6 +13,7 @@ public class Course {
     private String courseName;
     private double courseCredit;
     private String courseType;
+    private Long examineeCount;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "semester_id", referencedColumnName = "semesterId")
@@ -104,6 +105,14 @@ public class Course {
 
     public void setInternalQuesSetterEvaluator(User internalQuesSetterEvaluator) {
         this.internalQuesSetterEvaluator = internalQuesSetterEvaluator;
+    }
+
+    public Long getExamineeCount() {
+        return examineeCount;
+    }
+
+    public void setExamineeCount(Long examineeCount) {
+        this.examineeCount = examineeCount;
     }
 }
 

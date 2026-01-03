@@ -7,14 +7,15 @@ import com.example.entity.User;
 import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ExamCommitteController {
@@ -121,6 +122,58 @@ public class ExamCommitteController {
 
         model.addAttribute("committeeId", id);
         return "manage_committee";
+    }
+
+    @GetMapping("/committee/update-student/{id}")
+    public String updateCommittee(@PathVariable Long id, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        ExamCommittee committee = examCommitteeService.findCommitteeByCommitteeId(id);
+        if (committee == null) {
+            model.addAttribute("status", "Not Found");
+            model.addAttribute("error", "Committee not found");
+            return "error_page";
+        }
+
+        model.addAttribute("committee", committee);
+        return "update_committee_student_form";
+    }
+
+    @PostMapping("/api/committee/update-student")
+    @ResponseBody
+    public ResponseEntity<Object> updateCommitteeStudent(@RequestBody Map<String, String> payload, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Map<Object, Object> map = new HashMap<>();
+        if (user == null) {
+            map.put("message", "Unauthorized: Please login first");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+        }
+
+        String id = payload.get("committeeId");
+        String newValue = payload.get("newValue");
+        try{
+            Long committeeId = Long.parseLong(id);
+            Long studentCount = Long.parseLong(newValue);
+            ExamCommittee committee = examCommitteeService.findCommitteeByCommitteeId(committeeId);
+            if(committee == null || studentCount <= 0) {
+                map.put("message", "Committee not found or Invalid student count.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+            }
+            if(user.getUserId().equals(committee.getChairman().getUserId()) || user.getRole().equals("admin") || user.getRole().equals("co-admin")) {
+                examCommitteeService.updateStudentCount(committee, studentCount);
+                map.put("message", "Student count has been updated successfully!");
+                return ResponseEntity.status(HttpStatus.OK).body(map);
+            }
+
+            map.put("message", "Bad Request: Something went wrong");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+
+        }catch (Exception e){
+            map.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
     }
 
 }

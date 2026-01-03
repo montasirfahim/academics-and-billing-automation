@@ -163,7 +163,7 @@
             <label for="salaryGrade">Salary Grade:</label>
             <select id="salaryGrade" th:field="*{salaryGrade}" required>
                 <option value="">Select Grade</option>
-                <option th:each="i : ${#numbers.sequence(1, 9)}" th:value="'Grade ' + ${i}">Grade [[${i}]]</option>
+                <option th:each="i : ${#numbers.sequence(1, 20)}" th:value="'Grade ' + ${i}">Grade [[${i}]]</option>
             </select>
         </div>
     </div>

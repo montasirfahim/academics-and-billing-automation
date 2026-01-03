@@ -84,4 +84,9 @@ public class ExamCommitteeService {
         }
         return examCommittee.getChairman().getUserId().equals(user.getUserId()) || examCommittee.getInternalMember1().getUserId().equals(user.getUserId()) || examCommittee.getInternalMember2().getUserId().equals(user.getUserId()) || examCommittee.getExternalMember1().getUserId().equals(user.getUserId());
     }
+
+    public void updateStudentCount(ExamCommittee examCommittee, Long studentCount){
+        examCommittee.setStudentCount(studentCount);
+        examCommitteeRepository.save(examCommittee);
+    }
 }

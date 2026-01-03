@@ -139,6 +139,7 @@
             <p class="d-flex flex-row gap-1"><strong>Designation:</strong> <span th:text="${user.designation}">Designation</span> <a class="edit-desig" th:href="@{/user/edit-designation/{id}(id=${user.userId})}"><i class="fas fa-edit"></i> </a> </p>
             <p><strong>Department:</strong> <span th:text="${user.department}">Department</span></p>
             <p><strong>University:</strong> <span th:text="${user.university}">University</span></p>
+            <p class="d-flex flex-row gap-1"><strong>Salary Grade:</strong> <span th:text="${user.salaryGrade}">Grade</span> <a class="edit-desig" th:href="@{/user/edit-grade/{id}(id=${user.userId})}"><i class="fas fa-edit"></i> </a> </p>
             <p><strong>Role:</strong> <span th:text="${user.role}">Role</span></p>
             <p><strong>Phone:</strong> <span th:text="${user.phone}">Phone</span></p>
             <p><strong>Email:</strong> <span th:text="${user.email}">email@example.com</span></p>

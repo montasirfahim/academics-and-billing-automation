@@ -14,7 +14,10 @@
             background: #ffffff;
             border-left: 5px solid #764ba2;
         }
-        .body-container, .sem-container{
+        .body-container{
+            padding: 30px;
+        }
+        .sem-container{
             padding: 30px;
         }
         .user-icon{
@@ -36,7 +39,7 @@
            background: linear-gradient(to right, #ec77ab 0%, #7873f5 100%);
         }
         table {
-            width: 80%;
+            width: 100%;
             border-collapse: collapse;
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
@@ -139,6 +142,7 @@
             <p class="d-flex flex-row gap-1"><strong>Designation:</strong> <span th:text="${user.designation}">Designation</span> <a class="edit-desig" th:href="@{/user/edit-designation/{id}(id=${user.userId})}"><i class="fas fa-edit"></i> </a> </p>
             <p><strong>Department:</strong> <span th:text="${user.department}">Department</span></p>
             <p><strong>University:</strong> <span th:text="${user.university}">University</span></p>
+            <p class="d-flex flex-row gap-1"><strong>Salary Grade:</strong> <span th:text="${user.salaryGrade}">Grade</span> <a class="edit-desig" th:href="@{/user/edit-grade/{id}(id=${user.userId})}"><i class="fas fa-edit"></i> </a> </p>
             <p><strong>Role:</strong> <span th:text="${user.role}">Role</span></p>
             <p><strong>Phone:</strong> <span th:text="${user.phone}">Phone</span></p>
             <p><strong>Email:</strong> <span th:text="${user.email}">email@example.com</span></p>
@@ -207,7 +211,7 @@
     <table th:if="${user.role == 'external'}" border="1" class="shadow">
         <thead>
         <tr>
-            <td colspan="7" class="text-center"><h1>All TA/DA Bills</h1></td>
+            <td colspan="8" class="text-center"><h1>All TA/DA Bills</h1></td>
         </tr>
         <tr>
             <th>Started At</th>
@@ -217,6 +221,7 @@
             <th>Fare Rate</th>
             <th>Daily Allowance</th>
             <th>Total Payable</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody id="tada-bill-table-body">
@@ -228,6 +233,10 @@
                 <td th:text="${bill.perKmFareRate} + ' BDT'"></td>
                 <td th:text="${bill.dailyAllowance} + ' BDT'"></td>
                 <td th:text="${bill.totalBillAmount} + ' BDT'"></td>
+                <td class="actions">
+                    <a th:href="@{/print/tada/{id}(id=${bill.billId})}"
+                       class="btn btn-outline-primary btn-sm"> Print Bill </a>
+                </td>
             </tr>
         </tbody>
     </table>

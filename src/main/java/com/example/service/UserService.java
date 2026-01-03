@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -79,9 +81,41 @@ public class UserService {
 
     public Boolean updateDesignation(Long userId, String newDesignation) {
         User user = userRepository.findByUserId(userId);
+        Map<String, String> map = new HashMap<>();
+        map.put("Lecturer", "Grade 9");
+        map.put("Assistant Professor", "Grade 6");
+        map.put("Associate Professor", "Grade 4");
+        map.put("Professor", "Grade 3");
+        map.put("Registrar", "Grade 9");
+        map.put("Deputy Registrar", "Grade 4");
+
+        Map<String, String> gradeCategory = new HashMap<>();
+        gradeCategory.put("Grade 1", "Category 1");
+        gradeCategory.put("Grade 2", "Category 1");
+        gradeCategory.put("Grade 3", "Category 1");
+        gradeCategory.put("Grade 4", "Category 1");
+        gradeCategory.put("Grade 5", "Category 1");
+        gradeCategory.put("Grade 6", "Category 2");
+        gradeCategory.put("Grade 7", "Category 2");
+        gradeCategory.put("Grade 8", "Category 2");
+        gradeCategory.put("Grade 9", "Category 2");
+        gradeCategory.put("Grade 10", "Category 2");
+        gradeCategory.put("Grade 11", "Category 3");
+        gradeCategory.put("Grade 12", "Category 3");
+        gradeCategory.put("Grade 13", "Category 3");
+        gradeCategory.put("Grade 14", "Category 3");
+        gradeCategory.put("Grade 15", "Category 3");
+        gradeCategory.put("Grade 16", "Category 3");
+
         if(user != null){
+            String newGrade = map.get(newDesignation);
+            String newCategory = gradeCategory.get(newGrade);
+
             user.setDesignation(newDesignation);
+            user.setSalaryGrade(newGrade);
+            user.setGradingCategory(newCategory);
             userRepository.save(user);
+
             return true;
         }
         return false;

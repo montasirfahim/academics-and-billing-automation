@@ -18,4 +18,6 @@ public interface TourAllowanceBillRepository extends JpaRepository<TourAllowance
 
     @Query("SELECT SUM(t.totalBillAmount) FROM TourAllowanceBill t")
     Double sumTotalBillAmount();
+
+    TourAllowanceBill findByBillId(Long billId);
 }

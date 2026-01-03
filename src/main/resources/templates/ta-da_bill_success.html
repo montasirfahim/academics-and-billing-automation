@@ -105,7 +105,7 @@
         </div>
 
         <div class="d-grid gap-2">
-            <a th:href="@{'/print/tada/' + ${bill.billId}}" class="btn btn-print text-white">
+            <a th:href="@{/print/tada/{id}(id=${bill.billId})}" class="btn btn-print text-white">
                 <i class="fas fa-print me-2"></i> Print Bill Now
             </a>
             <a th:href="@{/ta-da/new}" class="btn btn-outline-secondary">

@@ -1,12 +1,12 @@
 package com.example.controller;
 
-import com.example.entity.Course;
-import com.example.entity.ExamCommittee;
-import com.example.entity.Semester;
+import com.example.entity.*;
 import com.example.service.CourseService;
 import com.example.service.ExamCommitteeService;
 import com.example.service.PdfService;
+import com.example.service.TourAllowanceBillService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +20,18 @@ public class PdfController {
     @Autowired
     ExamCommitteeService examCommitteeService;
 
-
     private final PdfService pdfService;
 
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private TourAllowanceBillService tourAllowanceBillService;
 
     public PdfController(PdfService pdfService) {
         this.pdfService = pdfService;
     }
 
-    @GetMapping("test/sample_pdf/{id}")
+    @GetMapping("/print/committee/{id}")
     public void generateCommitteePdf(HttpServletResponse response, @PathVariable Long id) throws IOException {
         ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(id);
         if(examCommittee == null) {
@@ -40,7 +41,7 @@ public class PdfController {
 
         List<Course> committeeCourses = courseService.findByCommitteeId(id);
 
-        byte[] pdfBytes = pdfService.createPdf(examCommittee, semester, committeeCourses);
+        byte[] pdfBytes = pdfService.createCommitteePdf(examCommittee, semester, committeeCourses);
 
         // Set response headers
         String filePath = "committee" + id + ".pdf";
@@ -52,25 +53,6 @@ public class PdfController {
         response.getOutputStream().write(pdfBytes);
         response.getOutputStream().flush();
     }
-
-//    @PostMapping(value = "/generate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_PDF_VALUE)
-//    public ResponseEntity<byte[]> generatePdf(@RequestBody TableRequest request) {
-//        // Convert List<List<String>> -> List<String[]>
-//        List<String[]> rows = request.getRows()
-//                .stream()
-//                .map(list -> list.toArray(new String[0]))
-//                .collect(Collectors.toList());
-//
-//        byte[] pdfBytes = pdfService.createPdf(rows);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_PDF);
-//        // Force download
-//        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"report.pdf\"");
-//        headers.setContentLength(pdfBytes.length);
-//
-//        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-//    }
 
     // Simple DTO used by the POST endpoint
     public static class TableRequest {
@@ -85,5 +67,27 @@ public class PdfController {
         public void setRows(List<List<String>> rows) {
             this.rows = rows;
         }
+    }
+
+    @GetMapping("/print/tada/{id}")
+    public void generateTadaPdf(HttpServletResponse response, @PathVariable Long id, HttpSession session) throws IOException {
+        User user = (User) session.getAttribute("user");
+        TourAllowanceBill bill = tourAllowanceBillService.findById(id);
+        if(bill == null) {
+            return;
+        }
+
+        byte[] pdfBytes = pdfService.createTaDaBillPdf(bill);
+
+        // Set response headers
+        String filePath = "tada_bill" + id + ".pdf";
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=" + filePath);
+        response.setContentLength(pdfBytes.length);
+
+        // Write PDF bytes to response
+        response.getOutputStream().write(pdfBytes);
+        response.getOutputStream().flush();
+
     }
 }

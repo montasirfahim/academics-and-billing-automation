@@ -7,7 +7,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TourAllowanceBillService {
@@ -15,19 +17,35 @@ public class TourAllowanceBillService {
     @Autowired
     private TourAllowanceBillRepository tourAllowanceBillRepository;
 
+
     @Transactional
     public TourAllowanceBill saveTourAllowanceBill(TourAllowanceBill tourAllowanceBill) {
         User billUser = tourAllowanceBill.getUser();
         Integer distanceFromMBSTU = billUser.getDistanceFromMBSTU();
 
-        tourAllowanceBill.setTotalTravelDistance((long) (distanceFromMBSTU + 10));
-        tourAllowanceBill.setDailyAllowance((long)1500);
-        Long perKmFareRate = (long)20;
-        Long totalBill = tourAllowanceBill.getDailyAllowance()*tourAllowanceBill.getTotalDayCount() + perKmFareRate*tourAllowanceBill.getTotalTravelDistance();
+        Map<String, Double> map = new HashMap<>();
+        map.put("Grade 1", 1400.00);
+        map.put("Grade 2", 1225.00);
+        map.put("Grade 3", 1225.00);
+        map.put("Grade 4", 1050.00);
+        map.put("Grade 5", 1050.00);
+        map.put("Grade 6", 900.00);
+        map.put("Grade 7", 900.00);
+        map.put("Grade 8", 875.00);
+        map.put("Grade 9", 875.00);
+        map.put("Grade 10", 875.00);
+
+        double dailyAllowance = map.get(billUser.getSalaryGrade());
+
+        tourAllowanceBill.setTotalTravelDistance(2*(distanceFromMBSTU + 10));
+        tourAllowanceBill.setDailyAllowance(dailyAllowance);
+
+        double perKmFareRate = 18.0;
+        double totalBill = dailyAllowance*tourAllowanceBill.getTotalDayCount() + perKmFareRate*tourAllowanceBill.getTotalTravelDistance();
 
         tourAllowanceBill.setPerKmFareRate(perKmFareRate);
         tourAllowanceBill.setTotalBillAmount(totalBill);
-
+        tourAllowanceBill.setTransportationType("Public Transportation");
 
         return tourAllowanceBillRepository.save(tourAllowanceBill);
     }
@@ -44,5 +62,9 @@ public class TourAllowanceBillService {
 
     public List<TourAllowanceBill> getAllTourAllowanceBillByUser(User user) {
         return tourAllowanceBillRepository.findByUserOrderByBillIdDesc(user);
+    }
+
+    public TourAllowanceBill findById(Long tadaBillId) {
+        return tourAllowanceBillRepository.findByBillId(tadaBillId);
     }
 }

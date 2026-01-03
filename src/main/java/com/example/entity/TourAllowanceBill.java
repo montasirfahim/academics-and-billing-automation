@@ -22,11 +22,13 @@ public class TourAllowanceBill {
     private LocalDateTime arrivalTimeAtTangail2;
     private LocalDateTime arrivalTimeAtHisUniversity;
 
-    private Long dailyAllowance;
+    private double dailyAllowance;
     private Long totalDayCount;
     private double perKmFareRate;
-    private Long totalTravelDistance;
+    private double totalTravelDistance;
     private double totalBillAmount;
+
+    private String transportationType;
 
     public TourAllowanceBill() {}
 
@@ -95,11 +97,11 @@ public class TourAllowanceBill {
         this.arrivalTimeAtHisUniversity = arrivalTimeAtHisUniversity;
     }
 
-    public Long getDailyAllowance() {
+    public double getDailyAllowance() {
         return dailyAllowance;
     }
 
-    public void setDailyAllowance(Long dailyAllowance) {
+    public void setDailyAllowance(double dailyAllowance) {
         this.dailyAllowance = dailyAllowance;
     }
 
@@ -119,11 +121,11 @@ public class TourAllowanceBill {
         this.perKmFareRate = perKmFareRate;
     }
 
-    public Long getTotalTravelDistance() {
+    public double getTotalTravelDistance() {
         return totalTravelDistance;
     }
 
-    public void setTotalTravelDistance(Long totalTravelDistance) {
+    public void setTotalTravelDistance(double totalTravelDistance) {
         this.totalTravelDistance = totalTravelDistance;
     }
 
@@ -141,5 +143,13 @@ public class TourAllowanceBill {
 
     public void setTravelIntention(String travelIntention) {
         this.travelIntention = travelIntention;
+    }
+
+    public String getTransportationType() {
+        return transportationType;
+    }
+
+    public void setTransportationType(String transportationType) {
+        this.transportationType = transportationType;
     }
 }
