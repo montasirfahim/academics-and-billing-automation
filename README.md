@@ -3,7 +3,6 @@
 ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
 ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-%23005C00.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
-
 ![Bootstrap 5](https://img.shields.io/badge/Bootstrap_5-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/javascript-%23F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black)
 
@@ -73,4 +72,4 @@ mvn spring-boot:run
 http://localhost:8080
 ```
 
-![Your GitHub stats](https://github-readme-stats.vercel.app/api?username=montasirfahim&show_icons=true&theme=radical)
+[![Montasir's GitHub stats](https://github-readme-stats.vercel.app/api?username=montasirfahim&show_icons=true&theme=radical)](https://github.com/montasirfahim)
