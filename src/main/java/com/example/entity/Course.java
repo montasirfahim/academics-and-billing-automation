@@ -13,7 +13,7 @@ public class Course {
     private String courseName;
     private double courseCredit;
     private String courseType;
-    private Long examineeCount;
+    private Long examineeCount = 0L;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "semester_id", referencedColumnName = "semesterId")

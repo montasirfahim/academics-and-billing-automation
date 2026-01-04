@@ -211,7 +211,14 @@ public class UserController {
         if(loggedInUser == null) {
             return "redirect:/login";
         }
-        if(!loggedInUser.getRole().equals("admin") || !loggedInUser.getRole().equals("co-admin")) {
+
+        if(userService.getUserByEmail(user.getEmail()) != null) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "User with this email already exists.");
+            return "error_page";
+        }
+
+        if(!loggedInUser.getRole().equals("admin") && !loggedInUser.getRole().equals("co-admin")) {
             model.addAttribute("status", "Access Denied");
             model.addAttribute("error", "You are not allowed to perform this action.");
             return "error_page";
@@ -229,7 +236,7 @@ public class UserController {
         if(loggedInUser == null) {
             return "redirect:/login";
         }
-        if(!loggedInUser.getRole().equals("admin") || !loggedInUser.getRole().equals("co-admin")) {
+        if(!loggedInUser.getRole().equals("admin") && !loggedInUser.getRole().equals("co-admin")) {
             model.addAttribute("status", "Access Denied");
             model.addAttribute("error", "You are not allowed to perform this action.");
             return "error_page";

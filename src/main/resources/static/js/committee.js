@@ -38,3 +38,8 @@ async function assignQuesSetter(event, committeeId){
     }
 
 }
+
+async function updateExamineeCount(element){
+    const  committeeId = element.getAttribute("data-id");
+    console.log(committeeId);
+}

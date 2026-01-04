@@ -28,6 +28,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
+
     public void saveUser(User user) {
         user.setPassword(passwordEncryptor.hashPassword(user.getPassword()));
         userRepository.save(user);

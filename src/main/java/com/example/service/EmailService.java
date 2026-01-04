@@ -56,7 +56,7 @@ public class EmailService {
             """.formatted(otp);
 
 
-        helper.setFrom("fahimmontasirtuhin1128@gmail.com", "Notification from Automation Software");
+        helper.setFrom("fahimmontasirtuhin1128@gmail.com", "Dept of ICT, MBSTU");
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true);

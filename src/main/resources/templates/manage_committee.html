@@ -9,51 +9,62 @@
         body {
             font-family: Arial, sans-serif;
             background: #f9f9f9;
-            padding: 120px 30px 20px;
+            padding-top: 120px;
             margin: 0;
             color: #333;
+            min-height: 100vh;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
         .main-container {
             display: flex;
             flex-wrap: wrap;
             flex-direction: row;
-            gap: 40px;
+            gap: 20px;
+            padding: 0 30px 20px;
+            justify-content: flex-start;
+            align-items: flex-start;
         }
 
-        .container {
-            max-width: 20%;
-            background: white;
+        #courses{
+            padding: 0 30px;
+            box-sizing: border-box;
+            width: 100%;
             display: flex;
-            flex-wrap: wrap;
-            flex-direction: column;
-            padding: 20px;
+        }
+        .course-table{
+            width: 100%;
+        }
+
+        #card {
+            flex: 0 0 450px;
+            background: white;
+            padding: 0 15px 15px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-right: 50px;
+        }
+
+        .actions {
+            flex: 1;
+        }
+
+        .action-box {
+            background: white;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            text-align: center;
-            align-content: center;
-            align-items: center;
+            height: 100%;
+            padding-bottom: 15px;
         }
-        #sem-info{
-            text-align: left; !important;
-            align-self: flex-start;
-            margin-left: 10px;
-            margin-right: auto;
-            align-content: flex-start;
+
+        #sem-info {
+            text-align: left;
+            padding: 15px;
+            width: 100%;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
-        }
-        #course-table{
-            max-width: max-content;
-            margin-top: 50px;
         }
 
         thead {
@@ -67,81 +78,9 @@
             border-bottom: 1px solid #ddd;
         }
 
-        tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .btn{
-            margin-top: 25px;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            width: 70%;
-        }
-
-        .action{
-            display: flex;
-            flex-wrap: wrap;
-            flex-direction: column;
-            gap: 10px;
-            padding: 10px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            text-align: center;
-            align-items: center;
-            align-content: center;
-
-        }
-        .actions{
-            display: flex;
-            flex-wrap: wrap;
-            flex-direction: column;
-            gap: 30px;
-        }
-        .drop-menu{
-            text-align: center;
-            margin-bottom: 10px;
-            padding: 5px;
-        }
-        #meeting-date{
-            padding: 5px;
-        }
-
-
-        /* Responsive: horizontal scroll on small screens */
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px 10px;
-            }
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-            thead tr {
-                display: none; /* Hide table header on small */
-            }
-            tbody tr {
-                margin-bottom: 20px;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                padding: 15px;
-            }
-            tbody td {
-                padding-left: 50%;
-                position: relative;
-                text-align: right;
-                border: none;
-                border-bottom: 1px solid #eee;
-            }
-            tbody td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 15px;
-                width: 45%;
-                padding-left: 10px;
-                font-weight: 700;
-                text-align: left;
-                color: #555;
-            }
-
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            #card { flex: 1 1 100%; width: 100%; }
         }
     </style>
 </head>
@@ -174,7 +113,7 @@
 
 <div class="main-container" id="main-container">
     <div class="action" id="card">
-        <span style="text-align: center; font-weight: bold; font-size: 16px; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Committee Body</span>
+        <span style="text-align: center; display: inline-block; font-weight: bold; font-size: 16px; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Committee Body</span>
 
         <div id="sem-info"> </div>
 
@@ -203,64 +142,112 @@
         </table>
 
         <div class="btn d-flex justify-content-center">
-            <a class="btn btn-outline-primary" th:href="@{'/print/committee/' + ${committee.committeeId}}">Print Committee</a>
+            <a class="btn btn-outline-primary w-50 my-4" th:href="@{'/print/committee/' + ${committee.committeeId}}">Print Committee</a>
         </div>
     </div>
 
-    <div class="actions" id="actions">
-        <div id="moderation" class="action">
-            <span style="text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Question Moderation</span>
-            <label for="meeting-date" class="form-label fw-bold">Select Meeting Date Time</label>
-            <input type="datetime-local" id="meeting-date" class="form-control" required>
-            <button type="submit" class="btn btn-outline-primary" th:data-id="${committee.committeeId}" onclick="callModeration(this)">Call Meeting</button>
+    <div class="actions row g-4" id="actions">
+        <div id="div-assign-qes" class="col-12 col-md-6">
+            <div class="action-box shadow">
+                <span style="display: inline-block; text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px; margin-bottom: 10px;">Assign Question Setter & Evaluator</span>
+                <form id="assign-qse" class="px-2 pb-2 shadow h-100" th:onsubmit="|assignQuesSetter(event, ${committee.committeeId})|">
+                <div class="px-2">
+                    <label for="course" class="form-label fw-bold">Course</label>
+                    <select id="course" class="drop-menu form-select mb-2" required>
+                        <option value="">-- Select Course --</option>
+                        <option th:each="course : ${committeeCourses}" th:value="${course.id}" th:text="${course.courseName}"></option>
+                    </select>
+
+                    <label for="internal" class="form-label fw-bold">Internal Teacher</label>
+                    <select id="internal" class="drop-menu form-select mb-2" required>
+                        <option value="">-- Select Internal --</option>
+                        <option th:each="internal : ${internals}" th:value="${internal.userId}" th:text="${internal.name}"></option>
+                    </select>
+
+                    <label for="external" class="form-label fw-bold">External Teacher</label>
+                    <select id="external" class="drop-menu form-select" required>
+                        <option value="">-- Select External --</option>
+                        <option th:each="external : ${externals}" th:value="${external.userId}" th:text="${external.name}"></option>
+                    </select>
+
+                    <div class="d-grid gap-2 d-flex justify-content-center mt-3">
+                        <button type="submit" id="assign-btn" class="btn btn-outline-primary px-5 w-50">Assign</button>
+                    </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div id="div-assign-qes">
-            <form id="assign-qse" class="px-2 pb-2 shadow" th:onsubmit="|assignQuesSetter(event, ${committee.committeeId})|">
-                <span style="text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px">Assign Question Setter & Evaluator</span>
-                <br> <br>
-                <label for="course" class="form-label fw-bold">Course</label>
-                <select id="course" class="drop-menu form-select" required>
-                    <option value="">-- Select Course --</option>
-                    <option th:each="course : ${committeeCourses}"
-                            th:value="${course.id}"
-                            th:text="${course.courseName}">Course Name Placeholder</option>
-                </select>
+        <div class="col-12 col-md-6">
+            <div class="action-box shadow">
+                <span style="display: block; text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px; margin-bottom: 15px;">Assign Third Examiner</span>
+                <form class="px-3">
+                    <label for="course2" class="form-label fw-bold">Course</label>
+                    <select id="course2" class="form-select mb-2">
+                        <option value="">-- Select Course --</option>
+                        <option th:each="course : ${committeeCourses}" th:value="${course.id}" th:text="${course.courseName}"></option>
+                    </select>
+                    <label for="examiner" class="form-label fw-bold">Examiner</label>
+                    <select id="examiner" class="form-select mb-2">
+                        <option value="">-- Select Examiner --</option>
+                        <option th:each="i : ${internals}" th:value="${i.userId}" th:text="${i.name}"></option>
+                    </select>
+                    <label for="scripts-count" class="form-label fw-bold">Number of Scripts</label>
+                    <input id="scripts-count" type="number" class="form-control mb-3" placeholder="e.g: 3" required>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-outline-primary w-50">Assign</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-                <label for="internal" class="form-label fw-bold">Internal Teacher</label>
-                <select id="internal" class="drop-menu form-select" required>
-                    <option value="">-- Select Internal --</option>
-                    <option th:each="internal : ${internals}"
-                            th:value="${internal.userId}"
-                            th:text="${internal.name}">Placeholder</option>
-                </select>
-
-                <label for="external" class="form-label fw-bold">External Teacher</label>
-                <select id="external" class="drop-menu form-select" required>
-                    <option value="">-- Select External --</option>
-                    <option th:each="external : ${externals}"
-                            th:value="${external.userId}"
-                            th:text="${external.name}">Placeholder</option>
-                </select>
-                <div class="d-grid gap-2 d-flex justify-content-center mt-3">
-                    <button type="submit" id="assign-btn" class="btn btn-outline-primary px-5">Assign</button>
+        <div class="col-12 col-md-6">
+            <div class="action-box shadow">
+                <span style="display: block; text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px; margin-bottom: 15px;">Question Moderation</span>
+                <div class="px-3">
+                    <label for="meeting-date" class="form-label fw-bold">Select Meeting Time</label>
+                    <input type="datetime-local" id="meeting-date" class="form-control mb-5" required>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-outline-primary w-50 mt-5" th:data-id="${committee.committeeId}" onclick="callModeration(this)">Call Meeting</button>
+                    </div>
                 </div>
-            </form>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="action-box shadow">
+                <span style="display: block; text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px; margin-bottom: 15px;">Number of Scripts</span>
+                <div class="px-3">
+                    <label for="course3" class="form-label fw-bold">Course</label>
+                    <select id="course3" class="form-select mb-2" required>
+                        <option value="">-- Select Course --</option>
+                        <option th:each="course: ${committeeCourses}" th:text="${course.courseName}" th:value="${course.id}">Course Name</option>
+                    </select>
+
+                    <label for="examinee" class="form-label fw-bold">Examinee</label>
+                    <input type="number" id="examinee" class="form-control mb-3" placeholder="Number of examinee e.g: 54" required>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-outline-primary w-50" th:data-id="${committee.committeeId}" onclick="updateExamineeCount(this)">Update</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
 
 </div>
 
-<div id="courses" class="course-table">
+
+<div id="courses" class="course-table my-5 d-flex justify-content-center align-items-center">
     <table border="1" th:object="${committeeCourses}" id="course-table" class="shadow">
         <thead>
         <th>Course Code</th>
         <th>Course Name </th>
         <th>Credit Hour</th>
         <th>Course Teacher</th>
-        <th>Internal Question Setter and Evaluator</th>
-        <th>External Question Setter and Evaluator</th>
+        <th>Internal Examiner</th>
+        <th>External Examiner</th>
+        <th>Examinee</th>
         </thead>
         <tr th:each="committeeCourse: ${committeeCourses}">
             <td th:text="${committeeCourse.courseCode}" data-label="Code"></td>
@@ -269,9 +256,21 @@
             <td th:text="${committeeCourse.courseTeacher?.name ?: 'Not Assigned'}"></td>
             <td th:text="${committeeCourse.internalQuesSetterEvaluator?.name ?: 'Not Assigned'}"></td>
             <td th:text="${committeeCourse.externalQuesSetterEvaluator?.name ?: 'Not Assigned'}"></td>
+            <td th:text="${committeeCourse.examineeCount}"></td>
         </tr>
     </table>
 </div>
+
+<footer class="bg-dark text-white p-4 d-flex flex-column justify-content-center align-items-center">
+    <div class="container text-center">
+        <p class="mb-0">Dept. of ICT, MBSTU © 2026</p>
+    </div>
+    <div class="container text-center d-flex flex-row gap-1 justify-content-center">
+        <p class="mb-0">Developed by</p>
+        <a href="https://www.facebook.com/fahim.ffff" class="text-decoration-none">Montasir Fahim</a>
+        <p>ICT'19</p>
+    </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script th:src="@{/js/auth.js}"></script>
