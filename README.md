@@ -24,11 +24,14 @@ A Real-world, modern, full-stack Java application designed to streamline departm
 
 ##  Features
 - Role-based access (Admin, Faculty, Chairman)
-- Two-factor authentication via Email
+- Storing hashed password with BCryptPasswordEncoder for user security
+- Secured HttpSession based auth handling to maintain authenticated states
+- Two-factor authentication via Email OTP
 - Workflow automation for a complete semester
 - Email notification system with auto generated attachments (Formal Application or Letter)
 - Auto bill generation stored in database
-- Dashboard for academic activities tracking
+- Integrated iText PDF to programmatically generate dynamic pdf file for formal applications, letters, and gratuity bills with custom formatting
+- User Dashboard and Admin Panel for academic activities tracking
 
 ---
 
