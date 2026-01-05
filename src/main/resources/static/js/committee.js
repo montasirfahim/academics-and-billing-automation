@@ -6,7 +6,10 @@ async function assignQuesSetter(event, committeeId){
     const externalTeacherId = document.getElementById("external").value;
 
     const submitBtn = document.getElementById("assign-btn");
-    if(submitBtn) submitBtn.disabled = true;
+    if(submitBtn){
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Assigning..."
+    }
 
     if(!courseId || !internalTeacherId || !externalTeacherId){
         alert("Provide all necessary data.");
@@ -34,12 +37,63 @@ async function assignQuesSetter(event, committeeId){
         console.log(err);
         alert("An error occurred.");
     }finally {
-        if(submitBtn) submitBtn.disabled = false;
+        if(submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Assign";
+        }
     }
 
 }
 
 async function updateExamineeCount(element){
-    const  committeeId = element.getAttribute("data-id");
+    const committeeId = element.getAttribute("data-id");
     console.log(committeeId);
+    if(committeeId == null || isNaN(committeeId)){
+        alert("Error: Committee ID not found or invalid.");
+        return;
+    }
+    const courseId = document.getElementById("course3").value;
+    const examineeCount = document.getElementById("examinee").value;
+    if(examineeCount <= 0){
+        alert("Error: Number of participated student in examination can not be zero or negative.")
+        return;
+    }
+    if(courseId == null || isNaN(courseId)){
+        alert("Error: Course ID not found or invalid, please select a course.");
+        return;
+    }
+
+    const btn = document.getElementById("examinee-btn");
+    try{
+        if(btn) {
+            btn.disabled = true;
+            btn.innerText = "Updating...";
+        }
+
+        const response = await fetch('/api/committee/course/update-examinee', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({committeeId, courseId, examineeCount})
+        });
+
+        const data = await response.json();
+        if(response.ok){
+            alert("Success: " + data.message);
+            window.location.href = `/committee/manage/${committeeId}`;
+        }
+        else{
+            alert("Error: " + data.message);
+        }
+
+
+    }catch (err){
+        console.log(err);
+        alert("An error occurred: " + err);
+    }finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = "Update";
+        }
+    }
+
 }

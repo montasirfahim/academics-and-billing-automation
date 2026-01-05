@@ -198,7 +198,7 @@ public class ExamCommitteeRestController {
         Map<Object, Object> map = new HashMap<>();
         if (user == null) {
             map.put("status", "Unauthorized");
-            map.put("message", "You are not logged in!");
+            map.put("message", "Unauthorized: You are not logged in!");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
         }
 
@@ -223,13 +223,13 @@ public class ExamCommitteeRestController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
             }
             if(course.getCourseTeacher() == null){
-                map.put("message", "Please assign course teacher at first.");
+                map.put("message", "Bad Request: Please assign course teacher at first.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
 
             if(committee.getChairman().getUserId().equals(loggedInUser.getUserId()) || loggedInUser.getRole().equals("admin") || loggedInUser.getRole().equals("co-admin")) {
                 if(courseService.updateQuesSetterAndEvaluator(courseId, internalTeacher, externalTeacher, committee)){
-                    map.put("message", "Question Setter & Script Evaluator has been assigned successfully for selected course!");
+                    map.put("message", "Success: Question Setter & Script Evaluator has been assigned successfully for selected course!");
                     return ResponseEntity.status(HttpStatus.OK).body(map);
                 }
                 else{

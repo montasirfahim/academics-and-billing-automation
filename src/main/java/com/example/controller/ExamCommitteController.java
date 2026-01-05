@@ -95,7 +95,7 @@ public class ExamCommitteController {
     public String manageCommittee(@PathVariable Long id, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/login";
+           // return "redirect:/login";
         }
 
         ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(id);
@@ -104,11 +104,11 @@ public class ExamCommitteController {
             model.addAttribute("error", "Committee not found");
             return "error_page";
         }
-        if(!examCommitteeService.checkViewPermission(user, examCommittee)){
-            model.addAttribute("status", "Access Denied");
-            model.addAttribute("error", "You are not allowed to view this committee. Only committee members or admins have this permission.");
-            return "error_page";
-        }
+//        if(!examCommitteeService.checkViewPermission(user, examCommittee)){
+//            model.addAttribute("status", "Access Denied");
+//            model.addAttribute("error", "You are not allowed to view this committee. Only committee members or admins have this permission.");
+//            return "error_page";
+//        }
 
         model.addAttribute("committee", examCommittee);
 
@@ -169,6 +169,58 @@ public class ExamCommitteController {
 
             map.put("message", "Bad Request: Something went wrong");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+
+        }catch (Exception e){
+            map.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+    }
+
+    @PostMapping("/api/committee/course/update-examinee")
+    @ResponseBody
+    public ResponseEntity<Object> updateCommitteeCourse(@RequestBody Map<String, String> payload, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Map<Object, Object> map = new HashMap<>();
+        if(user == null) {
+            map.put("message", "Unauthorized! Please login first.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+        }
+
+        try{
+            Long committeeId = Long.parseLong(payload.get("committeeId"));
+            Long courseId = Long.parseLong(payload.get("courseId"));
+            Long examineeCount = Long.parseLong(payload.get("examineeCount"));
+
+            ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(committeeId);
+            Course course = courseService.findById(courseId);
+
+            if(examCommittee == null || course == null){
+                map.put("message", "Exam committee or course not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+            }
+            if(examineeCount <= 0){
+                map.put("message", "Number of student participated in exam can not be zero or less than zero.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
+
+            if(!examCommitteeService.checkEditPermission(user, examCommittee)) {
+                map.put("message", "Permission denied! Only committee chairman or admins can edit or update anything of an exam committee.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
+            }
+
+            if(!examCommittee.getSemester().getSemesterId().equals(course.getSemester().getSemesterId())  || !examCommittee.getSession().equals(course.getSession())){
+                map.put("message", "Data Mismatch! The selected course does not belong to this committee.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
+            }
+
+            if(courseService.updateExamineeCount(course, examineeCount)) {
+                map.put("message", "Examinee count has been updated successfully!");
+                return ResponseEntity.status(HttpStatus.OK).body(map);
+            }
+            else{
+                map.put("message", "Bad Request: Something went wrong");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
 
         }catch (Exception e){
             map.put("message", e.getMessage());

@@ -78,6 +78,19 @@ public class CourseService {
         }
     }
 
+    public Boolean updateExamineeCount(Course course, Long examineeCount) {
+        if(examineeCount == null || course == null) return false;
+        try{
+            course.setExamineeCount(examineeCount);
+            courseRepository.save(course);
+            return true;
+
+        }catch(Exception e) {
+            System.out.println(e);
+            return false;
+        }
+    }
+
     public long getTotalCoursesByUser(User user) {
         return courseRepository.countByCourseTeacher(user);
     }

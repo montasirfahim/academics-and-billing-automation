@@ -74,5 +74,3 @@ mvn spring-boot:run
 ```
 http://localhost:8080
 ```
-
-[![Montasir's GitHub stats](https://github-readme-stats.vercel.app/api?username=montasirfahim&show_icons=true&theme=radical)](https://github.com/montasirfahim)

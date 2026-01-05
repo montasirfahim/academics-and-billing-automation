@@ -227,7 +227,7 @@
                     <label for="examinee" class="form-label fw-bold">Examinee</label>
                     <input type="number" id="examinee" class="form-control mb-3" placeholder="Number of examinee e.g: 54" required>
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-outline-primary w-50" th:data-id="${committee.committeeId}" onclick="updateExamineeCount(this)">Update</button>
+                        <button type="button" id="examinee-btn" class="btn btn-outline-primary w-50" th:data-id="${committee.committeeId}" onclick="updateExamineeCount(this)">Update</button>
                     </div>
                 </div>
             </div>
