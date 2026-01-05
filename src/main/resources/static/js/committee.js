@@ -95,5 +95,46 @@ async function updateExamineeCount(element){
             btn.innerText = "Update";
         }
     }
+}
 
+async function assignThirdExaminer(event, committeeId){
+    event.preventDefault();
+
+    const courseId = document.getElementById("course2").value;
+    const examinerId = document.getElementById("examiner").value;
+    const scriptsCount = document.getElementById("scripts-count").value;
+
+    if(!courseId || !committeeId || !examinerId || !scriptsCount){
+        alert("Error: Invalid parameters");
+        return;
+    }
+    if(isNaN(committeeId) || isNaN(courseId) || isNaN(examinerId) || isNaN(scriptsCount)){
+        alert("Error: Invalid data type of any given parameter.");
+        return;
+    }
+
+    const btn = document.getElementById("third-examiner-btn");
+    try{
+        if(btn) btn.disabled = true;
+
+        const response = await fetch('/api/assign-thirdexaminer', {
+            method: 'POST',
+            headers: {'Content-Type' : 'application/json'},
+            body: JSON.stringify({committeeId, courseId, examinerId, scriptsCount})
+        });
+
+        const data = await response.json();
+        if(response.ok){
+            alert(data.message);
+            window.location.href = `/committee/manage/${committeeId}`;
+        }
+        else{
+            alert(data.message);
+        }
+
+    }catch (err){
+
+    }finally {
+        if(btn) btn.disabled = false;
+    }
 }

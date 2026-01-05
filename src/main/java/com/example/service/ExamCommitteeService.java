@@ -90,6 +90,11 @@ public class ExamCommitteeService {
         return user.getRole().equals("admin") || user.getRole().equals("co-admin") || user.getUserId().equals(examCommittee.getChairman().getUserId());
     }
 
+    public boolean isMember(User user, ExamCommittee examCommittee){
+        if(user == null || examCommittee == null){ return false; }
+        return user.getUserId().equals(examCommittee.getChairman().getUserId()) || user.getUserId().equals(examCommittee.getInternalMember1().getUserId()) || user.getUserId().equals(examCommittee.getInternalMember2().getUserId()) || user.getUserId().equals(examCommittee.getExternalMember1().getUserId());
+    }
+
     public void updateStudentCount(ExamCommittee examCommittee, Long studentCount){
         examCommittee.setStudentCount(studentCount);
         examCommitteeRepository.save(examCommittee);

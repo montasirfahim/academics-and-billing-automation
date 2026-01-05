@@ -181,7 +181,7 @@
         <div class="col-12 col-md-6">
             <div class="action-box shadow">
                 <span style="display: block; text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px; margin-bottom: 15px;">Assign Third Examiner</span>
-                <form class="px-3">
+                <form class="px-3" th:onsubmit="|assignThirdExaminer(event, ${committee.committeeId})|">
                     <label for="course2" class="form-label fw-bold">Course</label>
                     <select id="course2" class="form-select mb-2">
                         <option value="">-- Select Course --</option>
@@ -195,7 +195,7 @@
                     <label for="scripts-count" class="form-label fw-bold">Number of Scripts</label>
                     <input id="scripts-count" type="number" class="form-control mb-3" placeholder="e.g: 3" required>
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn btn-outline-primary w-50">Assign</button>
+                        <button type="submit" id="third-examiner-btn" class="btn btn-outline-primary w-50">Assign</button>
                     </div>
                 </form>
             </div>
