@@ -95,7 +95,7 @@ public class ExamCommitteController {
     public String manageCommittee(@PathVariable Long id, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-           // return "redirect:/login";
+            return "redirect:/login";
         }
 
         ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(id);
@@ -104,11 +104,11 @@ public class ExamCommitteController {
             model.addAttribute("error", "Committee not found");
             return "error_page";
         }
-//        if(!examCommitteeService.checkViewPermission(user, examCommittee)){
-//            model.addAttribute("status", "Access Denied");
-//            model.addAttribute("error", "You are not allowed to view this committee. Only committee members or admins have this permission.");
-//            return "error_page";
-//        }
+        if(!examCommitteeService.checkViewPermission(user, examCommittee)){
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to view this committee. Only committee members or admins have this permission.");
+            return "error_page";
+        }
 
         model.addAttribute("committee", examCommittee);
 
