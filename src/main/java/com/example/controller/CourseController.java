@@ -2,9 +2,11 @@ package com.example.controller;
 
 import com.example.entity.Course;
 import com.example.entity.Semester;
+import com.example.entity.ThirdExamination;
 import com.example.entity.User;
 import com.example.service.CourseService;
 import com.example.service.SemesterService;
+import com.example.service.ThirdExaminationService;
 import com.example.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class CourseController {
     private SemesterService semesterService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ThirdExaminationService thirdExaminationService;
 
 
     @PostMapping("/course/new")
@@ -180,9 +184,12 @@ public class CourseController {
 
         List<Course> conductedCourses = courseService.findByCourseTeacherAndSemester(targetUser, semester);
         List<Course> coursesAsSetter = courseService.findBySemesterAndTeacherAsQuesSetter(semester, targetUser);
+        List<ThirdExamination> thirdExaminationList = thirdExaminationService.findByExaminerIdAndSemesterId(userId, semesterId);
+
         model.addAttribute("conductedCourses", conductedCourses);
         model.addAttribute("coursesAsSetter", coursesAsSetter);
         model.addAttribute("semester", semester);
+        model.addAttribute("thirdExaminationList", thirdExaminationList);
         model.addAttribute("teacherName", targetUser.getName());
         model.addAttribute("role", targetUser.getRole());
 

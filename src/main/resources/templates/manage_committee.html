@@ -25,7 +25,7 @@
             align-items: flex-start;
         }
 
-        #courses{
+        #courses, #third-examination{
             padding: 0 30px;
             box-sizing: border-box;
             width: 100%;
@@ -125,7 +125,6 @@
             </tr>
             </thead>
             <tbody id="course-table-body">
-            <!-- Rows will be injected here by JS -->
             <tr>
                 <td data-label="Member" th:text="${committee.chairman.getName()}"></td>
                 <td data-label="Role"> Chairman</td>
@@ -241,6 +240,9 @@
 <div id="courses" class="course-table my-5 d-flex justify-content-center align-items-center">
     <table border="1" th:object="${committeeCourses}" id="course-table" class="shadow">
         <thead>
+            <td colspan="7" class="fw-bold text-center"> <h2>Courses</h2> </td>
+        </thead>
+        <thead>
         <th>Course Code</th>
         <th>Course Name </th>
         <th>Credit Hour</th>
@@ -257,6 +259,31 @@
             <td th:text="${committeeCourse.internalQuesSetterEvaluator?.name ?: 'Not Assigned'}"></td>
             <td th:text="${committeeCourse.externalQuesSetterEvaluator?.name ?: 'Not Assigned'}"></td>
             <td th:text="${committeeCourse.examineeCount}"></td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="third-examination" class="course-table my-5 d-flex justify-content-center align-items-center">
+    <table border="1" th:if="${thirdExaminationList != null and !thirdExaminationList.isEmpty()}" th:object="${thirdExaminationList}" id="third-examination-table" class="shadow">
+        <thead>
+            <td colspan="6" class="fw-bold text-center"><h2>Third Examination</h2></td>
+        </thead>
+        <thead>
+        <th>Course Code</th>
+        <th>Course Name </th>
+        <th>Credit Hour</th>
+        <th>Course Teacher</th>
+        <th>Third Examiner</th>
+        <th>Total Scripts</th>
+        </thead>
+        <tr th:each="thirdExamination: ${thirdExaminationList}">
+            <td th:text="${thirdExamination.course.courseCode}" data-label="Code"></td>
+            <td th:text="${thirdExamination.course.courseName}" data-label="Name"></td>
+            <td th:text="${thirdExamination.course.courseCredit}" data-label="Credit"></td>
+            <td th:text="${thirdExamination.course.courseTeacher?.name ?: 'Not Assigned'}"></td>
+            <td th:text="${thirdExamination.examiner?.name ?: 'Not Assigned'}"></td>
+            <td th:text="${thirdExamination.scriptsCount}"></td>
         </tr>
     </table>
 </div>

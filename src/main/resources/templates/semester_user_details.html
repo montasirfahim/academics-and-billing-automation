@@ -181,6 +181,36 @@
             </tbody>
         </table>
     </div>
+
+    <div class="container" th:if="${thirdExaminationList != null and !thirdExaminationList.isEmpty()}">
+        <h1>Third Examination</h1>
+        <div class="sem-container d-flex flex-column flex-md-row justify-content-between mb-4">
+            <h5 th:text="'Examiner: ' + ${teacherName}"></h5>
+        </div>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Course Credit</th>
+                <th>Course Teacher</th>
+                <th>Third Examiner</th>
+                <th>Total Scripts</th>
+            </tr>
+            </thead>
+            <tbody id="third-examination-table-body">
+            <tr th:each="thirdExamination: ${thirdExaminationList}">
+                <td th:text="${thirdExamination.course.courseCode}"></td>
+                <td th:text="${thirdExamination.course.courseName}"></td>
+                <td th:text="${#numbers.formatDecimal(thirdExamination.course.courseCredit, 1, 2)}"></td>
+                <td th:text="${thirdExamination.course.courseTeacher.name}"></td>
+                <td th:text="${thirdExamination.examiner.name}"></td>
+                <td th:text="${thirdExamination.scriptsCount}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 

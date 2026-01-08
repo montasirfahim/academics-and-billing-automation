@@ -11,10 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -99,7 +96,7 @@ public class SemesterController {
         return "manage_semester";
     }
 
-    @PostMapping("/semester/delete/{id}")
+    @DeleteMapping("/semester/delete/{id}")
     public String deleteSemester(@PathVariable("id") Long semesterId, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {

@@ -1,9 +1,6 @@
 package com.example.controller;
 
-import com.example.entity.Course;
-import com.example.entity.ExamCommittee;
-import com.example.entity.Semester;
-import com.example.entity.User;
+import com.example.entity.*;
 import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +27,8 @@ public class ExamCommitteController {
     private final PdfService pdfService;
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private ThirdExaminationService thirdExaminationService;
 
     public ExamCommitteController(PdfService pdfService) {
         this.pdfService = pdfService;
@@ -114,6 +113,9 @@ public class ExamCommitteController {
 
         List<Course> committeeCourses = courseService.findByCommitteeId(id);
         model.addAttribute("committeeCourses",committeeCourses);
+
+        List<ThirdExamination> thirdExaminationList = thirdExaminationService.findByExamCommitteeId(id);
+        model.addAttribute("thirdExaminationList",thirdExaminationList);
 
         List<User> internals = userService.getInternals();
         List<User> externals = userService.getExternals();
