@@ -131,7 +131,7 @@
         }
         try{
             const response = await fetch(`/api/course/assign/${courseId}/${teacherId}`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 }

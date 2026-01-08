@@ -141,7 +141,7 @@ public class ExamCommitteController {
         return "update_committee_student_form";
     }
 
-    @PostMapping("/api/committee/update-student")
+    @PutMapping("/api/committee/update-student")
     @ResponseBody
     public ResponseEntity<Object> updateCommitteeStudent(@RequestBody Map<String, String> payload, HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -176,9 +176,9 @@ public class ExamCommitteController {
         }
     }
 
-    @PostMapping("/api/committee/course/update-examinee")
+    @PutMapping("/api/committee/course/update-examinee")
     @ResponseBody
-    public ResponseEntity<Object> updateCommitteeCourse(@RequestBody Map<String, String> payload, HttpSession session) {
+    public ResponseEntity<Object> updateCommitteeCourseExamineeCount(@RequestBody Map<String, String> payload, HttpSession session) {
         User user = (User) session.getAttribute("user");
         Map<Object, Object> map = new HashMap<>();
         if(user == null) {

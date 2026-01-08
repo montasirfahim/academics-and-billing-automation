@@ -245,7 +245,7 @@
         console.log("custom code: " + customCode);
         try{
             const response = await fetch("/api/courses/view/filter", {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 },

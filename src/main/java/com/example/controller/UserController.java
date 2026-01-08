@@ -230,7 +230,7 @@ public class UserController {
        return "redirect:/all_users";
     }
 
-    @PostMapping("/user/delete/{id}")
+    @DeleteMapping("/user/delete/{id}")
     public String deleteUser(@PathVariable("id") Long id, HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("user");
         if(loggedInUser == null) {
@@ -247,7 +247,7 @@ public class UserController {
     }
 
     @GetMapping("/user/edit-designation/{id}")
-    public String editDesignation(@PathVariable("id") Long id, HttpSession session, Model model) {
+    public String editDesignationForm(@PathVariable("id") Long id, HttpSession session, Model model) {
         User targetUser = userService.getUserById(id);
         if(targetUser == null){
             return "redirect:/home";
@@ -263,7 +263,7 @@ public class UserController {
         return "error_page";
     }
 
-    @PostMapping("/api/user/edit-designation/{userId}")
+    @PutMapping("/api/user/edit-designation/{userId}")
     @ResponseBody
     public ResponseEntity<Object> editDesignation(@PathVariable("userId") Long targetUserId, HttpSession session, @RequestBody Map<String, String> payload) {
         User targetUser = userService.getUserById(targetUserId);
@@ -300,7 +300,7 @@ public class UserController {
         return "pass_reset_form";
     }
 
-    @PostMapping("api/user/reset-password")
+    @PutMapping("api/user/reset-password")
     @ResponseBody
     public ResponseEntity<Object> resetPassword(HttpSession session, @RequestBody Map<String, String> payload) {
         User currentUser = (User) session.getAttribute("user");

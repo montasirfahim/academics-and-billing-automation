@@ -110,7 +110,7 @@ public class CourseController {
         return "redirect:/courses/view";
     }
 
-    @PostMapping("/api/course/assign/{courseId}/{teacherId}")
+    @PutMapping("/api/course/assign/{courseId}/{teacherId}")
     @ResponseBody
     public ResponseEntity<Object> assignCourseTeacher(@PathVariable("courseId") Long courseId, @PathVariable("teacherId") Long teacherId, HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -131,7 +131,7 @@ public class CourseController {
         return new ResponseEntity<>(Map.of("message", "Successfully assigned!"), HttpStatus.OK);
     }
 
-    @PostMapping("/api/courses/view/filter")
+    @GetMapping("/api/courses/view/filter")
     @ResponseBody
     public ResponseEntity<Object> filterCourses(@RequestBody Map<String, String> payload) {
         String customCode = payload.get("customCode");

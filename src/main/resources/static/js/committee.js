@@ -19,7 +19,7 @@ async function assignQuesSetter(event, committeeId){
     try{
 
         const response = await fetch('/committee/api/assign-setter', {
-            method: 'POST',
+            method: 'PUT',
             headers: {'Content-Type' : 'application/json'},
             body: JSON.stringify({committeeId, courseId, internalTeacherId, externalTeacherId})
         });
@@ -71,7 +71,7 @@ async function updateExamineeCount(element){
         }
 
         const response = await fetch('/api/committee/course/update-examinee', {
-            method: 'POST',
+            method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({committeeId, courseId, examineeCount})
         });

@@ -116,7 +116,7 @@ async function  resetPassword(event, userId){
     }
     try{
         const response = await fetch(`/api/user/reset-password`, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },

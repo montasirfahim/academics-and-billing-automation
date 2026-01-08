@@ -192,7 +192,7 @@ public class ExamCommitteeRestController {
 
     }
 
-    @PostMapping("/api/assign-setter")
+    @PutMapping("/api/assign-setter")
     public ResponseEntity<Object> assignQuesSetterAndEvaluator(HttpSession session, @RequestBody Map<String, String> payload) {
         User user = (User) session.getAttribute("user");
         Map<Object, Object> map = new HashMap<>();
