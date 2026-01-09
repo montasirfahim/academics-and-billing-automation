@@ -70,24 +70,57 @@ public class PdfController {
     }
 
     @GetMapping("/print/tada/{id}")
-    public void generateTadaPdf(HttpServletResponse response, @PathVariable Long id, HttpSession session) throws IOException {
+    public void generateTadaBillPdf(HttpServletResponse response, @PathVariable Long id, HttpSession session) throws IOException {
         User user = (User) session.getAttribute("user");
+        if(user == null){
+            return;
+        }
         TourAllowanceBill bill = tourAllowanceBillService.findById(id);
         if(bill == null) {
+            return;
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin") && !user.getUserId().equals(bill.getUser().getUserId())){
             return;
         }
 
         byte[] pdfBytes = pdfService.createTaDaBillPdf(bill);
 
-        // Set response headers
         String filePath = "tada_bill" + id + ".pdf";
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "inline; filename=" + filePath);
         response.setContentLength(pdfBytes.length);
 
-        // Write PDF bytes to response
         response.getOutputStream().write(pdfBytes);
         response.getOutputStream().flush();
 
     }
+
+    @GetMapping("/print/tada/report/{id}")
+    public void generateTadaReportPdf(HttpServletResponse response, @PathVariable Long id, HttpSession session) throws IOException {
+        User user = (User) session.getAttribute("user");
+        if(user == null){
+            return;
+        }
+        TourAllowanceBill bill = tourAllowanceBillService.findById(id);
+        if(bill == null) {
+            return;
+        }
+
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")){ //only for admin. && !user.getUserId().equals(bill.getUser().getUserId())
+            return;
+        }
+
+        byte[] pdfBytes = pdfService.createTaDaReportPdf(bill);
+
+
+        String filePath = "tada_report" + id + ".pdf";
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=" + filePath);
+        response.setContentLength(pdfBytes.length);
+
+        response.getOutputStream().write(pdfBytes);
+        response.getOutputStream().flush();
+
+    }
+
 }

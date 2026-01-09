@@ -221,7 +221,7 @@
             <th>Fare Rate</th>
             <th>Daily Allowance</th>
             <th>Total Payable</th>
-            <th>Actions</th>
+            <th>Download</th>
         </tr>
         </thead>
         <tbody id="tada-bill-table-body">
@@ -235,7 +235,9 @@
                 <td th:text="${bill.totalBillAmount} + ' BDT'"></td>
                 <td class="actions">
                     <a th:href="@{/print/tada/{id}(id=${bill.billId})}"
-                       class="btn btn-outline-primary btn-sm"> Print Bill </a>
+                       class="btn btn-outline-primary btn-sm"> Bill </a> |
+                    <a th:href="@{/print/tada/report/{id}(id=${bill.billId})}"
+                       class="btn btn-outline-primary btn-sm"> Report </a>
                 </td>
             </tr>
         </tbody>

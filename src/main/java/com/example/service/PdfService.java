@@ -16,10 +16,10 @@ import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.DottedBorder;
+import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.properties.HorizontalAlignment;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.layout.properties.*;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.awt.SystemColor.text;
+import static javax.swing.text.StyleConstants.setBold;
 
 @Service
 public class PdfService {
@@ -235,6 +236,7 @@ public class PdfService {
             mainTable.addCell(new Cell().add(new Paragraph("MBSTU")).setTextAlignment(TextAlignment.CENTER));
             mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtMbstu().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
             mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtMbstu().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+
             for(int i = 7; i <= 11; i++){
                 mainTable.addCell(new Cell().add(new Paragraph("")));
             }
@@ -304,11 +306,259 @@ public class PdfService {
 
 
             document.add(mainTable);
+            document.add(new AreaBreak(AreaBreakType.NEXT_PAGE)); //to jump on next page
+
+            //new page
+            float[] columnWidth2 = {6, 3, 6, 10};
+            Table summaryTable = new Table(UnitValue.createPercentArray(columnWidth2));
+            summaryTable.useAllAvailableWidth();
+            summaryTable.setMarginTop(15f);
+
+            //1st row
+            summaryTable.addCell(new Cell().add(new Paragraph("i. Travel Distance " + bill.getTotalTravelDistance() + " Km (as per column 12)\nii. " + bill.getDailyAllowance() + " BDT, daily allowance (as per column 13)\n04. Actual cost (as per column 15)").setTextAlignment(TextAlignment.LEFT)));
+            summaryTable.addCell(new Cell().add(new Paragraph(bill.getTotalTravelDistance() * bill.getPerKmFareRate() + "\n\n\n\n" + bill.getDailyAllowance()*bill.getTotalDayCount()).setTextAlignment(TextAlignment.CENTER)));
+
+            Cell column3 = new Cell();
+
+
+            Table photoBox = new Table(1);
+            photoBox.setWidth(80f);
+            photoBox.setHeight(80f);
+            photoBox.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+            Cell boxCell = new Cell()
+                    .setHeight(100f)
+                    .setBorder(new SolidBorder(1f));
+
+            photoBox.addCell(boxCell);
+
+
+            column3.add(photoBox);
+
+            Paragraph sigPara = new Paragraph("\n\nSignature of Traveler: ____________\n(Official Seal)                      Date: _________")
+                    .setTextAlignment(TextAlignment.LEFT);
+            column3.add(sigPara);
+
+            summaryTable.addCell(column3);
+
+            //summaryTable.addCell(new Cell(1, 4).add(new Paragraph("Attestation\n1. This is being attested that, the class in which I have traveled and that travel was made in the interest of the university.\n2. I didn't receive the claimed amount of this bill before.\n3. I have stayed at Rest House, Circuit House or Dak Bungalow. True : False\n4. If any additional money received against this bill, I will be obliged to return it.").setTextAlignment(TextAlignment.LEFT)));
+            //COLUMN 4: Attestation
+            Cell column4 = new Cell(4, 1);
+
+            Paragraph attHeader = new Paragraph("Attestation")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBold()
+                    .setMarginBottom(5f);
+            column4.add(attHeader);
+
+
+            Paragraph attBody = new Paragraph()
+                    .setTextAlignment(TextAlignment.LEFT)
+                    .add("1. This is being attested that, the class in which I have traveled and that travel was made in the interest of the university.\n")
+                    .add("2. I didn't receive the claimed amount of this bill before.\n")
+                    .add("3. I have stayed at Rest House, Circuit House or Dak Bungalow. True : False\n")
+                    .add("4. If any additional money received against this bill, I'll be obliged to return it.");
+            column4.add(attBody);
+
+            Paragraph signature = new Paragraph().setTextAlignment(TextAlignment.RIGHT).add("\n\nSignature of Traveler")
+                            .add("\nDate: ____________");
+            column4.add(signature);
+
+            Paragraph rulesHeading = new Paragraph("\nProcedures of Preparing Tour Allowance Bill").setTextAlignment(TextAlignment.CENTER).setBold();
+            column4.add(rulesHeading);
+            Paragraph rulesBody = new Paragraph().setTextAlignment(TextAlignment.LEFT)
+                            .add("1. Tour allowance bill must be submitted within 03 month of travel.\n")
+                    .add("2. Different types of travels and halts should not shown on the same row.\n");
+
+            column4.add(rulesBody);
+
+
+
+            summaryTable.addCell(column4);
+
+            summaryTable.addCell(new Cell().add(new Paragraph("Total Payable").setTextAlignment(TextAlignment.LEFT)));
+            summaryTable.addCell(new Cell().add(new Paragraph("Tk: " + bill.getTotalBillAmount() + " BDT").setTextAlignment(TextAlignment.LEFT)));
+            summaryTable.addCell(new Cell().add(new Paragraph()));
+
+            summaryTable.addCell(new Cell().add(new Paragraph("Advance (if exist)\nCash voucher no. ______________\nDate: __________").setTextAlignment(TextAlignment.LEFT)));
+            summaryTable.addCell(new Cell().add(new Paragraph("Tk: " + bill.getTotalBillAmount() + " BDT").setTextAlignment(TextAlignment.LEFT)));
+            summaryTable.addCell(new Cell().add(new Paragraph()));
+
+
+
+            summaryTable.addCell(new Cell().add(new Paragraph("Total Payable").setTextAlignment(TextAlignment.LEFT)));
+            summaryTable.addCell(new Cell().add(new Paragraph("Tk: " + bill.getTotalBillAmount() + " BDT").setTextAlignment(TextAlignment.LEFT)));
+            summaryTable.addCell(new Cell().add(new Paragraph()));
+
+
+            document.add(summaryTable);
+
+            //document.add(new Paragraph("TK " + bill.getTotalBillAmount() + " BDT, In Words:     advance/expenditure approved.").setTextAlignment(TextAlignment.LEFT));
+            Paragraph p = new Paragraph();
+            p.add("\n\n\nTK " + bill.getTotalBillAmount() + " BDT, In Words: ");
+            p.addTabStops(new TabStop(450, TabAlignment.LEFT));
+            p.add(new Tab());
+
+            p.add("advance/expenditure approved.");
+            document.add(p);
+
+            document.add(new Paragraph("Budget Office").setTextAlignment(TextAlignment.CENTER));
+
+            Paragraph p2 = new Paragraph();
+            p2.addTabStops(new TabStop(400));
+            p2.addTabStops(new TabStop(600));
+            p2.add("Tk " + bill.getTotalBillAmount() + " BDT, In Words: ");
+            p2.add(new Tab());
+            p2.add(" Let it be paid. ");
+            p2.add(new Tab());
+            p2.add("     expenditure sector ______ in ______ allocated amount: __________");
+
+            document.add(p2);
+
+            document.add(new Paragraph("Total expenditure till current bill: ___________ BDT").setTextAlignment(TextAlignment.RIGHT));
+            document.add(new Paragraph("Remaining Tk: ___________ BDT").setTextAlignment(TextAlignment.RIGHT));
+
+            document.add(new Paragraph("\nHead of Department / Head of Office\n").setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("Assistant Accountant                Section Officer/Assistant Account Officer               Assistant Director                  Deputy Director                 Director").setTextAlignment(TextAlignment.CENTER));
 
 
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
+        }
+
+        return baos.toByteArray();
+    }
+
+    public byte[] createTaDaReportPdf(TourAllowanceBill bill) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try (PdfWriter writer = new PdfWriter(baos);
+             PdfDocument pdfDoc = new PdfDocument(writer);
+             Document document = new Document(pdfDoc)) {
+
+            pdfDoc.setDefaultPageSize(PageSize.LEGAL);
+
+            PdfFont font = PdfFontFactory.createFont("src/main/resources/fonts/times.ttf", PdfEncodings.IDENTITY_H);
+            document.setFont(font);
+
+            String logoPath = "src/main/resources/static/logo.PNG";
+            ImageData imageData = ImageDataFactory.create(logoPath);
+            Image logo = new Image(imageData);
+            logo.setWidth(45);
+            logo.setHeight(45);
+            logo.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            document.add(logo);
+
+            addTaDaHeader(document, "Mawlana Bhashani Science and Technology University\nDept. of Information and Communication Technology\nTour Report");
+
+            LineSeparator ls = new LineSeparator(new SolidLine(1f));
+            ls.setWidth(UnitValue.createPercentValue(100));
+            document.add(ls);
+
+            User billUser = bill.getUser();
+            Table infoTable = new Table(UnitValue.createPercentArray(new float[]{10, 3}));
+            infoTable.useAllAvailableWidth();
+            infoTable.setMarginTop(10f);
+
+
+            infoTable.addCell(createLabelValueCell("Name: ", billUser.getName()));
+            infoTable.addCell(createLabelValueCell("Designation: ", billUser.getDesignation()));
+
+            infoTable.addCell(createLabelValueCell("Dept: ", billUser.getDepartment() + ", " + billUser.getUniversity()));
+            infoTable.addCell(createLabelValueCell("Basic Salary: ", ""));
+            //infoTable.addCell(new Cell().setBorder(Border.NO_BORDER));
+
+            infoTable.addCell(createLabelValueCell("From: ", bill.getDepartureTimeFromHisUniversity().toString().split("T")[0]));
+            infoTable.addCell(createLabelValueCell("To: ", bill.getDepartureTimeFromMbstu().toString().split("T")[0]));
+
+
+            infoTable.addCell(createLabelValueCell("Transport: ", "Public"));
+            infoTable.addCell(createLabelValueCell("Class: ", "First Class"));
+
+            infoTable.addCell(createLabelValueCell("Bank Acc & Routing No: ", ""));
+            infoTable.addCell(new Cell().setBorder(Border.NO_BORDER));
+            infoTable.addCell(createLabelValueCell("Travel Intention: ", bill.getTravelIntention()));
+
+
+            document.add(infoTable);
+
+
+            float[] columnWidths = {4, 4, 6, 4, 4, 6, 5};
+            Table mainTable = new Table(UnitValue.createPercentArray(columnWidths));
+            mainTable.useAllAvailableWidth();
+            mainTable.setMarginTop(15f);
+
+            //1st
+            mainTable.addCell(new Cell(1, 3).add(new Paragraph("Departure").setTextAlignment(TextAlignment.CENTER)));
+            mainTable.addCell(new Cell(1, 3).add(new Paragraph("Arrival").setTextAlignment(TextAlignment.CENTER)));
+            mainTable.addCell(new Cell().add(new Paragraph("Location").setTextAlignment(TextAlignment.CENTER)));
+
+            //2nd
+            mainTable.addCell(new Cell().add(new Paragraph("Date")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Time")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Place")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Date")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Time")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Place")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new  Cell().add(new Paragraph("From - To (Time)")).setTextAlignment(TextAlignment.CENTER));
+
+
+            //3rd
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getDepartureTimeFromHisUniversity().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getDepartureTimeFromHisUniversity().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(billUser.getUniversity())).setTextAlignment(TextAlignment.CENTER));
+
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtTangail1().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtTangail1().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Tangail")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("")));
+
+            //4th
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtTangail1().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtTangail1().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Tangail")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtMbstu().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtMbstu().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("MBSTU")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("")));
+
+            //5th
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getDepartureTimeFromMbstu().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getDepartureTimeFromMbstu().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("MBSTU")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtTangail2().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtTangail2().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Tangail")).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("")));
+
+            //6th row
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtTangail2().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtTangail2().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("Tangail")).setTextAlignment(TextAlignment.CENTER));
+
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtHisUniversity().toString().split("T")[0])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(bill.getArrivalTimeAtHisUniversity().toString().split("T")[1])).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph(billUser.getUniversity())).setTextAlignment(TextAlignment.CENTER));
+            mainTable.addCell(new Cell().add(new Paragraph("")));
+
+            for(int i = 1; i <= 35; i++){
+                mainTable.addCell(new Cell().setHeight(19f).add(new Paragraph("")));
+            }
+            document.add(mainTable);
+
+            document.add(new Paragraph("Total Travelling Days(Arrival & Departure): ").setTextAlignment(TextAlignment.LEFT));
+            document.add(new Paragraph("Total Spent Days: " + bill.getTotalDayCount()).setTextAlignment(TextAlignment.LEFT));
+            document.add(new Paragraph("Signature of Teacher/Officer").setTextAlignment(TextAlignment.RIGHT));
+            document.add(new Paragraph("Date: _____________\n\n").setTextAlignment(TextAlignment.RIGHT));
+
+            document.add(ls);
+
+            document.add(new Paragraph("This tour report has been approved for preparation and payment of TA/DA bill.").setTextAlignment(TextAlignment.LEFT));
+            document.add(new Paragraph("\nHead Of Department/Office").setTextAlignment(TextAlignment.RIGHT));
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
         return baos.toByteArray();
@@ -479,6 +729,7 @@ public class PdfService {
                 .setBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .setTextAlignment(TextAlignment.CENTER).setBold();
     }
+
 
 
 }
