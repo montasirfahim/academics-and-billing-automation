@@ -54,7 +54,7 @@ public class PdfController {
         response.getOutputStream().flush();
     }
 
-    // Simple DTO used by the POST endpoint
+    //Simple DTO used by the POST endpoint
     public static class TableRequest {
         private List<List<String>> rows;
 

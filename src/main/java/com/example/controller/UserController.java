@@ -187,6 +187,7 @@ public class UserController {
             return "redirect:/login";
         }
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("visitor", user.getRole());
         return "all_users";
     }
 
@@ -211,18 +212,17 @@ public class UserController {
         if(loggedInUser == null) {
             return "redirect:/login";
         }
-
+        if(!loggedInUser.getRole().equals("admin") && !loggedInUser.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action.");
+            return "error_page";
+        }
         if(userService.getUserByEmail(user.getEmail()) != null) {
             model.addAttribute("status", "Access Denied");
             model.addAttribute("error", "User with this email already exists.");
             return "error_page";
         }
 
-        if(!loggedInUser.getRole().equals("admin") && !loggedInUser.getRole().equals("co-admin")) {
-            model.addAttribute("status", "Access Denied");
-            model.addAttribute("error", "You are not allowed to perform this action.");
-            return "error_page";
-        }
         if(user.getDistanceFromMBSTU() == null){
             user.setDistanceFromMBSTU(0);
         }

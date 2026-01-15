@@ -163,7 +163,7 @@
             <th>Designation</th>
             <th>Phone</th>
             <th>Email</th>
-            <th>Actions</th>
+            <th th:if="${visitor=='admin' or visitor=='co-admin'}">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -175,7 +175,7 @@
             <td data-label="Designation" th:text="${user.designation}"></td>
             <td data-label="Phone" th:text="${user.phone}"></td>
             <td data-label="Phone" th:text="${user.email}"></td>
-            <td class="actions" data-label="Actions">
+            <td th:if="${visitor=='admin' or visitor=='co-admin'}" class="actions" data-label="Actions">
                 <a th:href="@{'/user/profile/' + ${user.userId}}"> View </a> |
                 <a th:href="@{'/user/delete/' + ${user.userId}}"
                    onclick="return confirm('Are you sure?')" class="delete">Delete</a>

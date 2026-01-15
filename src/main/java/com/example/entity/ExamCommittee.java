@@ -40,6 +40,7 @@ public class ExamCommittee {
     private boolean isCompleted = false;
     private String semesterYearName;
     private Long studentCount;
+    private boolean isResultPublished = false;
 
     public ExamCommittee() {}
 
@@ -150,5 +151,13 @@ public class ExamCommittee {
 
     public void setStudentCount(Long studentCount) {
         this.studentCount = studentCount;
+    }
+
+    public boolean isResultPublished() {
+        return isResultPublished;
+    }
+
+    public void setResultPublished(boolean resultPublished) {
+        isResultPublished = resultPublished;
     }
 }
