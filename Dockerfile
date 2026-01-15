@@ -1,3 +1,4 @@
+RUN apt-get update && apt-get install -y fontconfig libfreetype6 xfonts-utils fonts-dejavu
 #Build the application using Maven
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
