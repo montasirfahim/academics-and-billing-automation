@@ -62,7 +62,6 @@ public class PdfService {
 
             byte[] imageBytes = is.readAllBytes();
 
-            String logoPath = "src/main/resources/static/logo.PNG";
             ImageData imageData = ImageDataFactory.create(imageBytes);
             Image logo = new Image(imageData);
             logo.setWidth(60);
@@ -108,11 +107,26 @@ public class PdfService {
             pdfDoc.setDefaultPageSize(PageSize.LEGAL.rotate());
             document.setMargins(20f, 20f, 20f, 20f);
 
-            PdfFont font = PdfFontFactory.createFont("src/main/resources/fonts/times.ttf", PdfEncodings.IDENTITY_H);
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/times.ttf");
+
+            if (fontStream == null) {
+                throw new IOException("Font file not found! Check if it is in src/main/resources/fonts/times.ttf");
+            }
+
+            byte[] fontBytes = fontStream.readAllBytes();
+
+            PdfFont font = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H);
             document.setFont(font);
 
-            String logoPath = "src/main/resources/static/logo.PNG";
-            ImageData imageData = ImageDataFactory.create(logoPath);
+            InputStream is = getClass().getResourceAsStream("/static/logo.PNG");
+
+            if (is == null) {
+                throw new IOException("Logo not found in classpath! Check path: /static/logo.PNG");
+            }
+
+            byte[] imageBytes = is.readAllBytes();
+
+            ImageData imageData = ImageDataFactory.create(imageBytes);
             Image logo = new Image(imageData);
             logo.setWidth(45);
             logo.setHeight(45);
@@ -456,11 +470,26 @@ public class PdfService {
 
             pdfDoc.setDefaultPageSize(PageSize.LEGAL);
 
-            PdfFont font = PdfFontFactory.createFont("src/main/resources/fonts/times.ttf", PdfEncodings.IDENTITY_H);
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/times.ttf");
+
+            if (fontStream == null) {
+                throw new IOException("Font file not found! Check if it is in src/main/resources/fonts/times.ttf");
+            }
+
+            byte[] fontBytes = fontStream.readAllBytes();
+
+            PdfFont font = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H);
             document.setFont(font);
 
-            String logoPath = "src/main/resources/static/logo.PNG";
-            ImageData imageData = ImageDataFactory.create(logoPath);
+            InputStream is = getClass().getResourceAsStream("/static/logo.PNG");
+
+            if (is == null) {
+                throw new IOException("Logo not found in classpath! Check path: /static/logo.PNG");
+            }
+
+            byte[] imageBytes = is.readAllBytes();
+
+            ImageData imageData = ImageDataFactory.create(imageBytes);
             Image logo = new Image(imageData);
             logo.setWidth(45);
             logo.setHeight(45);
