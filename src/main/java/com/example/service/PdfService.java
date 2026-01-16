@@ -34,8 +34,6 @@ import static javax.swing.text.StyleConstants.setBold;
 @Service
 public class PdfService {
 
-    @Autowired
-    UtilityService utilityService;
 
     public byte[] createCommitteePdf(ExamCommittee examCommittee, Semester semester, List<Course> assignedCourses) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
