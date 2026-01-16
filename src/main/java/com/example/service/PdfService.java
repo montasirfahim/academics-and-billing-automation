@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static java.awt.SystemColor.text;
@@ -42,11 +43,27 @@ public class PdfService {
             pdfDoc.setDefaultPageSize(PageSize.A4);
 //            document.setMargins(70, 36, 50, 36);
 
-            PdfFont font = PdfFontFactory.createFont("src/main/resources/fonts/times.ttf", PdfEncodings.IDENTITY_H);
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/times.ttf");
+
+            if (fontStream == null) {
+                throw new IOException("Font file not found! Check if it is in src/main/resources/fonts/times.ttf");
+            }
+
+            byte[] fontBytes = fontStream.readAllBytes();
+
+            PdfFont font = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H);
             document.setFont(font);
 
+            InputStream is = getClass().getResourceAsStream("/static/logo.PNG");
+
+            if (is == null) {
+                throw new IOException("Logo not found in classpath! Check path: /static/logo.PNG");
+            }
+
+            byte[] imageBytes = is.readAllBytes();
+
             String logoPath = "src/main/resources/static/logo.PNG";
-            ImageData imageData = ImageDataFactory.create(logoPath);
+            ImageData imageData = ImageDataFactory.create(imageBytes);
             Image logo = new Image(imageData);
             logo.setWidth(60);
             logo.setHeight(60);
