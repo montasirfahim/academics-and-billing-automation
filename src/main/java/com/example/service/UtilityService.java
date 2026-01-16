@@ -81,4 +81,60 @@ public class UtilityService {
 
         return customCode;
     }
+
+    private static final String[] ones = {
+            "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+            "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+    };
+
+    private static final String[] tens = {
+            "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+    };
+
+    public static String convertToWords(long n) {
+        if (n == 0) return "";
+
+        if (n >= 10000000) { //1 Crore(Koti)
+            return convertToWords(n / 10000000) + " Crore " + convertToWords(n % 10000000);
+        }
+        if (n >= 100000) {   //1 Lakh
+            return convertToWords(n / 100000) + " Lakh " + convertToWords(n % 100000);
+        }
+        if (n >= 1000) {     //1 Thousand(Hazar)
+            return convertToWords(n / 1000) + " Thousand " + convertToWords(n % 1000);
+        }
+        if (n >= 100) {      //1 Hundred
+            return convertToWords(n / 100) + " Hundred " + convertToWords(n % 100);
+        }
+        if (n >= 20) {
+            return tens[(int)(n / 10)] + (n % 10 != 0 ? " " + ones[(int)(n % 10)] : "");
+        }
+        return ones[(int)n];
+    }
+
+    public static String formatBDT(double amount) {
+        if (amount == 0) return "Zero Taka Only";
+
+        long taka = (long) amount;
+        long paisa = Math.round((amount - taka) * 100);
+
+        String takaPart = convertToWords(taka).trim();
+        String paisaPart = convertToWords(paisa).trim();
+
+        StringBuilder finalResult = new StringBuilder();
+
+        if (taka > 0) {
+            finalResult.append(takaPart).append(" Taka");
+        }
+
+        if (paisa > 0) {
+            //"and" if there was a Taka part
+            if(taka > 0) {
+                finalResult.append(" and ");
+            }
+            finalResult.append(paisaPart).append(" Paisa");
+        }
+
+        return finalResult.append(" Only").toString();
+    }
 }

@@ -20,6 +20,7 @@ import com.itextpdf.layout.borders.DottedBorder;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -32,6 +33,9 @@ import static javax.swing.text.StyleConstants.setBold;
 
 @Service
 public class PdfService {
+
+    @Autowired
+    UtilityService utilityService;
 
     public byte[] createCommitteePdf(ExamCommittee examCommittee, Semester semester, List<Course> assignedCourses) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -424,13 +428,11 @@ public class PdfService {
 
             document.add(summaryTable);
 
-            //document.add(new Paragraph("TK " + bill.getTotalBillAmount() + " BDT, In Words:     advance/expenditure approved.").setTextAlignment(TextAlignment.LEFT));
-            Paragraph p = new Paragraph();
-            p.add("\n\n\nTK " + bill.getTotalBillAmount() + " BDT, In Words: ");
-            p.addTabStops(new TabStop(450, TabAlignment.LEFT));
-            p.add(new Tab());
+            String billAmountInWords = UtilityService.formatBDT(bill.getTotalBillAmount());
 
-            p.add("advance/expenditure approved.");
+            Paragraph p = new Paragraph();
+            p.add("\n\n\nTK " + bill.getTotalBillAmount() + " BDT, In Words: " + billAmountInWords);
+            p.add(", advance/expenditure approved.");
             document.add(p);
 
             document.add(new Paragraph("Budget Office").setTextAlignment(TextAlignment.CENTER));
@@ -438,12 +440,10 @@ public class PdfService {
             Paragraph p2 = new Paragraph();
             p2.addTabStops(new TabStop(400));
             p2.addTabStops(new TabStop(600));
-            p2.add("Tk " + bill.getTotalBillAmount() + " BDT, In Words: ");
-            p2.add(new Tab());
-            p2.add(" Let it be paid. ");
+            p2.add("Tk " + bill.getTotalBillAmount() + " BDT, In Words: " + billAmountInWords);
+            p2.add(", Let it be paid. ");
             p2.add(new Tab());
             p2.add("     expenditure sector ______ in ______ allocated amount: __________");
-
             document.add(p2);
 
             document.add(new Paragraph("Total expenditure till current bill: ___________ BDT").setTextAlignment(TextAlignment.RIGHT));
