@@ -1,4 +1,5 @@
 package com.example.controller;
+import com.example.entity.BillRate;
 import com.example.entity.TourAllowanceBill;
 import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +29,8 @@ public class UserController {
     private ExamCommitteeService examCommitteeService;
     @Autowired
     private TourAllowanceBillService tourAllowanceBillService;
+    @Autowired
+    private BillRateService billRateService;
 
     @GetMapping("/")
     public String landingPage(HttpSession session) {
@@ -74,6 +77,9 @@ public class UserController {
 
             double totalBills = tourAllowanceBillService.getTotalTaDaBillSoFar();
             model.addAttribute("totalBills", totalBills);
+
+            List<BillRate> billRates = billRateService.getAllBillRate();
+            model.addAttribute("billRates", billRates);
 
             return "admin_panel";
         }

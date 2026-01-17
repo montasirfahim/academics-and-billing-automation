@@ -16,6 +16,8 @@ public class TourAllowanceBillService {
 
     @Autowired
     private TourAllowanceBillRepository tourAllowanceBillRepository;
+    @Autowired
+    private BillRateService billRateService;
 
 
     @Transactional
@@ -23,24 +25,13 @@ public class TourAllowanceBillService {
         User billUser = tourAllowanceBill.getUser();
         Integer distanceFromMBSTU = billUser.getDistanceFromMBSTU();
 
-        Map<String, Double> map = new HashMap<>();
-        map.put("Grade 1", 1400.00);
-        map.put("Grade 2", 1225.00);
-        map.put("Grade 3", 1225.00);
-        map.put("Grade 4", 1050.00);
-        map.put("Grade 5", 1050.00);
-        map.put("Grade 6", 900.00);
-        map.put("Grade 7", 900.00);
-        map.put("Grade 8", 875.00);
-        map.put("Grade 9", 875.00);
-        map.put("Grade 10", 875.00);
-
-        double dailyAllowance = map.get(billUser.getSalaryGrade());
+        double dailyAllowance = billRateService.getRateByTaskAndParameter("Daily Allowance", billUser.getSalaryGrade());
 
         tourAllowanceBill.setTotalTravelDistance(2*(distanceFromMBSTU + 10));
         tourAllowanceBill.setDailyAllowance(dailyAllowance);
 
-        double perKmFareRate = 18.0;
+        double perKmFareRate = billRateService.getRateByTask("Travelling");
+
         double totalBill = dailyAllowance*tourAllowanceBill.getTotalDayCount() + perKmFareRate*tourAllowanceBill.getTotalTravelDistance();
 
         tourAllowanceBill.setPerKmFareRate(perKmFareRate);

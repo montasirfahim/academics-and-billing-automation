@@ -44,6 +44,9 @@
         thead {
             background: linear-gradient(to right, #ec77ab 0%, #7873f5 100%);
             color: white;
+            position: sticky;
+            z-index: 1;
+            top: 0;
         }
 
         th, td {
@@ -181,8 +184,33 @@
         </div>
 
     </div>
-</div>
 
+
+    <div class="sem-container d-flex flex-column justify-content-center align-items-center mt-5 gap-5">
+        <div style="max-height: 450px; overflow-y: auto; min-width: 80%" >
+        <table th:if="${user.role == 'admin' or user.role == 'co-admin'}" border="1" class="shadow justify-content-center w-100">
+            <thead>
+            <tr>
+                <td colspan="4" class="text-center"><h1>Billing Rate</h1></td>
+            </tr>
+            </thead>
+            <thead>
+            <th>Task</th>
+            <th>Rate Parameter</th>
+            <th>Rate(BDT)</th>
+            <th class="text-center">Action</th>
+            </thead>
+            <tbody th:each="billRate : ${billRates}" class="justify-content-center text-center">
+            <td th:text="${billRate.task}">Task</td>
+            <td th:text="${billRate.rateParameter}">Rate Parameter</td>
+            <td th:text="${billRate.rate}">Rate</td>
+            <td class="text-center"><a th:href="@{/update-bill-rate/{id}(id=${billRate.id})}" class="btn btn-outline-primary btn-sm">Update <i class="fas fa-edit"></i> </a></td>
+
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
 
 
 <footer class="bg-dark text-white p-4">
