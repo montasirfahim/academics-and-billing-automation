@@ -60,7 +60,7 @@ public class BillRateController {
                     map.put("message", "Bad Request: Invalid Bill ID or Rate");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
                 }
-                if(billRateService.updateRateById(id, newRate)){
+                if(billRateService.updateRateById(id, newRate, user.getUserId())){
                     map.put("message", "Bill Rate Updated");
                     return ResponseEntity.status(HttpStatus.OK).body(map);
                 }

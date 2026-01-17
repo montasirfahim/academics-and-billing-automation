@@ -5,6 +5,7 @@ import com.example.repository.BillRateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,12 +25,14 @@ public class BillRateService {
         return billRateRepository.getRateByTaskAndRateParameter(task, parameter);
     }
 
-    public Boolean updateRateById(Long id, double newRate){
+    public Boolean updateRateById(Long id, double newRate, Long modifiedById){
         BillRate billRate = billRateRepository.getBillRateById(id);
-        if(billRate == null || newRate <= 0){
+        if(billRate == null || newRate <= 0 || modifiedById == null || modifiedById <= 0){
             return false;
         }
         billRate.setRate(newRate);
+        billRate.setModifiedById(modifiedById);
+        billRate.setLastModified(LocalDateTime.now());
         billRateRepository.save(billRate);
         return true;
     }

@@ -1,9 +1,8 @@
 package com.example.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class BillRate {
@@ -13,6 +12,10 @@ public class BillRate {
     private String task;
     private double rate;
     private String rateParameter;
+
+    private LocalDateTime lastModified;
+
+    private Long modifiedById;
 
     public BillRate() {}
 
@@ -46,5 +49,22 @@ public class BillRate {
 
     public void setRateParameter(String rateParameter) {
         this.rateParameter = rateParameter;
+    }
+
+    public LocalDateTime getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
+
+    public Long getModifiedById() {
+        return modifiedById;
+    }
+
+    public void setModifiedById(Long modifiedById) {
+        this.modifiedById = modifiedById;
     }
 }
