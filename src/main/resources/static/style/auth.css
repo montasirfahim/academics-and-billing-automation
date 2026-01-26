@@ -95,7 +95,7 @@ button[type="submit"]:hover {
     background: black;
 }
 
-/*Optional: spacing for hidden input */
+
 input[type="hidden"] {
     display: none;
 }
@@ -103,10 +103,14 @@ input[type="hidden"] {
 .status{
     display: none;
 }
+#forgot-div{
+    display: none;
+}
 
 .error{
-    color:#991b1b;
-    background: #fee2e2;
+    display: block;
+    color:#991b1b !important;
+    background: #fee2e2 !important;
     padding: 10px;
     border-radius: 5px;
 }
@@ -118,8 +122,9 @@ input[type="hidden"] {
 }
 
 .success{
-    background: #d1fae5;
-    color: #065f46;
+    display: block;
+    background: #d1fae5 !important;
+    color: #065f46 !important;
     padding: 10px;
     border-radius: 5px;
 }

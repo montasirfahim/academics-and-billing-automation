@@ -17,7 +17,13 @@
     <input id="password" name="password" type="password" placeholder="Enter your password" required/>
 
     <button type="submit" id="login-btn" >Login</button>
+
     <p id="status" class="status"></p>
+    <div class="text-center mt-2" id="forgot-div">
+        <a href="javascript:void(0)" id="forgot-btn" onclick="forgotPasswordForm()" class="forgot-link">
+            Forgot password?
+        </a>
+    </div>
     <div id="otp-form" class="m-auto">
         <label for="otp-field">OTP</label>
         <input type="text" id="otp-field">

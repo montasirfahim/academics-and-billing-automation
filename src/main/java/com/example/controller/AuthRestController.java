@@ -34,7 +34,7 @@ public class AuthRestController {
 
         Map<String, Object> response = new HashMap<>();
         if(user != null) {
-            userService.generateAndSendOTP(user); //will enable later
+            userService.generateAndSendOTP(user, "Login Verification OTP", "login"); //will enable later
             session.setAttribute("userId", user.getUserId()); //safer
             //session.setAttribute("user", user); //will be deleted later
             response.put("status", "success");
@@ -98,6 +98,64 @@ public class AuthRestController {
                 "status", "success",
                 "message", "Logged out successfully"
         ));
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean exists = userService.existByEmail(email);
+        return ResponseEntity.ok(exists);
+    }
+
+    @PostMapping("/reset-forgotten-password")
+    public ResponseEntity<Map<String, Object>> resetForgottenPassword(@RequestBody Map<String, String> payload, HttpSession session) {
+        Map<String, Object> map = new HashMap<>();
+
+        String email = payload.get("email");
+        String newPassword = payload.get("newPassword");
+        String confirmPassword = payload.get("confirmedPassword");
+        String otp = payload.get("otp");
+
+        if(email == null || newPassword == null || confirmPassword == null || otp == null) {
+            map.put("status", "error");
+            map.put("message", "Invalid Parameters: Please check your email, password or OTP.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+        if(!userService.existByEmail(email)) {
+            map.put("status", "error");
+            map.put("message", "Bad Request: Email not found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+
+        User user = userService.getUserByEmail(email);
+
+        if(user.getLoginOTP() == null || !user.getLoginOTP().equals(otp)){
+            map.put("status", "error");
+            map.put("message", "Bad Request: Incorrect OTP");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+        if(user.getOtpExpiryTime().isBefore(LocalDateTime.now())) {
+            map.put("status", "error");
+            map.put("message", "Bad Request: OTP time expired!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+
+        if(newPassword.equals(confirmPassword) && newPassword.length() >= 6) {
+            if(userService.updatePassword(user.getUserId(), newPassword)) {
+                session.invalidate();
+                map.put("status", "success");
+                map.put("message", "Your password has been reset successfully");
+                return ResponseEntity.status(HttpStatus.OK).body(map);
+
+            }else{
+                map.put("status", "error");
+                map.put("message", "Oops! Internal Error... Please try again.");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
+            }
+        }
+
+        map.put("status", "error");
+        map.put("message", "Bad Request: Something went wrong. Please try again carefully.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
     }
 
 }

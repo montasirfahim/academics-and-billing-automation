@@ -39,21 +39,25 @@ public class EmailService {
     }
 
     @Async
-    public void sendOTPViaEmail(String to, String subject, String otp)
+    public void sendOTPViaEmail(String to, String subject,String type, String otp)
             throws MessagingException, UnsupportedEncodingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         String htmlBody = """
-            <p>Your secret one time login verification code is: <b>%s</b></p>
-            <p style="color: red;">Please do not share this private code with anyone</p>
-                <div style="margin-top: 25px; line-height: 1.5;">
+            <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee;">
+                <p>Your secret one-time <strong>%s</strong> verification code is:</p>
+                <p style="font-size: 24px; letter-spacing: 5px; color: #1e40af; font-weight: bold;">%s</p>
+                <p style="color: #991b1b; font-size: 13px;">Please do not share this private code with anyone.</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                <div style="color: #666; font-size: 13px;">
                        <p style="margin: 0;"><b>Regards,</b></p>
                        <p style="margin: 0;">Dept. of ICT, MBSTU</p>
                        <p style="margin: 0;">Santosh, Tangail-1902</p>
                 </div>
-            """.formatted(otp);
+            </div>
+            """.formatted(type, otp);
 
 
         helper.setFrom("fahimmontasirtuhin1128@gmail.com", "Dept of ICT, MBSTU");

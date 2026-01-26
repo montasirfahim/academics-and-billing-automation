@@ -44,10 +44,10 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void generateAndSendOTP(User user) throws MessagingException, UnsupportedEncodingException {
+    public void generateAndSendOTP(User user, String subject, String type) throws MessagingException, UnsupportedEncodingException {
         String otp = String.valueOf(ThreadLocalRandom.current().nextInt(10000, 100000));
 
-        emailService.sendOTPViaEmail(user.getEmail(), "Login Verification OTP", otp);
+        emailService.sendOTPViaEmail(user.getEmail(), subject, type, otp);
         user.setLoginOTP(otp);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(3));
         userRepository.save(user);
@@ -82,6 +82,7 @@ public class UserService {
         }
         String hashedPassword = passwordEncryptor.hashPassword(newPassword);
         user.setPassword(hashedPassword);
+        user.setLoginOTP(null);
         userRepository.save(user);
         return true;
     }
@@ -138,6 +139,10 @@ public class UserService {
 
     public List<User> getInternals(){
         return userRepository.findInternalTeachers().stream().map(User::createSafeCopy).collect(Collectors.toList());
+    }
+
+    public boolean existByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
 }
