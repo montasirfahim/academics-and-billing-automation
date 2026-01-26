@@ -235,9 +235,9 @@
                 <td th:text="${bill.totalBillAmount} + ' BDT'"></td>
                 <td class="actions">
                     <a th:href="@{/print/tada/{id}(id=${bill.billId})}"
-                       class="btn btn-outline-primary btn-sm"> Bill </a> |
+                       class="btn btn-outline-primary btn-sm" target="_blank"> Bill </a> |
                     <a th:href="@{/print/tada/report/{id}(id=${bill.billId})}"
-                       class="btn btn-outline-primary btn-sm"> Report </a>
+                       class="btn btn-outline-primary btn-sm" target="_blank"> Report </a>
                 </td>
             </tr>
         </tbody>
@@ -302,7 +302,7 @@
                     <td class="actions">
                         <a class="btn btn-outline-primary btn-sm" href="/details/${userId}/${semester.semesterId}">Details</a> |
                         <a href="/bill/${userId}/${semester.semesterId}"
-                           class="btn btn-outline-primary btn-sm"> Print Bill </a>
+                           class="btn btn-outline-primary btn-sm" target="_blank"> Print Bill </a>
                     </td>
                 `;
 
