@@ -135,7 +135,7 @@ public class CourseController {
         return new ResponseEntity<>(Map.of("message", "Successfully assigned!"), HttpStatus.OK);
     }
 
-    @GetMapping("/api/courses/view/filter")
+    @PostMapping("/api/courses/view/filter")
     @ResponseBody
     public ResponseEntity<Object> filterCourses(@RequestBody Map<String, String> payload) {
         String customCode = payload.get("customCode");
