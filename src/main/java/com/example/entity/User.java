@@ -13,9 +13,6 @@ public class User {
     private String name;
     private String email;
 
-    @JsonIgnore
-    private String password;
-
     private String role;
     private String phone;
     private String university;
@@ -28,6 +25,8 @@ public class User {
     private Integer distanceFromMBSTU;
 
     @JsonIgnore
+    private String password;
+    @JsonIgnore
     private String loginOTP;
     @JsonIgnore
     private LocalDateTime otpExpiryTime;
@@ -35,6 +34,7 @@ public class User {
 
 
     public User() {}
+
 
     public Long getUserId() {
         return userId;
@@ -151,5 +151,26 @@ public class User {
 
     public void setOTPVerified(Boolean OTPVerified) {
         isOTPVerified = OTPVerified;
+    }
+
+    public static User createSafeCopy(User other) {
+        if (other == null) return null;
+
+        User safeUser = new User();
+        safeUser.setUserId(other.getUserId());
+        safeUser.setName(other.getName());
+        safeUser.setEmail(other.getEmail());
+        safeUser.setRole(other.getRole());
+        safeUser.setPhone(other.getPhone());
+        safeUser.setUniversity(other.getUniversity());
+        safeUser.setDepartment(other.getDepartment());
+        safeUser.setDesignation(other.getDesignation());
+        safeUser.setSalaryGrade(other.getSalaryGrade());
+        safeUser.setGradingCategory(other.getGradingCategory());
+        safeUser.setChairman(other.isChairman());
+        safeUser.setUserType(other.getUserType());
+        safeUser.setDistanceFromMBSTU(other.getDistanceFromMBSTU());
+
+        return safeUser;
     }
 }

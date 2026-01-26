@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -25,7 +26,9 @@ public class UserService {
     private EmailService emailService;
 
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll().stream()
+                .map(User::createSafeCopy)
+                .collect(Collectors.toList());
     }
 
     public User getUserByEmail(String email) {
@@ -130,14 +133,11 @@ public class UserService {
     }
 
     public List<User> getExternals() {
-        return userRepository.findExternalTeachers();
+        return userRepository.findExternalTeachers().stream().map(User::createSafeCopy).collect(Collectors.toList());
     }
 
     public List<User> getInternals(){
-        return userRepository.findInternalTeachers();
+        return userRepository.findInternalTeachers().stream().map(User::createSafeCopy).collect(Collectors.toList());
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
 }

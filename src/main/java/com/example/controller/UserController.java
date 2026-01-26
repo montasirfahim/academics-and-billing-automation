@@ -54,7 +54,9 @@ public class UserController {
             return  "redirect:/login";
         }
 
-        User user = (User) session.getAttribute("user");
+        User sessionUser = (User) session.getAttribute("user");
+        User user = User.createSafeCopy(sessionUser);
+
         model.addAttribute("user", user);
         model.addAttribute("owner", "self");
 
@@ -115,7 +117,7 @@ public class UserController {
         if(session.getAttribute("user") == null) {
             return "redirect:/login";
         }
-        User targetUser = userService.getUserById(id);
+        User targetUser = User.createSafeCopy(userService.getUserById(id));
         User currentUser = (User) session.getAttribute("user");
 
         if(targetUser.getUserId().equals(currentUser.getUserId())) {
@@ -254,7 +256,7 @@ public class UserController {
 
     @GetMapping("/user/edit-designation/{id}")
     public String editDesignationForm(@PathVariable("id") Long id, HttpSession session, Model model) {
-        User targetUser = userService.getUserById(id);
+        User targetUser = User.createSafeCopy( userService.getUserById(id));
         if(targetUser == null){
             return "redirect:/home";
         }

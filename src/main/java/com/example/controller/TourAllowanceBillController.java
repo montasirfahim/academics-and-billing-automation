@@ -56,14 +56,16 @@ public class TourAllowanceBillController {
         }
 
        try{
+           User billuser = User.createSafeCopy(tourAllowanceBill.getUser());
+           tourAllowanceBill.setUser(billuser);
            TourAllowanceBill savedBill = tourAllowanceBillService.saveTourAllowanceBill(tourAllowanceBill);
-           User billuser = savedBill.getUser();
+
 
            redirectAttributes.addFlashAttribute("billuser", billuser);
            redirectAttributes.addFlashAttribute("bill", savedBill);
            return "redirect:/bill-success";
 
-       }catch (IllegalStateException e){
+       } catch (IllegalStateException e){
            model.addAttribute("status", "Forbidden");
            model.addAttribute("error", e.getMessage());
            return "error_page";
