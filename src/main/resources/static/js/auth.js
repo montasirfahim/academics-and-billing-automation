@@ -5,7 +5,7 @@ async function validateOTP(){
 
     if(!otp || otp.trim() === ""){
         statusEl.className = "error";
-        statusEl.textContent = "Please enter OTP";
+        statusEl.textContent = "Please enter a valid OTP";
         return;
     }
 
@@ -66,7 +66,7 @@ async function login(event) {
             otp_form.style.display = "block";
             const loginForm = document.getElementById("login-form");
             loginForm.style.marginTop = "10px";
-            setTimeout(() => window.location.href = '/home', 500); //otp bypassed, will fix it later
+            //setTimeout(() => window.location.href = '/home', 500); //otp bypassed, will fix it later
         } else {
             statusEl.className = data.status;
             statusEl.textContent = data.message;
