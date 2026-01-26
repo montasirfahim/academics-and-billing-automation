@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,13 @@ public class TourAllowanceBillService {
     @Transactional
     public TourAllowanceBill saveTourAllowanceBill(TourAllowanceBill tourAllowanceBill) {
         User billUser = tourAllowanceBill.getUser();
+        LocalDateTime departureTimeFromHisUniversity = tourAllowanceBill.getDepartureTimeFromHisUniversity();
+
+        boolean alreadyExists = tourAllowanceBillRepository.existsByUserAndDepartureTimeFromHisUniversity(billUser, departureTimeFromHisUniversity);
+        if (alreadyExists) {
+            throw new IllegalStateException("Duplicate entry: A bill for this user and departure time from his/her university already exists.");
+        }
+
         Integer distanceFromMBSTU = billUser.getDistanceFromMBSTU();
 
         double dailyAllowance = billRateService.getRateByTaskAndParameter("Daily Allowance", billUser.getSalaryGrade());

@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class TourAllowanceBillController {
     }
 
     @PostMapping("/ta-da/new")
-    public String createNewTaDaBill(@ModelAttribute TourAllowanceBill tourAllowanceBill, HttpSession session, Model model) {
+    public String createNewTaDaBill(@ModelAttribute TourAllowanceBill tourAllowanceBill, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
@@ -57,13 +58,29 @@ public class TourAllowanceBillController {
        try{
            TourAllowanceBill savedBill = tourAllowanceBillService.saveTourAllowanceBill(tourAllowanceBill);
            User billuser = savedBill.getUser();
-           model.addAttribute("billuser", billuser);
-           model.addAttribute("bill", savedBill);
-           return "ta-da_bill_success";
-       }catch (Exception e){
+
+           redirectAttributes.addFlashAttribute("billuser", billuser);
+           redirectAttributes.addFlashAttribute("bill", savedBill);
+           return "redirect:/bill-success";
+
+       }catch (IllegalStateException e){
+           model.addAttribute("status", "Forbidden");
+           model.addAttribute("error", e.getMessage());
+           return "error_page";
+       } catch (Exception e){
            model.addAttribute("status", "Error");
            model.addAttribute("error", e.getMessage());
            return "error_page";
        }
+    }
+
+    @GetMapping("/bill-success")
+    public String showSuccessPage() {
+        return "ta-da_bill_success";
+    }
+
+    @GetMapping("/show-error")
+    public String showErrorPage() {
+        return "error_page";
     }
 }

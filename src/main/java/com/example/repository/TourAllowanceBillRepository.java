@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TourAllowanceBillRepository extends JpaRepository<TourAllowanceBill, Long> {
@@ -20,4 +21,6 @@ public interface TourAllowanceBillRepository extends JpaRepository<TourAllowance
     Double sumTotalBillAmount();
 
     TourAllowanceBill findByBillId(Long billId);
+
+    boolean existsByUserAndDepartureTimeFromHisUniversity(User user, LocalDateTime departureTime);
 }

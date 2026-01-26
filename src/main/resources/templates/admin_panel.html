@@ -35,8 +35,9 @@
         .card{
             background: linear-gradient(to right, #ec77ab 0%, #7873f5 100%);
         }
+
         table {
-            width: 80%;
+            width: 100%;
             border-collapse: collapse;
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
@@ -186,9 +187,9 @@
     </div>
 
 
-    <div class="sem-container d-flex flex-column justify-content-center align-items-center mt-5 gap-5">
-        <div style="max-height: 450px; overflow-y: auto; min-width: 80%" >
-        <table th:if="${user.role == 'admin' or user.role == 'co-admin'}" border="1" class="shadow justify-content-center w-100">
+    <div class="rate-container d-flex flex-column mx-auto justify-content-center align-items-center mt-5 gap-5 shadow" style="width: 80%">
+        <div style="max-height: 450px; overflow-y: auto; min-width: 100%" >
+        <table th:if="${user.role == 'admin' or user.role == 'co-admin'}" border="1" class="justify-content-center w-100">
             <thead>
             <tr>
                 <td colspan="4" class="text-center"><h1>Billing Rate</h1></td>
