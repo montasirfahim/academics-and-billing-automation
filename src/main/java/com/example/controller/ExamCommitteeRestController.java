@@ -36,6 +36,8 @@ public class ExamCommitteeRestController {
     private UserService userService;
     @Autowired
     private CourseService courseService;
+    @Autowired
+    private BrevoEmailService brevoEmailService;
 
     @GetMapping("/api/{id}")
     public ResponseEntity<ExamCommittee> getCommittee(@PathVariable Long id) {
@@ -175,14 +177,14 @@ public class ExamCommitteeRestController {
         """;
 
 
-        emailService.sendEmail(
+        brevoEmailService.sendEmail(
                 new String[] {"montasirtuhin1128@gmail.com", "it22016@mbstu.ac.bd"},
                 "Question Moderation Meeting",
                 htmlBody,
                 null
         );
 
-        System.out.println("Email sent");
+        System.out.println("Email sent, chairman: " + committee.getChairman().getName());
         committee.setModerationCallDateTime(callTime);
         committee.setModerationScheduledDateTime(meetingDateTime);
         committee.setModerated(true);

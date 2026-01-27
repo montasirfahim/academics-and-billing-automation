@@ -25,6 +25,9 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private BrevoEmailService brevoEmailService;
+
     public List<User> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(User::createSafeCopy)
@@ -44,10 +47,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void generateAndSendOTP(User user, String subject, String type) throws MessagingException, UnsupportedEncodingException {
+    public void generateAndSendOTP(User user, String subject, String type) {
         String otp = String.valueOf(ThreadLocalRandom.current().nextInt(10000, 100000));
 
-        emailService.sendOTPViaEmail(user.getEmail(), subject, type, otp);
+        //emailService.sendOTPViaEmail(user.getEmail(), subject, type, otp);
+        brevoEmailService.sendOTPViaEmail(user.getEmail(), subject, type, otp);
         user.setLoginOTP(otp);
         user.setOtpExpiryTime(LocalDateTime.now().plusMinutes(3));
         userRepository.save(user);
