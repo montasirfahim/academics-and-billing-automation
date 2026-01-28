@@ -387,17 +387,6 @@
                 console.log("committee status button clicked!");
                 //Toggle the button text and status
                 const newStatus = !committee.isCompleted; //current status
-
-                toggleBtn.textContent = newStatus ? "Mark as Active" : "Mark as Completed";
-                statusBadge.textContent = newStatus ? "Completed" : "Active";
-                if (newStatus) {//switch to completed
-                    statusBadge.classList.replace("bg-warning", "bg-success");
-                    statusBadge.classList.replace("text-dark", "text-white");
-                } else {
-                    statusBadge.classList.replace("bg-success", "bg-warning");
-                    statusBadge.classList.replace("text-white", "text-dark");
-                }
-
                 fetch(`/committee/api/updateStatus/${id}`, {
                     method: 'PUT',
                     headers: {
@@ -407,7 +396,29 @@
                     .then(response => {
                         if (response.ok) {
                             committee.isCompleted = newStatus;
+                            toggleBtn.textContent = newStatus ? "Mark as Active" : "Mark as Completed";
+                            statusBadge.textContent = newStatus ? "Completed" : "Active";
+                            if (newStatus) {//switch to completed
+                                statusBadge.classList.replace("bg-warning", "bg-success");
+                                statusBadge.classList.replace("text-dark", "text-white");
+                            } else {
+                                statusBadge.classList.replace("bg-success", "bg-warning");
+                                statusBadge.classList.replace("text-white", "text-dark");
+                            }
                             console.log("Status updated successfully!");
+                        }
+                        else if(response.status === 401){
+                            alert("Unauthorized: Please login first.")
+                            window.location.href = "/login";
+                        }
+                        else if(response.status === 403){
+                            alert("Forbidden: Only admins or committee chairman have the permission to update committee status.");
+                        }
+                        else if(response.status === 409){
+                            alert("Conflict: Question moderation and/or Result publication is incomplete of this exam committee.");
+                        }
+                        else{
+                            alert("Bad Request: Something went wrong!");
                         }
                     });
                 });

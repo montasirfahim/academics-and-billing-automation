@@ -53,7 +53,7 @@ public class ExamCommitteeRestController {
 
     @PutMapping("/api/updateStatus/{id}")
     public ResponseEntity<ExamCommittee> updateCommitteeStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> statusUpdate, HttpSession session) {
-        Boolean isComplete = statusUpdate.get("isComplete");
+        Boolean isComplete = statusUpdate.get("isComplete"); //target status
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -66,7 +66,11 @@ public class ExamCommitteeRestController {
         if (committee == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(user.getUserId().equals(committee.getChairman().getUserId()) || ((user.getRole().equals("admin")) || user.getRole().equals("co-admin"))) {
+        if((!committee.isModerated() || !committee.isResultPublished()) && isComplete){//guard only when user wants to make Completed
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        if(examCommitteeService.checkEditPermission(user, committee)) {
             try {
                 ExamCommittee updatedCommittee = examCommitteeService.updateStatus(id, isComplete);
                 return new ResponseEntity<>(updatedCommittee, HttpStatus.OK); // 200 OK

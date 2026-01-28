@@ -129,7 +129,7 @@ public class ExamCommitteController {
     }
 
     @GetMapping("/committee/update-student/{id}")
-    public String updateCommittee(@PathVariable Long id, Model model, HttpSession session) {
+    public String updateCommitteeStudentForm(@PathVariable Long id, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
@@ -138,6 +138,11 @@ public class ExamCommitteController {
         if (committee == null) {
             model.addAttribute("status", "Not Found");
             model.addAttribute("error", "Committee not found");
+            return "error_page";
+        }
+        if(examCommitteeService.checkViewPermission(user, committee)){
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
             return "error_page";
         }
 
@@ -165,7 +170,7 @@ public class ExamCommitteController {
                 map.put("message", "Committee not found or Invalid student count.");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
             }
-            if(user.getUserId().equals(committee.getChairman().getUserId()) || user.getRole().equals("admin") || user.getRole().equals("co-admin")) {
+            if(examCommitteeService.checkEditPermission(user, committee)) {
                 examCommitteeService.updateStudentCount(committee, studentCount);
                 map.put("message", "Student count has been updated successfully!");
                 return ResponseEntity.status(HttpStatus.OK).body(map);
@@ -176,7 +181,7 @@ public class ExamCommitteController {
 
         }catch (Exception e){
             map.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
         }
     }
 
@@ -234,7 +239,7 @@ public class ExamCommitteController {
 
     @PutMapping("/api/committee/publish-result/{committeeId}")
     @ResponseBody
-    public ResponseEntity<Object> updateCommitteePublishResult(@PathVariable("committeeId") Long committeeId, HttpSession session) {
+    public ResponseEntity<Object> markPublishedCommitteeResult(@PathVariable("committeeId") Long committeeId, HttpSession session) {
         User user = (User) session.getAttribute("user");
         Map<Object, Object> map = new HashMap<>();
         if(user == null) {
@@ -253,6 +258,10 @@ public class ExamCommitteController {
 
         if(examCommittee.isResultPublished()){
             map.put("message", "Result is already published!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+        if(!examCommittee.isModerated()){
+            map.put("message", "Failed to update result status: Question Moderation of this committee is not completed!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
         }
 
