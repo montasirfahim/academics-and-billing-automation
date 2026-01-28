@@ -144,6 +144,22 @@
             <a class="btn btn-outline-primary w-50 my-4" th:href="@{'/print/committee/' + ${committee.committeeId}}">Print Committee</a>
         </div>
 
+
+        <div class="d-flex align-items-center gap-2" style="margin-bottom: 20px; font-size: 1.25rem;">
+            <span style="font-weight: 500;">Result Status: </span>
+
+            <span id="result-status" class="badge" th:text="${resultStatus} ? 'Published' : 'Not Published'"
+                  th:classappend="${resultStatus} ? 'bg-success' : 'bg-warning text-dark'"
+                  style="font-size: 0.75em; padding: 0.5em 0.8em; vertical-align: middle;">Status
+            </span>
+
+            <button id="result-status-toggler" class="btn btn-outline-secondary btn-sm"
+                    th:disabled="${resultStatus}" th:data-id="${committee.committeeId}"
+                    onclick="markResultPublished(this)" style="font-size: 0.7rem; margin-left: 5px;">
+                Mark as Published
+            </button>
+        </div>
+
     </div>
 
     <div class="actions row g-4" id="actions">
@@ -192,8 +208,10 @@
                         <option value="">-- Select Examiner --</option>
                         <option th:each="i : ${internals}" th:value="${i.userId}" th:text="${i.name}"></option>
                     </select>
-                    <label for="scripts-count" class="form-label fw-bold">Number of Scripts</label>
-                    <input id="scripts-count" type="number" class="form-control mb-3" placeholder="e.g: 3" required>
+<!--                    <label for="scripts-count" class="form-label fw-bold">Number of Scripts</label>-->
+<!--                    <input id="scripts-count" type="number" class="form-control mb-3" placeholder="e.g: 3" required>-->
+                    <label for="studentsId" class="form-label fw-bold">Students ID</label>
+                    <input id="studentsId" class="form-control mb-3" type="text" placeholder="Enter IDs separated by comma. e.g: IT22016, IT22002" required>
                     <div class="d-flex justify-content-center">
                         <button type="submit" id="third-examiner-btn" class="btn btn-outline-primary w-50">Assign</button>
                     </div>
@@ -206,9 +224,13 @@
                 <span style="display: block; text-align: center; font-weight: bold; background-color: rebeccapurple; color: white; width: 100%; padding: 10px; margin-bottom: 15px;">Question Moderation</span>
                 <div class="px-3">
                     <label for="meeting-date" class="form-label fw-bold">Select Meeting Time</label>
-                    <input type="datetime-local" id="meeting-date" class="form-control mb-5" required>
+                    <input type="datetime-local" id="meeting-date" class="form-control mb-4" required>
+                    <div class="d-flex justify-content-center gap-2" style="margin-bottom: 20px">
+<!--                        <h5>Moderation Status: </h5>-->
+                        <span id="mod-status" class="badge" th:text="${moderationStatus} ? 'Moderation Completed' : 'Not Moderated'" th:classappend="${moderationStatus} ? ' bg-success' : ' bg-warning text-dark'" style="font-size: 0.85rem; padding: 0.5em 0.7em;">Status</span>
+                    </div>
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-outline-primary w-50 mt-5" th:data-id="${committee.committeeId}" onclick="callModeration(this)">Call Meeting</button>
+                        <button type="button" class="btn btn-outline-primary w-50 mt-4" th:data-id="${committee.committeeId}" onclick="callModeration(this)">Call Meeting</button>
                     </div>
                 </div>
             </div>
@@ -334,11 +356,17 @@
             //debugged
             const div = document.getElementById("card");
 
-            const h3 = document.createElement("h3");
-            var status = "Active";
-            const st = committee.isCompleted;
-            if(st) status = "Completed";
-            h3.textContent= 'Committee Status: ' + status;
+            const statusContainer = document.createElement("div");
+            statusContainer.style.fontSize = "1.25rem";
+            statusContainer.textContent = "Committee Status: ";
+
+            const statusBadge = document.createElement("span");
+            statusBadge.className = "badge";
+            const isDone = committee.isCompleted;
+            statusBadge.textContent = isDone ? "Completed" : "Active";
+            statusBadge.classList.add(isDone ? "bg-success" : "bg-warning", isDone ? "text-white" : "text-dark");
+            statusContainer.appendChild(statusBadge);
+
             const tbody = document.getElementById("course-table-body");
             const row = document.createElement("tr");
                 row.innerHTML = `
@@ -348,13 +376,27 @@
 
 
             const toggleBtn = document.createElement("button");
+            toggleBtn.className = "btn btn-outline-secondary btn-sm";
             toggleBtn.textContent = committee.isCompleted ? "Mark as Active" : "Mark as Completed";
+            toggleBtn.style.marginLeft = "10px";
+            toggleBtn.style.fontSize = "0.7rem";
+            toggleBtn.style.verticalAlign = "middle";
+            statusContainer.appendChild(toggleBtn);
 
             toggleBtn.addEventListener('click', () => {
+                console.log("committee status button clicked!");
                 //Toggle the button text and status
-                const newStatus = !committee.isCompleted;
+                const newStatus = !committee.isCompleted; //current status
+
                 toggleBtn.textContent = newStatus ? "Mark as Active" : "Mark as Completed";
-                h3.textContent = `Committee Status: ${newStatus ? "Completed" : "Active"}`;
+                statusBadge.textContent = newStatus ? "Completed" : "Active";
+                if (newStatus) {//switch to completed
+                    statusBadge.classList.replace("bg-warning", "bg-success");
+                    statusBadge.classList.replace("text-dark", "text-white");
+                } else {
+                    statusBadge.classList.replace("bg-success", "bg-warning");
+                    statusBadge.classList.replace("text-white", "text-dark");
+                }
 
                 fetch(`/committee/api/updateStatus/${id}`, {
                     method: 'PUT',
@@ -372,79 +414,13 @@
 
 
             tbody.appendChild(row);
-            div.appendChild(h3);
-            div.appendChild(toggleBtn);
+            div.appendChild(statusContainer);
+            // div.appendChild(toggleBtn);
 
         })
         .catch(error => {
             console.error("Error loading courses:", error);
         });
-
-    function callModeration(element) {
-        const id = element.getAttribute("data-id");
-
-        const now = new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Dhaka",
-            hour12: true,             // AM/PM
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-        });
-        const callTime = now.replace(", ", ", ");
-        console.log("Call Time:", callTime);
-
-        const meetingTime = document.getElementById("meeting-date").value; // YYYY-MM-DDTHH:mm format
-        if(!meetingTime) {
-            alert("Please select a meeting date and time");
-            return;
-        }
-
-        const dateObj = new Date(meetingTime);
-        const datePart = dateObj.toLocaleDateString('en-GB', {
-            timeZone: "Asia/Dhaka",
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit"
-        }).replace(/\//g, '-');
-
-        //Using 'en-US' ensures the time uses the 12-hour format with AM/PM.
-        const timePart = dateObj.toLocaleTimeString('en-US', {
-            timeZone: "Asia/Dhaka",
-            hour12: true,
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-        });
-
-        const formattedMeetingTime = `${datePart}, ${timePart}`;
-        console.log(formattedMeetingTime);
-
-        const payload = {
-            callTime: callTime,
-            meetingTime: formattedMeetingTime,
-            dateObj: dateObj
-        };
-
-        fetch(`/committee/api/moderation/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        })
-            .then(response => response.text().then(message => {
-            alert(message);
-            if (response.status === 401) {
-            window.location.href = "/login";
-        }
-        }))
-            .catch(err => {
-            console.error("Error:", err);
-            alert("Something went wrong!");
-        });
-    }
-
 </script>
 
 </body>

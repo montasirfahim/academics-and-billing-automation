@@ -2,7 +2,6 @@ package com.example.controller;
 
 import com.example.entity.Course;
 import com.example.entity.ExamCommittee;
-import com.example.entity.Semester;
 import com.example.entity.User;
 import com.example.service.*;
 import jakarta.mail.MessagingException;
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/committee")
@@ -97,11 +95,11 @@ public class ExamCommitteeRestController {
         }
 
         if(committee.isModerated()){
-            return  new ResponseEntity<>("Already Moderated!", HttpStatus.CONFLICT);
+            return  new ResponseEntity<>("Questions Already Moderated!", HttpStatus.CONFLICT);
         }
 
        if(!examCommitteeService.checkQuesModerationEligibility(committee)) {
-           return  new ResponseEntity<>("Please assign course teacher, question setter and script evaluator for all courses!", HttpStatus.BAD_REQUEST);
+           return  new ResponseEntity<>("This committee is not ready yet to call moderation meeting. Please assign course teacher, question setter and script evaluator for all courses and check everything!", HttpStatus.BAD_REQUEST);
        }
 
         String meetingDateTime = payload.get("meetingTime");
@@ -214,6 +212,7 @@ public class ExamCommitteeRestController {
             User internalTeacher = userService.getUserById(internalTeacherId);
             User externalTeacher = userService.getUserById(externalTeacherId);
             User loggedInUser = (User) session.getAttribute("user");
+
             if(committee == null || internalTeacher == null || externalTeacher == null || loggedInUser == null) {
                 map.put("message", "Not Found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
@@ -224,12 +223,16 @@ public class ExamCommitteeRestController {
                 map.put("message", "Course Not Found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
             }
+            if(examCommitteeService.isNotCommitteeCourse(committee, course)) {
+                map.put("message", "Data Mismatch! The selected course does not belong to this committee.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
+            }
             if(course.getCourseTeacher() == null){
                 map.put("message", "Bad Request: Please assign course teacher at first.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
 
-            if(committee.getChairman().getUserId().equals(loggedInUser.getUserId()) || loggedInUser.getRole().equals("admin") || loggedInUser.getRole().equals("co-admin")) {
+            if(examCommitteeService.checkEditPermission(loggedInUser, committee)) {
                 if(courseService.updateQuesSetterAndEvaluator(courseId, internalTeacher, externalTeacher, committee)){
                     map.put("message", "Success: Question Setter & Script Evaluator has been assigned successfully for selected course!");
                     return ResponseEntity.status(HttpStatus.OK).body(map);

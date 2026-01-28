@@ -47,7 +47,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void generateAndSendOTP(User user, String subject, String type) {
+    public void generateAndSendOTP(User user, String subject, String type) throws MessagingException, UnsupportedEncodingException {
         String otp = String.valueOf(ThreadLocalRandom.current().nextInt(10000, 100000));
 
         //emailService.sendOTPViaEmail(user.getEmail(), subject, type, otp);

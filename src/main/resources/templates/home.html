@@ -9,7 +9,46 @@
     <link rel="stylesheet" th:href="@{/lib/fontawesome/css/all.min.css}">
 
     <link rel="stylesheet" th:href="@{/style/landing.css}">
+    <style>
+        body {
+            display: flex !important;
+            flex-direction: column !important;
+            /*background: lightgray !important;*/
+        }
 
+        a.basic-btn {
+            display: inline-block;
+            background: linear-gradient(to right, #ec77ab 0%, #7873f5 100%) !important;
+            margin-bottom: 20px;
+            border: none !important;
+            color: white !important;
+            text-decoration: none;
+            padding: 10px 18px;
+            width: 260px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: background-color 0.3s ease !important;
+            cursor: pointer;
+        }
+
+        a.basic-btn:hover {
+            background: black !important;
+            color: white !important;
+        }
+
+        .content-wrapper {
+            flex: 0 0 auto;
+            /*padding-top: 100px;*/
+            min-height: 50% !important;
+        }
+        footer.footer-div{
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+    </style>
 </head>
 <body>
 
@@ -36,54 +75,21 @@
     </div>
 </nav>
 
-<div id="carouselExampleDark" class="carousel carousel-dark slide position-relative h-100" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
-    <div class="carousel-inner">
-        <div class="carousel-item active" data-bs-interval="2000">
-            <img src="/icpc2025.jpg" class="d-block w-100" alt="...">
-            <div class="carousel-caption d-none d-md-block">
-                <h5>ICPC 2025</h5>
-            </div>
+<div class="content-wrapper d-flex align-items-center justify-content-center">
+    <div class="container text-center">
+        <div class="d-flex flex-wrap justify-content-center gap-4">
+            <a href="/all_users" class="btn basic-btn" th:text="${userBtn}">Manage Users</a>
+            <a href="/courses/view" class="btn basic-btn" th:text="${courseBtn}">Manage Courses</a>
+            <a href="/semesters/view" class="btn basic-btn">Manage Semesters</a>
+            <a href="/ta-da/new" class="btn basic-btn">Create TA/DA Bill</a>
         </div>
-        <div class="carousel-item" data-bs-interval="2000">
-            <img src="/icpc25_2.jpg" class="d-block w-100" alt="...">
-            <div class="carousel-caption d-none d-md-block">
-                <h5>ICPC 2025</h5>
-            </div>
-        </div>
-        <div class="carousel-item" data-bs-interval="2000">
-            <img src="/icpc2025.jpg" class="d-block w-100" alt="...">
-            <div class="carousel-caption d-none d-md-block">
-                <h5>ICPC 2025</h5>
-            </div>
-        </div>
-    </div>
-
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-
-    <div class="position-absolute top-50 start-50 translate-middle d-flex flex-column flex-lg-row gap-2">
-        <a class="btn btn-outline-light w-75 w-lg-auto btn-fixed-md" href="/all_users">Manage Users</a>
-        <a class="btn btn-outline-light w-75 w-lg-auto btn-fixed-md" href="/courses/view">Manage Courses</a>
-        <a class="btn btn-outline-light w-75 w-lg-auto btn-fixed-md" href="/semesters/view">Manage Semesters</a>
-        <a class="btn btn-outline-light w-75 w-lg-auto btn-fixed-md" href="/ta-da/new">Create TA/DA Bill</a>
     </div>
 </div>
 
 
-<div class="mt-5 pt-5"></div>
+<div class="mt-5 pt-5 dummy-div"></div>
 
-<footer class="bg-dark text-white p-4">
+<footer class="bg-dark text-white p-4 footer-div">
     <div class="text-left mb-3">
         <h4>Links</h4>
         <a href="https://ict.mbstu.ac.bd/" class="link text-primary">ICT, MBSTU</a> <br>

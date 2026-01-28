@@ -12,6 +12,8 @@ public class ExamCommittee {
     private Long committeeId;
 
     private String session;
+    private String semesterYearName;
+    private Long studentCount;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "semester_id", nullable = false)
@@ -34,13 +36,13 @@ public class ExamCommittee {
     @JoinColumn(name = "external_member1_id")
     private User externalMember1;
 
-    private boolean isModerated = false;
+
     private String moderationCallDateTime;
     private String moderationScheduledDateTime;
-    private boolean isCompleted = false;
-    private String semesterYearName;
-    private Long studentCount;
+
+    private boolean isModerated = false;
     private boolean isResultPublished = false;
+    private boolean isCompleted = false;
 
     public ExamCommittee() {}
 

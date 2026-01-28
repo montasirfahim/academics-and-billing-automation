@@ -152,7 +152,7 @@
 
 <div class="container">
     <h1>All Users</h1>
-    <a th:href="@{/users/new}" class="add-new">Add New User</a>
+    <a th:if="${visitor=='admin' or visitor=='co-admin'}" th:href="@{/users/new}" class="add-new">Add New User</a>
     <table>
         <thead>
         <tr>

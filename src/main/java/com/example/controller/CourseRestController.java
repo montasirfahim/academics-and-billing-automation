@@ -1,6 +1,8 @@
 package com.example.controller;
 import com.example.entity.Course;
+import com.example.entity.User;
 import com.example.service.CourseService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,15 @@ public class CourseRestController {
     private CourseService courseService;
 
     @GetMapping("api/all")
-    public ResponseEntity<List<Course>> getAllCourses(){
-       List<Course> courses = courseService.findAll();
+    public ResponseEntity<List<Course>> getAllCourses(HttpSession session){
+        User user = (User)session.getAttribute("user");
+        if(user==null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        List<Course> courses = courseService.findAll();
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")){
+            courses = courseService.findAllByCourseTeacher(user);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Total-Count", String.valueOf(courses.size()));

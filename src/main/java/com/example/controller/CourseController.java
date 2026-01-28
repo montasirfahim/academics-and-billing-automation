@@ -1,13 +1,7 @@
 package com.example.controller;
 
-import com.example.entity.Course;
-import com.example.entity.Semester;
-import com.example.entity.ThirdExamination;
-import com.example.entity.User;
-import com.example.service.CourseService;
-import com.example.service.SemesterService;
-import com.example.service.ThirdExaminationService;
-import com.example.service.UserService;
+import com.example.entity.*;
+import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +27,8 @@ public class CourseController {
     private UserService userService;
     @Autowired
     private ThirdExaminationService thirdExaminationService;
+    @Autowired
+    private ExamCommitteeService examCommitteeService;
 
 
     @PostMapping("/course/new")
@@ -90,10 +86,16 @@ public class CourseController {
     }
 
     @GetMapping("/courses/view")
-    public String viewCourses(HttpSession session) {
+    public String viewCourses(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
+        }
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            model.addAttribute("visitor", "faculty");
+        }
+        else{
+            model.addAttribute("visitor", "admin");
         }
         return "all_courses";
     }
@@ -130,6 +132,12 @@ public class CourseController {
         if(courseTeacher == null || course == null) {
             return new ResponseEntity<>("Course or Teacher not found!", HttpStatus.NOT_FOUND);
         }
+
+        ExamCommittee examCommittee = examCommitteeService.findCommitteeBySemesterAndSession(course.getSemester(), course.getSession());
+        if(examCommittee != null && examCommittee.isResultPublished()){
+            return new ResponseEntity<>("Result of this course has already published! You can't modify anything.", HttpStatus.CONFLICT);
+        }
+
         course.setCourseTeacher(courseTeacher);
         courseService.saveCourse(course);
         return new ResponseEntity<>(Map.of("message", "Successfully assigned!"), HttpStatus.OK);
@@ -137,7 +145,11 @@ public class CourseController {
 
     @PostMapping("/api/courses/view/filter")
     @ResponseBody
-    public ResponseEntity<Object> filterCourses(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<Object> filterCourses(@RequestBody Map<String, String> payload, HttpSession httpSession) {
+        User user = (User) httpSession.getAttribute("user");
+        if (user == null) {
+            return new ResponseEntity<>(Map.of("message", "Please login first!"), HttpStatus.UNAUTHORIZED);
+        }
         String customCode = payload.get("customCode");
         String session = payload.get("session");
         Map<Object, Object> map = new HashMap<>();
@@ -145,7 +157,7 @@ public class CourseController {
             map.put("message", "Custom Code or Session Not Found!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
         }
-        List<Course> courses = courseService.getFilteredCourses(customCode, session);
+        List<Course> courses = courseService.getFilteredCourses(customCode, session, user);
         if(courses == null || courses.isEmpty()) {
             map.put("message", "No courses found based on your query!");
             map.put("courses", new ArrayList<>());

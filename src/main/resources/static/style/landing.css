@@ -1,8 +1,8 @@
 body {
     font-family: Arial, sans-serif;
-    background: #f5f7fa;
     width: 100%;
-    height: 100vh;
+    margin-top: 10% !important;
+    height: 80vh !important;
 }
 h1 {
     color: white;
@@ -145,28 +145,6 @@ a{
     color: black;
 }
 
-.carousel-item{
-    height: 100vh !important;
-}
-#carouselExampleDark,
-#carouselExampleDark .carousel-inner,
-#carouselExampleDark .carousel-item {
-    height: 100vh;
-}
-.carousel-caption {
-    color: #eab308 !important;
-    font-weight: bold;
-}
-
-.carousel-indicators{
-    color: #eab308 !important;
-    font-weight: bold;
-}
-#carouselExampleDark .carousel-item img {
-    height: 100%;
-    width: 100%;
-
-}
 
 .fascinate-inline-regular {
     font-family: "Fascinate Inline", system-ui;

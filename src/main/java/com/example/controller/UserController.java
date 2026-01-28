@@ -41,10 +41,20 @@ public class UserController {
     }
 
     @GetMapping("/home")
-    public String home(HttpSession session) {
-        if (session.getAttribute("user") == null) {
+    public String home(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
             return "redirect:/login";
         }
+
+        String userBtn = "Manage Users";
+        String courseBtn = "Manage Courses";
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin")) {
+            userBtn = "Contact Directory";
+            courseBtn = "All Courses";
+        }
+        model.addAttribute("userBtn", userBtn);
+        model.addAttribute("courseBtn", courseBtn);
         return "home";
     }
 

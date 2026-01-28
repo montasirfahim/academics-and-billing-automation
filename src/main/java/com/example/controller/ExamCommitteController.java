@@ -110,6 +110,8 @@ public class ExamCommitteController {
         }
 
         model.addAttribute("committee", examCommittee);
+        model.addAttribute("moderationStatus", examCommittee.isModerated());
+        model.addAttribute("resultStatus", examCommittee.isResultPublished());
 
         List<Course> committeeCourses = courseService.findByCommitteeId(id);
         model.addAttribute("committeeCourses",committeeCourses);
@@ -210,7 +212,7 @@ public class ExamCommitteController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
             }
 
-            if(!examCommittee.getSemester().getSemesterId().equals(course.getSemester().getSemesterId())  || !examCommittee.getSession().equals(course.getSession())){
+            if(examCommitteeService.isNotCommitteeCourse(examCommittee, course)) {
                 map.put("message", "Data Mismatch! The selected course does not belong to this committee.");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
             }
@@ -227,6 +229,40 @@ public class ExamCommitteController {
         }catch (Exception e){
             map.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+    }
+
+    @PutMapping("/api/committee/publish-result/{committeeId}")
+    @ResponseBody
+    public ResponseEntity<Object> updateCommitteePublishResult(@PathVariable("committeeId") Long committeeId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        Map<Object, Object> map = new HashMap<>();
+        if(user == null) {
+            map.put("message", "Unauthorized! Please login first.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+        }
+        ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(committeeId);
+        if(committeeId == null || examCommittee == null) {
+            map.put("message", "Committee not found or Invalid committee ID.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+        }
+        if(!examCommitteeService.checkEditPermission(user, examCommittee)) {
+            map.put("message", "Forbidden: You do not have permission to update anything in this committee.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
+        }
+
+        if(examCommittee.isResultPublished()){
+            map.put("message", "Result is already published!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+
+        if(examCommitteeService.markResultPublished(examCommittee)){
+            map.put("message", "Result has been marked as published successfully!");
+            return ResponseEntity.status(HttpStatus.OK).body(map);
+        }
+        else{
+            map.put("message", "Internal Server Error: Could not update result status! Please try again...");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
         }
     }
 

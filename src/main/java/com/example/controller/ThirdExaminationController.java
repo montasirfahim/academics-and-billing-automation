@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class ThirdExaminationController {
@@ -44,7 +47,18 @@ public class ThirdExaminationController {
             Long committeeId = Long.parseLong(payload.get("committeeId"));
             Long examinerId = Long.parseLong(payload.get("examinerId"));
             Long courseId = Long.parseLong(payload.get("courseId"));
-            Long scriptsCount = Long.parseLong(payload.get("scriptsCount"));
+
+            String rawStudentsId = payload.getOrDefault("rawStudentsId", "");
+            List<String> studentsId = Arrays.stream(rawStudentsId.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+
+            Long scriptsCount = (long) studentsId.size();
+            if(scriptsCount == 0){
+                map.put("message", "Please enter one or more student IDs separated by comma!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
 
             Course course = courseService.findById(courseId);
             User examiner = userService.getUserById(examinerId);
@@ -74,8 +88,8 @@ public class ThirdExaminationController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
             }
 
-            if(thirdExaminationService.saveThirdExamination(examCommittee, course, examiner, scriptsCount)){
-                map.put("message", "Success: Third examiner has been assigned successfully for select course.");
+            if(thirdExaminationService.saveThirdExamination(examCommittee, course, examiner, rawStudentsId, studentsId, scriptsCount)){
+                map.put("message", "Success: Third examiner has been assigned successfully for selected course.");
                 return ResponseEntity.status(HttpStatus.OK).body(map);
             }
             else{

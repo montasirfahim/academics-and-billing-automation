@@ -21,6 +21,8 @@ public interface ExamCommitteeRepository extends JpaRepository<ExamCommittee, Lo
 
     ExamCommittee findBycommitteeId(Long committeeId);
 
+    ExamCommittee findBySemesterAndSession(Semester semester, String session);
+
     long countExamCommitteeByChairman(User user);
     long countExamCommitteeByInternalMember1OrInternalMember2(User user1, User user2);
     long countExamCommitteeByExternalMember1(User user);

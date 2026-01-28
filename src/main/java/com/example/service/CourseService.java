@@ -33,17 +33,22 @@ public class CourseService {
         return courseRepository.findById(id).orElse(null);
     }
 
-
+    public List<Course> findAllByCourseTeacher(User teacher) {
+        return courseRepository.findAllByCourseTeacherOrderByCourseCodeAsc(teacher);
+    }
     public void deleteCourseById(Long id) {
         courseRepository.deleteById(id);
     }
 
-    public List<Course> getFilteredCourses(String customCode, String session) {
+    public List<Course> getFilteredCourses(String customCode, String session, User user) {
         Semester semester = semesterService.findByCustomSemesterCode(customCode);
         if(semester == null || session == null) {
             return null;
         }
-        return courseRepository.findBySemesterAndSessionOrderByCourseCodeAsc(semester, session);
+        if(user.getRole().equals("admin") || user.getRole().equals("co-admin"))
+            return courseRepository.findBySemesterAndSessionOrderByCourseCodeAsc(semester, session);
+        else
+            return courseRepository.findBySemesterAndSessionAndCourseTeacherOrderByCourseCodeAsc(semester, session, user);
     }
 
     public List<Course> findByCommitteeId(Long committeeId) {//committee courses

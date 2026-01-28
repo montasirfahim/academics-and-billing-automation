@@ -2,6 +2,8 @@ package com.example.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class ThirdExamination {
 
@@ -27,7 +29,8 @@ public class ThirdExamination {
 
 
     private Long scriptsCount;
-
+    private String rawStudentsId;
+    private List<String> studentsId;
 
 
     public ThirdExamination() {}
@@ -80,5 +83,21 @@ public class ThirdExamination {
 
     public void setScriptsCount(Long scriptsCount) {
         this.scriptsCount = scriptsCount;
+    }
+
+    public List<String> getStudentsId() {
+        return studentsId;
+    }
+
+    public void setStudentsId(List<String> studentsId) {
+        this.studentsId = studentsId;
+    }
+
+    public String getRawStudentsId() {
+        return rawStudentsId;
+    }
+
+    public void setRawStudentsId(String rawStudentsId) {
+        this.rawStudentsId = rawStudentsId;
     }
 }

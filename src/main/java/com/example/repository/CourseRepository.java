@@ -13,6 +13,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> findBySemesterAndSessionOrderByCourseCodeAsc(Semester semester, String session);
     List<Course> findBySemesterAndCourseTeacherOrderByCourseCodeAsc(Semester semester, User courseTeacher);
     List<Course> findBySemesterAndInternalQuesSetterEvaluatorOrExternalQuesSetterEvaluatorOrderByCourseCodeAsc(Semester semester, User internal, User external);
+    List<Course> findBySemesterAndSessionAndCourseTeacherOrderByCourseCodeAsc(Semester semester, String session, User courseTeacher);
 
     long countByCourseTeacher(User user);
 
@@ -22,7 +23,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     long countByCourseType(String type);
 
-    // List<Course> findBySessionAndSemester(String committeeSession, Semester semester);
+    List<Course> findAllByCourseTeacherOrderByCourseCodeAsc(User courseTeacher);
 
 
 }
