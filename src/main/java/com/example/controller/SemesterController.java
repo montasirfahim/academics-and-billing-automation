@@ -80,12 +80,12 @@ public class SemesterController {
         model.addAttribute("examCommittees", examCommittees);
 
         List<String> colors = Arrays.asList(
-                "linear-gradient(to right, #f5e6a8, #f0f0e8)",
+                "linear-gradient(to right, #11998e, #38ef7d)",
                 "linear-gradient(to right, #c471f5, #fa71cd)",
                 "linear-gradient(to right, #ff512f, #dd2476)",
-                "linear-gradient(to right, #11998e, #38ef7d)",
                 "linear-gradient(to right, #ff8008, #ffc837)",
                 "linear-gradient(to right, #8e9eab, #eef2f3)",
+                "linear-gradient(to right, #f5e6a8, #f0f0e8)",
                 "linear-gradient(to right, #f7971e, #ffd200)",
                 "linear-gradient(to right, #00b09b, #96c93d)"
         );

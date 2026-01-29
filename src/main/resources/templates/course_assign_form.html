@@ -141,7 +141,8 @@
                 window.location.href = "/courses/view";
             }
             else{
-                alert("Failed to assign course teacher");
+                const message = await response.text();
+                alert("Failed to assign course teacher: \n" + message);
             }
         }catch (err){
             console.log(err);

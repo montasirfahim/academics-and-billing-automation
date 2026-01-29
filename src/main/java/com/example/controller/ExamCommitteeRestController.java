@@ -218,7 +218,7 @@ public class ExamCommitteeRestController {
             User loggedInUser = (User) session.getAttribute("user");
 
             if(committee == null || internalTeacher == null || externalTeacher == null || loggedInUser == null) {
-                map.put("message", "Not Found");
+                map.put("message", "Not Found All Required Data");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
             }
 
@@ -227,11 +227,19 @@ public class ExamCommitteeRestController {
                 map.put("message", "Course Not Found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
             }
+            if(committee.isResultPublished()){
+                map.put("message", "Conflict: Result of this exam committee has already published!\nYou can't re-assign question setter and examiner right now.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
+            }
             if(examCommitteeService.isNotCommitteeCourse(committee, course)) {
                 map.put("message", "Data Mismatch! The selected course does not belong to this committee.");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
             }
-            if(course.getCourseTeacher() == null){
+            if(course.getCourseType().equals("Industrial Visit") || course.getCourseType().equals("Thesis") || course.getCourseType().equals("Project") || course.getCourseType().equals("Viva Voce")) {
+                map.put("message", "Bad Request: It's Not a Theory or Lab Course! \nExaminer of this type of course can not be assigned in this way. Please try with appropriate procedure.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
+            if(course.getCourseTeacher() == null && (course.getCourseType().equals("Theory") || course.getCourseType().equals("Lab"))) {//project/thesis/industrial visit/viva voce courses do not require course teacher
                 map.put("message", "Bad Request: Please assign course teacher at first.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }

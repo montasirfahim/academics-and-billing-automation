@@ -149,14 +149,15 @@
             <p><strong>Email:</strong> <span th:text="${user.email}">email@example.com</span></p>
             <a id="password-reset" th:if="${owner} == 'self'" class="btn btn-sm btn-outline-danger" href="/user/reset-password">Reset Password</a>
         </div>
+
         <div class="row row-cols-1 row-cols-md-2 g-3">
             <div class="col">
                 <div class="card shadow-sm p-4 pb-1 text-center border-0 h-100">
                     <h5 class="text-white fw-bold mb-1">Total Courses</h5>
                     <h2 class="fw-bold text-white pt-4" th:text="${totalCourses}">0</h2>
-                    <div class="d-flex justify-content-between">
-                        <p class="text-white mb-0" th:text="'Theory: ' + ${totalTheoryCourses}">0</p>
-                        <p class="text-white mb-0" th:text="'Lab: ' + ${totalCourses - totalTheoryCourses}">0</p>
+                    <div class="d-flex justify-content-between mt-5">
+                        <p class="text-white mb-2" th:text="'Theory: ' + ${totalTheoryCourses}">0</p>
+                        <p class="text-white mb-2" th:text="'Lab: ' + ${totalCourses - totalTheoryCourses}">0</p>
                     </div>
                 </div>
             </div>
@@ -164,9 +165,9 @@
                 <div class="card shadow-sm p-4 pb-1 text-center border-0 h-100">
                     <h5 class="text-white fw-bold mb-1">Exam Committees</h5>
                     <h2 class="fw-bold text-white pt-4" th:text="${totalCommittees}">0</h2>
-                    <div class="d-flex justify-content-between">
-                        <p class="text-white mb-0" th:text="'Active: ' + ${totalActiveCommittees}">0</p>
-                        <p class="text-white mb-0" th:text="'Completed: ' + ${totalCompletedCommittees}">0</p>
+                    <div class="d-flex justify-content-between mt-5">
+                        <p class="text-white mb-2" th:text="'Active: ' + ${totalActiveCommittees}">0</p>
+                        <p class="text-white mb-2" th:text="'Completed: ' + ${totalCompletedCommittees}">0</p>
                     </div>
                 </div>
             </div>
@@ -180,6 +181,10 @@
                 <div class="card shadow-sm p-4 text-center border-0 h-100">
                     <h5 class="text-white fw-bold mb-1">Total Bills</h5>
                     <h2 class="fw-bold text-white pt-4" th:text="${totalBills} + ' BDT' ">0</h2>
+                    <div class="d-flex justify-content-between mt-5">
+                        <p class="text-white mb-0" th:text="'TA-DA: ' + ${totalTADABill} + ' BDT'">0.0</p>
+                        <p class="text-white mb-0" th:text="'Gratuity: ' + ${totalGratuityBill} + ' BDT'">0.0</p>
+                    </div>
                 </div>
             </div>
         </div>

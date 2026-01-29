@@ -137,6 +137,9 @@ public class CourseController {
         if(examCommittee != null && examCommittee.isResultPublished()){
             return new ResponseEntity<>("Result of this course has already published! You can't modify anything.", HttpStatus.CONFLICT);
         }
+        if(course.getCourseType().equals("Industrial Visit") || course.getCourseType().equals("Thesis") || course.getCourseType().equals("Project") || course.getCourseType().equals("Viva Voce")) {
+           return new ResponseEntity<>("Bad Request: It's Not a Theory or Lab Course! \nThis type of course does not require course teacher.", HttpStatus.BAD_REQUEST);
+        }
 
         course.setCourseTeacher(courseTeacher);
         courseService.saveCourse(course);

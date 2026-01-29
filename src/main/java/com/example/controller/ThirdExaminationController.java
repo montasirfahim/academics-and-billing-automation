@@ -72,8 +72,17 @@ public class ThirdExaminationController {
                 map.put("message", "Forbidden: Only committee chairman and admins have permission to perform this action.");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
             }
+            if(examCommittee.isResultPublished()){
+                map.put("message", "Conflict: Result has been already published of this course and related exam committee!\nYou can't perform this action now.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
+            }
+            System.out.println("Course type: " + course.getCourseType());
+            if(!course.getCourseType().equals("Theory")){
+                map.put("message", "Bad Request: Only theory courses can be assigned for third examination.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
 
-            if(!course.getSemester().getSemesterId().equals(examCommittee.getSemester().getSemesterId()) || !course.getSession().equals(examCommittee.getSession())){
+            if(examCommitteeService.isNotCommitteeCourse(examCommittee, course)){
                 map.put("message", "Bad Request: This course does not belong to the committee you provided.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }

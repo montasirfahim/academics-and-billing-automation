@@ -17,4 +17,5 @@ public interface ThirdExaminationRepository extends JpaRepository<ThirdExaminati
     public List<ThirdExamination> findByExamCommittee(ExamCommittee examCommittee);
 
     boolean existsByExamCommitteeAndCourseAndExaminer(ExamCommittee examCommittee, Course course, User examiner);
+    ThirdExamination findByCourseAndExamCommittee(Course course, ExamCommittee examCommittee);
 }

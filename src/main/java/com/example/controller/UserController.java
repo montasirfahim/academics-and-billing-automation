@@ -31,6 +31,8 @@ public class UserController {
     private TourAllowanceBillService tourAllowanceBillService;
     @Autowired
     private BillRateService billRateService;
+    @Autowired
+    private GratuityBillService gratuityBillService;
 
     @GetMapping("/")
     public String landingPage(HttpSession session) {
@@ -87,7 +89,12 @@ public class UserController {
             model.addAttribute("totalCourses", totalCourses);
             model.addAttribute("totalTheoryCourses", totalTheoryCourses);
 
-            double totalBills = tourAllowanceBillService.getTotalTaDaBillSoFar();
+            double totalTADABill = tourAllowanceBillService.getTotalTaDaBillSoFar();
+            double totalGratuityBill = gratuityBillService.getTotalBillSoFar();
+            model.addAttribute("totalTADABill", totalTADABill);
+            model.addAttribute("totalGratuityBill", totalGratuityBill);
+
+            double totalBills = totalTADABill + totalGratuityBill;
             model.addAttribute("totalBills", totalBills);
 
             List<BillRate> billRates = billRateService.getAllBillRate();
@@ -105,7 +112,7 @@ public class UserController {
         long totalCommitteeInternalMember = examCommitteeService.getTotalCommitteesAsInternalMember(user);
         long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(user);
         long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
-        double totalBills = 0.0;
+        double totalBills = gratuityBillService.getTotalBillByUser(sessionUser) + tourAllowanceBillService.getTotalTaDaBillByUser(sessionUser);
 
         List<TourAllowanceBill> tadaBills = tourAllowanceBillService.getAllTourAllowanceBillByUser(user);
 
@@ -131,6 +138,10 @@ public class UserController {
         User currentUser = (User) session.getAttribute("user");
 
         if(targetUser.getUserId().equals(currentUser.getUserId())) {
+            if(targetUser.getRole().equals("admin") || targetUser.getRole().equals("co-admin")) {
+                return "redirect:/dashboard";
+            }
+
             model.addAttribute("owner", "self");
             model.addAttribute("user", targetUser);
 
@@ -143,7 +154,7 @@ public class UserController {
             long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(targetUser);
             long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
 
-            double totalBills = tourAllowanceBillService.getTotalTaDaBillByUser(targetUser);
+            double totalBills = tourAllowanceBillService.getTotalTaDaBillByUser(targetUser) + gratuityBillService.getTotalBillByUser(targetUser);
             List<TourAllowanceBill> tadaBills = tourAllowanceBillService.getAllTourAllowanceBillByUser(targetUser);
             model.addAttribute("totalCourses", totalCourses);
             model.addAttribute("theoryCourses", theoryCourses);
@@ -175,7 +186,7 @@ public class UserController {
             long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(targetUser);
             long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
 
-            double totalBills = tourAllowanceBillService.getTotalTaDaBillByUser(targetUser);
+            double totalBills = tourAllowanceBillService.getTotalTaDaBillByUser(targetUser) + gratuityBillService.getTotalBillByUser(targetUser);
 
             List<TourAllowanceBill> tadaBills = tourAllowanceBillService.getAllTourAllowanceBillByUser(targetUser);
 
