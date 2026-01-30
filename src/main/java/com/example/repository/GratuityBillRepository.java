@@ -1,10 +1,15 @@
 package com.example.repository;
 
+import com.example.entity.ExamCommittee;
 import com.example.entity.GratuityBill;
 import com.example.entity.User;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
+
+import java.util.List;
 
 public interface GratuityBillRepository extends JpaRepository<GratuityBill,Long> {
     @Query("SELECT SUM(b.totalBillAmount) FROM GratuityBill b WHERE b.billUser=:user")
@@ -12,5 +17,10 @@ public interface GratuityBillRepository extends JpaRepository<GratuityBill,Long>
 
     @Query("SELECT SUM(gb.totalBillAmount) FROM GratuityBill gb")
     Double getTotalBillSoFar();
+
+    @Query("SELECT SUM(b.totalBillAmount) FROM GratuityBill b WHERE b.billUser = :user AND b.examCommittee = :examCommittee")
+    Double getTotalBillByUserAndExamCommittee(@Param("user") User billUser, @Param("examCommittee") ExamCommittee examCommittee);
+
+    List<GratuityBill> findAllByBillUserAndExamCommittee(User user, ExamCommittee examCommittee);
 
 }

@@ -31,6 +31,12 @@ import java.util.List;
 public class PdfService {
 
 
+    private final ExamCommitteeService examCommitteeService;
+
+    public PdfService(ExamCommitteeService examCommitteeService) {
+        this.examCommitteeService = examCommitteeService;
+    }
+
     public byte[] createCommitteePdf(ExamCommittee examCommittee, Semester semester, List<Course> assignedCourses) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -604,6 +610,357 @@ public class PdfService {
         return baos.toByteArray();
     }
 
+    public byte[] createGratuityBillPdf(User billUser, ExamCommittee examCommittee, List<GratuityBill> gratuityBillList) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try (PdfWriter writer = new PdfWriter(baos);
+             PdfDocument pdfDoc = new PdfDocument(writer);
+             Document document = new Document(pdfDoc)) {
+
+            pdfDoc.setDefaultPageSize(PageSize.LEGAL);
+
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/times.ttf");
+
+            if (fontStream == null) {
+                throw new IOException("Font file not found! Check if it is in src/main/resources/fonts/times.ttf");
+            }
+
+            byte[] fontBytes = fontStream.readAllBytes();
+
+            PdfFont font = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H);
+            document.setFont(font);
+
+            document.add(new Paragraph("Bill No: __________").setTextAlignment(TextAlignment.RIGHT));
+
+            InputStream is = getClass().getResourceAsStream("/static/logo.PNG");
+
+            if (is == null) {
+                throw new IOException("Logo not found in classpath! Check path: /static/logo.PNG");
+            }
+
+            float[] columnWidths = {1, 4};
+            Table headerTable = new Table(UnitValue.createPercentArray(columnWidths));
+            headerTable.setWidth(UnitValue.createPercentValue(100));
+
+            byte[] imageBytes = is.readAllBytes();
+            ImageData imageData = ImageDataFactory.create(imageBytes);
+            Image logo = new Image(imageData).setWidth(45).setHeight(45);
+
+            Cell logoCell = new Cell(2, 1)
+                    .add(logo)
+                    .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setBorder(Border.NO_BORDER);
+            headerTable.addCell(logoCell);
+
+            Cell univCell = new Cell()
+                    .add(new Paragraph("Mawlana Bhashani Science and Technology University")
+                            .setBold()
+                            .setFontSize(16)
+                            .setTextAlignment(TextAlignment.CENTER))
+                    .setBorder(Border.NO_BORDER)
+                    .setVerticalAlignment(VerticalAlignment.BOTTOM);
+            headerTable.addCell(univCell);
+
+            Cell titleCell = new Cell()
+                    .add(new Paragraph("Examination-Related Remuneration Bill Form")
+                            .setFontSize(12)
+                            .setTextAlignment(TextAlignment.CENTER))
+                    .setBorder(Border.NO_BORDER)
+                    .setVerticalAlignment(VerticalAlignment.TOP);
+            headerTable.addCell(titleCell);
+
+            document.add(headerTable);
+
+            document.add(new Paragraph("\nThe relevant documents must be submitted to the Office of the Controller of Examinations through the Chairman of the Examination Committee upon completion of all examination-related duties. \nBill must be submitted for each course separately.").setTextAlignment(TextAlignment.CENTER).setFontSize(9));
+
+
+            Table infoTable = new Table(UnitValue.createPercentArray(new float[]{10, 3}));
+            infoTable.useAllAvailableWidth();
+            infoTable.setMarginTop(10f);
+
+
+            infoTable.addCell(createLabelValueCell("Name of Teacher: ", billUser.getName()));
+            infoTable.addCell(createLabelValueCell("", ""));
+            infoTable.addCell(createLabelValueCell("Designation & Address: ", billUser.getDesignation() + ", Dept. of " + billUser.getDepartment() + ", " + billUser.getUniversity()));
+
+            document.add(infoTable);
+
+            document.add(new Paragraph("\n"));
+
+            document.add(new Paragraph("Details of Examination-Related Duties Given Below:").setFontSize(15).setTextAlignment(TextAlignment.CENTER).setBold());
+            document.add(new Paragraph("Duration of Examination: " + examCommittee.getSemester().getSemesterHeldMonths() + ", " + examCommittee.getSemester().getSemesterHeldYear()).setTextAlignment(TextAlignment.CENTER));
+
+            document.add(new Paragraph("\n"));
+
+            float[] columnWidths2 = {0.8f, 3.5f, 2f, 1f, 1.5f, 1.5f, 1.5f, 1f, 1f, 1f, 1.5f, 1f};
+            Table table = new Table(UnitValue.createPercentArray(columnWidths2));
+            table.setWidth(UnitValue.createPercentValue(100));
+            table.setFontSize(8.5f);
+
+            String[] headers = {
+                    "SL", "Nature of Work", "Exam Name", "Year", "Dept.", "Course Code",
+                    "No. of Scripts/Students", "Total Days/Members", "Credit Hours", "No. of Class Tests", "Taka", "Paisa"
+            };
+
+            for(String header : headers){
+                table.addHeaderCell(new Cell()
+                        .add(new Paragraph(header).setBold())
+                        .setTextAlignment(TextAlignment.CENTER));
+            }
+
+
+            String[] categories = {
+                    "Question Setting", "Question Moderation", "Script Evaluation",
+                    "Oral/Comprehensive Exam", "Practical/Lab/Sessional", "Tabulation",
+                    "Chairman Honorarium","Member Honorarium", "Question Typing & Checking", "Thesis/Research Project",
+                    "Special Topic Seminar/Term Paper/Industrial Training & Viva", "Internship/Monograph/Presentation & Viva-Voce", "Class Test"
+            };
+
+            int sl = 1;
+            double totalQuesSettingBill = 0;
+            double totalScriptEvaluationBill = 0;
+            double grossTotal = 0;
+            for(String category : categories){
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(sl))));
+                table.addCell(new Cell().add(new Paragraph(category)));
+                for(int i = 0; i < 10; i++) {
+                    if(sl == 1){
+                        if(i == 0) table.addCell(new Cell().add(new Paragraph(examCommittee.getSemesterYearName() + " " + examCommittee.getSemester().getSemesterParity() + " Semester")));
+                        else if(i == 1)  table.addCell(new Cell().add(new Paragraph(String.valueOf(examCommittee.getSemester().getSemesterScheduledYear())).setTextAlignment(TextAlignment.CENTER)));
+                        else if(i == 2) table.addCell(new Cell().add(new Paragraph("ICT").setTextAlignment(TextAlignment.CENTER)));
+                        else if(i == 3){
+                            StringBuilder courseCodes = new StringBuilder();
+                            for(GratuityBill gratuityBill : gratuityBillList){
+                                if(gratuityBill.getTaskName().equals("Question Setting")){
+                                    totalQuesSettingBill += gratuityBill.getTotalBillAmount();
+                                    grossTotal += gratuityBill.getTotalBillAmount();
+                                    System.out.println(gratuityBill.getCourseCode() + " Ques Setting: " + gratuityBill.getTotalBillAmount());
+                                    if(courseCodes.isEmpty()) courseCodes.append(gratuityBill.getCourseCode());
+                                    else courseCodes.append("\n").append(gratuityBill.getCourseCode());
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(courseCodes.toString()).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else if(i == 8)  table.addCell(new Cell().add(new Paragraph(String.valueOf(totalQuesSettingBill)).setTextAlignment(TextAlignment.CENTER)));
+                        else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                        continue;
+                    }
+                    else if(sl == 2){
+                        if(!examCommitteeService.isMember(billUser, examCommittee)){
+                            table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                            continue;
+                        }
+                        if(i == 8){
+                            System.out.println(billUser.getName() + " is a member of this committee!");
+                            double modBill = 0;
+                            for(GratuityBill gratuityBill : gratuityBillList) {
+                                if(gratuityBill.getTaskName().equals("Question Moderation")){
+                                    grossTotal += gratuityBill.getTotalBillAmount();
+                                    modBill = gratuityBill.getTotalBillAmount();
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(String.valueOf(modBill)).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                        continue;
+                    }
+                    else if(sl == 3){
+                        if(i == 3){
+                            StringBuilder courseCodes = new StringBuilder();
+                            for(GratuityBill gratuityBill : gratuityBillList) {
+                                if(gratuityBill.getTaskName().equals("Script Evaluation")){
+                                    grossTotal += gratuityBill.getTotalBillAmount();
+                                    totalScriptEvaluationBill += gratuityBill.getTotalBillAmount();
+                                    if(courseCodes.isEmpty()) courseCodes.append(gratuityBill.getCourseCode());
+                                    else  courseCodes.append("\n").append(gratuityBill.getCourseCode());
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(courseCodes.toString()).setTextAlignment(TextAlignment.CENTER)));
+
+                        }
+                        else if(i == 4){
+                            StringBuilder scriptCount = new StringBuilder();
+                            for(GratuityBill gratuityBill : gratuityBillList) {
+                                if(gratuityBill.getTaskName().equals("Script Evaluation")){
+                                    if(scriptCount.isEmpty()) scriptCount.append(gratuityBill.getNumberOfScriptsOrStudents() + "x" + gratuityBill.getBillRate());
+                                    else scriptCount.append("\n").append(gratuityBill.getNumberOfScriptsOrStudents() + "x" + gratuityBill.getBillRate());
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(scriptCount.toString()).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else if(i == 8){
+                            table.addCell(new Cell().add(new Paragraph(String.valueOf(totalScriptEvaluationBill)).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                        continue;
+                    }
+                    else if(sl == 6){
+                        if(i == 4){
+                            StringBuilder tabuDetails = new StringBuilder();
+                            if(examCommitteeService.isMember(billUser, examCommittee)){
+                                for(GratuityBill gratuityBill : gratuityBillList) {
+                                    if(gratuityBill.getTaskName().equals("Tabulation") || gratuityBill.getTaskName().equals("Comprehensive Tabulation")){
+                                        grossTotal += gratuityBill.getTotalBillAmount();
+                                        if(!tabuDetails.isEmpty()) tabuDetails.append("\n");
+                                        tabuDetails.append(examCommittee.getStudentCount() +  "x" + gratuityBill.getBillRate());
+                                    }
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(tabuDetails.toString()).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else if(i == 8){
+                            StringBuilder tabuDetails = new StringBuilder();
+                            if(examCommitteeService.isMember(billUser, examCommittee)){
+                                for(GratuityBill gratuityBill : gratuityBillList) {
+                                    if(gratuityBill.getTaskName().equals("Tabulation") || gratuityBill.getTaskName().equals("Comprehensive Tabulation")){
+                                        if(!tabuDetails.isEmpty()) tabuDetails.append("\n");
+                                        tabuDetails.append(gratuityBill.getTotalBillAmount());
+                                    }
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(tabuDetails.toString()).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                        continue;
+                    }
+                    else if(sl == 7){
+                       if(i == 8){
+                           double chairmanBill = 0;
+                           if(examCommittee.getChairman().getUserId().equals(billUser.getUserId())){
+                                for(GratuityBill gratuityBill : gratuityBillList) {
+                                    if(gratuityBill.getTaskName().equals("Allowance of Chairman")){
+                                        grossTotal += gratuityBill.getTotalBillAmount();
+                                        chairmanBill = gratuityBill.getTotalBillAmount();
+                                    }
+                                }
+                           }
+                           table.addCell(new Cell().add(new Paragraph(String.valueOf(chairmanBill)).setTextAlignment(TextAlignment.CENTER)));
+                       }
+                       else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                       continue;
+                    }
+                    else if(sl == 8){
+                        if(i == 8){
+                            double memberBill = 0;
+                            if(examCommitteeService.isMember(billUser, examCommittee)){
+                                for(GratuityBill gratuityBill : gratuityBillList) {
+                                    if(gratuityBill.getTaskName().equals("Allowance of Member")){
+                                        grossTotal += gratuityBill.getTotalBillAmount();
+                                        memberBill = gratuityBill.getTotalBillAmount();
+                                        System.out.println("allowance of member: " + gratuityBill.getTotalBillAmount());
+                                    }
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(String.valueOf(memberBill)).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                        continue;
+                    }
+                    else if(sl == 13){
+                        if(i == 3){
+                            StringBuilder courseCodes = new StringBuilder();
+                            for(GratuityBill gratuityBill : gratuityBillList) {
+                                if(gratuityBill.getTaskName().equals("Class Test")){
+                                    grossTotal += gratuityBill.getTotalBillAmount();
+                                    if(!courseCodes.isEmpty()) courseCodes.append("\n");
+                                    courseCodes.append(gratuityBill.getCourseCode());
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(String.valueOf(courseCodes)).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else if(i == 4){
+                            table.addCell(new Cell().add(new Paragraph(String.valueOf(examCommittee.getStudentCount())).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else if(i == 7){
+                            StringBuilder ctCount = new StringBuilder();
+                            for(GratuityBill gratuityBill : gratuityBillList) {
+                                if(gratuityBill.getTaskName().equals("Class Test")){
+                                    grossTotal += gratuityBill.getTotalBillAmount();
+                                    if(!ctCount.isEmpty()) ctCount.append("\n");
+                                    ctCount.append(gratuityBill.getNumberOfClassTests());
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(String.valueOf(ctCount)).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else if(i == 8){
+                            StringBuilder totalBill = new StringBuilder();
+                            for(GratuityBill gratuityBill : gratuityBillList) {
+                                if(gratuityBill.getTaskName().equals("Class Test")){
+                                    if(!totalBill.isEmpty()) totalBill.append("\n");
+                                    totalBill.append(gratuityBill.getTotalBillAmount());
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(String.valueOf(totalBill)).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                        continue;
+                    }
+                    table.addCell(new Cell().add(new Paragraph("")));
+                }
+                sl++;
+            }
+
+            table.addCell(new Cell().add(new Paragraph(String.valueOf(sl))));
+            table.addCell(new Cell().add(new Paragraph("Incidental Charge")));
+            table.addCell(new Cell(1, 8).add(new Paragraph("Attached Voucher No: ")));
+            table.addCell(new Cell().add(new Paragraph("")));
+            table.addCell(new Cell().add(new Paragraph("")));
+
+
+            table.addCell(new Cell(1, 9)
+                    .add(new Paragraph("Total"))
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setPaddingRight(10f)
+                    .setBold());
+            table.addCell(new Cell(1, 3).add(new Paragraph(String.valueOf(grossTotal))));
+            //table.addCell(new Cell().add(new Paragraph("")));
+
+            document.add(table);
+            document.add(new Paragraph("\n\n"));
+
+            //signatures table
+            float[] sigWidths = {1, 1};
+            Table sigTable = new Table(UnitValue.createPercentArray(sigWidths)).setBorder(Border.NO_BORDER);
+            sigTable.setWidth(UnitValue.createPercentValue(100));
+
+            Cell leftSig = new Cell().setBorder(Border.NO_BORDER);
+            leftSig.add(new Paragraph("Signature\nChairman, Exam Committee").setFontSize(11));
+            sigTable.addCell(leftSig);
+
+            Cell rightSig = new Cell().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT);
+            rightSig.add(new Paragraph("..................................\nExaminer's Signature").setFontSize(11));
+            sigTable.addCell(rightSig);
+
+            document.add(sigTable);
+
+            document.add(new Paragraph("\n"));
+
+
+            Paragraph payTo = new Paragraph()
+                    .add(new Text("Please pay to " + billUser.getName()).setFontSize(11))
+                    .add(new Text(" TK: ").setFontSize(12))
+                    .add(new Text(" (In words): ").setFontSize(12))
+                    .add(new Text(UtilityService.formatBDT(grossTotal)).setFontSize(11));
+            document.add(payTo);
+            document.add(new Paragraph("\n"));
+
+            Table footerSigs = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1})).setBorder(Border.NO_BORDER);
+            footerSigs.setWidth(UnitValue.createPercentValue(100)).setMarginTop(20);
+
+            footerSigs.addCell(new Cell().add(new Paragraph("Receiver's Signature")).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT).setFontSize(11));
+            footerSigs.addCell(new Cell().add(new Paragraph("Section Officer/Assistant Controller of Examination")).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER).setFontSize(11));
+            footerSigs.addCell(new Cell().add(new Paragraph("Controller of Examinations")).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT).setFontSize(11));
+
+            document.add(footerSigs);
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return baos.toByteArray();
+    }
+
     private void addTaDaHeader(Document document, String text) {
         Paragraph p = new Paragraph(text)
                 .setTextAlignment(TextAlignment.CENTER)
@@ -769,7 +1126,5 @@ public class PdfService {
                 .setBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .setTextAlignment(TextAlignment.CENTER).setBold();
     }
-
-
 
 }

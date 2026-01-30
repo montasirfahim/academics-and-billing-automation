@@ -26,7 +26,7 @@ public class GratuityBill {
 
     @JoinColumn(name = "committee_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private ExamCommittee committee;
+    private ExamCommittee examCommittee;
 
     @JoinColumn(name = "bill_user_id")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -130,14 +130,6 @@ public class GratuityBill {
         this.totalBillAmount = totalBillAmount;
     }
 
-    public ExamCommittee getCommittee() {
-        return committee;
-    }
-
-    public void setCommittee(ExamCommittee committee) {
-        this.committee = committee;
-    }
-
     public User getBillUser() {
         return billUser;
     }
@@ -160,5 +152,13 @@ public class GratuityBill {
 
     public void setCourseCode(String courseCode) {
         this.courseCode = courseCode;
+    }
+
+    public ExamCommittee getExamCommittee() {
+        return examCommittee;
+    }
+
+    public void setExamCommittee(ExamCommittee examCommittee) {
+        this.examCommittee = examCommittee;
     }
 }

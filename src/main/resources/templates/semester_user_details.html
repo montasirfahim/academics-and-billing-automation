@@ -211,6 +211,34 @@
         </table>
     </div>
 
+    <div class="container">
+        <h1>Exam Committees and Your Bills</h1>
+        <div class="sem-container d-flex flex-column flex-md-row justify-content-between mb-4">
+            <h5 th:text="'Bill User: ' + ${teacherName} + ' (' + ${role} + ')'"></h5>
+        </div>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Batch</th>
+                <th>Committee Chairman</th>
+                <th>Total Bill(BDT)</th>
+                <th class="text-center">Download</th>
+            </tr>
+            </thead>
+            <tbody id="committees-table-body2">
+            <tr th:each="row : ${committeeBillDTOList}">
+                <td th:text="${row.batchName}"></td>
+                <td th:text="${row.chairmanName}"></td>
+                <td th:text="${#numbers.formatDecimal(row.billAmount, 1, 2)}">0.0</td>
+                <td class="text-center">
+                    <a th:href="@{/print-detailed-bill/{uId}/{commId}(uId=${userId}, commId=${row.committeeId})}" class="btn btn-outline-primary btn-sm" target="_blank">Print Bill</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
 </div>
 
 

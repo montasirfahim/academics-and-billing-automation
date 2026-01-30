@@ -176,21 +176,21 @@ public class ExamCommitteeService {
                 GratuityBill comprehensiveTabulationBill = new GratuityBill();
                 GratuityBill quesModerationBill = new GratuityBill();
 
-                gratuityBill.setCommittee(examCommittee);
+                gratuityBill.setExamCommittee(examCommittee);
 
-                tabulationBill.setCommittee(examCommittee);
+                tabulationBill.setExamCommittee(examCommittee);
                 tabulationBill.setTaskName("Tabulation");
                 tabulationBill.setBillRate(tabulationBillRate);
                 tabulationBill.setNumberOfScriptsOrStudents(studentCount);
                 tabulationBill.setTotalBillAmount(tabulationBillRate*studentCount);
 
-                comprehensiveTabulationBill.setCommittee(examCommittee);
+                comprehensiveTabulationBill.setExamCommittee(examCommittee);
                 comprehensiveTabulationBill.setTaskName("Comprehensive Tabulation");
                 comprehensiveTabulationBill.setBillRate(comprehensiveTabulationRate);
                 comprehensiveTabulationBill.setNumberOfScriptsOrStudents(studentCount);
                 comprehensiveTabulationBill.setTotalBillAmount(comprehensiveTabulationRate*studentCount);
 
-                quesModerationBill.setCommittee(examCommittee);
+                quesModerationBill.setExamCommittee(examCommittee);
                 quesModerationBill.setTaskName("Question Moderation");
                 quesModerationBill.setTotalBillAmount(moderationBillPerMember);
 
@@ -257,7 +257,7 @@ public class ExamCommitteeService {
 
                     Long numOfClassTests = (long) ((course.getCourseCredit() == 3) ? 4 : 3);
                     classTestBill.setBillUser(course.getCourseTeacher());
-                    classTestBill.setCommittee(examCommittee);
+                    classTestBill.setExamCommittee(examCommittee);
                     classTestBill.setTaskName("Class Test");
                     classTestBill.setBillRate(classTestBillRate);
                     classTestBill.setNumberOfClassTests(numOfClassTests);
@@ -270,13 +270,13 @@ public class ExamCommitteeService {
                         GratuityBill quesSettingBill = new GratuityBill();
                         GratuityBill scriptEvaluationBill = new GratuityBill();
 
-                        quesSettingBill.setCommittee(examCommittee);
+                        quesSettingBill.setExamCommittee(examCommittee);
                         quesSettingBill.setCourseCode(course.getCourseCode());
                         quesSettingBill.setTaskName("Question Setting");
                         quesSettingBill.setBillRate(quesSettingBillRate);
                         quesSettingBill.setTotalBillAmount(quesSettingBillRate);
 
-                        scriptEvaluationBill.setCommittee(examCommittee);
+                        scriptEvaluationBill.setExamCommittee(examCommittee);
                         scriptEvaluationBill.setCourseCode(course.getCourseCode());
                         scriptEvaluationBill.setBillRate(scriptEvaluationBillRate);
                         scriptEvaluationBill.setTaskName("Script Evaluation");
@@ -301,7 +301,7 @@ public class ExamCommitteeService {
                     if(thirdExamination != null){
                         GratuityBill thirdExaminationBill = new GratuityBill();
 
-                        thirdExaminationBill.setCommittee(examCommittee);
+                        thirdExaminationBill.setExamCommittee(examCommittee);
                         thirdExaminationBill.setBillUser(thirdExamination.getExaminer());
                         thirdExaminationBill.setCourseCode(course.getCourseCode());
                         thirdExaminationBill.setCourseCodesOrStuIds(thirdExamination.getStudentsId());
@@ -316,7 +316,7 @@ public class ExamCommitteeService {
                 else if(course.getCourseType().equals("Lab")){
                     GratuityBill labCourseBill = new GratuityBill();
 
-                    labCourseBill.setCommittee(examCommittee);
+                    labCourseBill.setExamCommittee(examCommittee);
                     labCourseBill.setCourseCode(course.getCourseCode());
                     labCourseBill.setTaskName("Lab/Sessional");
                     labCourseBill.setBillUser(course.getCourseTeacher());
@@ -328,7 +328,7 @@ public class ExamCommitteeService {
                     for(int i = 0; i < 4; i++){
                         GratuityBill labExamCommitteeBill = new GratuityBill();
 
-                        labExamCommitteeBill.setCommittee(examCommittee);
+                        labExamCommitteeBill.setExamCommittee(examCommittee);
                         labExamCommitteeBill.setCourseCode(course.getCourseCode());
                         labExamCommitteeBill.setTaskName("Lab/Sessional");
                         labExamCommitteeBill.setBillRate(labExamCommitteeBillRate);
@@ -389,7 +389,7 @@ public class ExamCommitteeService {
                            //evaluation bill
                             GratuityBill projectCourseBill = new GratuityBill();
                            projectCourseBill.setBillUser(internal);
-                           projectCourseBill.setCommittee(examCommittee);
+                           projectCourseBill.setExamCommittee(examCommittee);
                            projectCourseBill.setCourseCode(course.getCourseCode());
                            projectCourseBill.setCreditHour(course.getCourseCredit());
                            projectCourseBill.setTaskName(courseType + " Evaluation");
@@ -404,7 +404,7 @@ public class ExamCommitteeService {
                             GratuityBill supervisionBill = new GratuityBill();
 
                             supervisionBill.setBillUser(internal);
-                            supervisionBill.setCommittee(examCommittee);
+                            supervisionBill.setExamCommittee(examCommittee);
                             supervisionBill.setCourseCode(course.getCourseCode());
                             supervisionBill.setCreditHour(course.getCourseCredit());
                             supervisionBill.setTaskName(courseType + " Supervision");
@@ -417,7 +417,7 @@ public class ExamCommitteeService {
 
                         //only project/thesis evaluation bill for external, no supervision
                         GratuityBill externalEvaluationBill = new GratuityBill();
-                        externalEvaluationBill.setCommittee(examCommittee);
+                        externalEvaluationBill.setExamCommittee(examCommittee);
                         externalEvaluationBill.setBillUser(thesisProjectEvaluation.getExternalTeacher());
                         externalEvaluationBill.setCourseCode(course.getCourseCode());
                         externalEvaluationBill.setCreditHour(course.getCourseCredit());
@@ -432,7 +432,7 @@ public class ExamCommitteeService {
                     double vivaVoceBillRate = billRateService.getRateByTask("Viva Voce");
                     for(int i = 0; i < 4; i++){
                         GratuityBill vivaVoceBill = new GratuityBill();
-                        vivaVoceBill.setCommittee(examCommittee);
+                        vivaVoceBill.setExamCommittee(examCommittee);
                         vivaVoceBill.setCourseCode(course.getCourseCode());
                         vivaVoceBill.setCreditHour(course.getCourseCredit());
                         vivaVoceBill.setNumberOfScriptsOrStudents(studentCount);

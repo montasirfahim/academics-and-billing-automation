@@ -1,18 +1,13 @@
 package com.example.controller;
-import com.example.entity.Course;
-import com.example.entity.ExamCommittee;
-import com.example.entity.Semester;
-import com.example.entity.User;
-import com.example.service.CourseService;
-import com.example.service.ExamCommitteeService;
-import com.example.service.SemesterService;
-import com.example.service.UserService;
+import com.example.entity.*;
+import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +18,14 @@ public class SemesterController {
     private SemesterService semesterService;
     @Autowired
     private ExamCommitteeService examCommitteeService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CourseService courseService;
+    @Autowired
+    private ThirdExaminationService thirdExaminationService;
+    @Autowired
+    private GratuityBillService gratuityBillService;
 
 
     @PostMapping("/semester/new")
@@ -111,6 +114,58 @@ public class SemesterController {
 
         semesterService.deleteBySemesterId(semesterId);
         return "redirect:/semesters/view";
+    }
+
+    @GetMapping("/details/{userId}/{semesterId}")
+    public String getDetailedInfoPerUserAndSemester(@PathVariable("userId") Long userId, @PathVariable("semesterId") Long semesterId, HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("user");
+        if (loggedInUser == null) {
+            return "redirect:/login";
+        }
+        if(!loggedInUser.getRole().equals("admin") && !loggedInUser.getRole().equals("co-admin") && !loggedInUser.getUserId().equals(userId)) {
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You are not allowed to perform this action");
+            return "error_page";
+        }
+        User targetUser = userService.getUserById(userId);
+        Semester semester = semesterService.findById(semesterId);
+        if(targetUser == null || semester == null) {
+            model.addAttribute("status", "Not Found");
+            model.addAttribute("error", "Semester or User not found!");
+            return "error_page";
+        }
+
+        if(targetUser.getRole().equals("admin") || targetUser.getRole().equals("co-admin")) {
+            model.addAttribute("status", "Not Found");
+            model.addAttribute("error", "Admins are not associated with academic activities.");
+            return "error_page";
+        }
+
+        List<Course> conductedCourses = courseService.findByCourseTeacherAndSemester(targetUser, semester);
+        List<Course> coursesAsSetter = courseService.findBySemesterAndTeacherAsQuesSetter(semester, targetUser);
+        List<ThirdExamination> thirdExaminationList = thirdExaminationService.findByExaminerIdAndSemesterId(userId, semesterId);
+
+        List<ExamCommittee> examCommitteeList = examCommitteeService.findAllBySemesterId(semesterId);
+        List<CommitteeBillDTO> committeeBillDTOList = new ArrayList<>();
+        if(conductedCourses != null) {
+            for(ExamCommittee examCommittee : examCommitteeList){
+                double billAmount = gratuityBillService.getTotalBillAmountByUserAndExamCommittee(targetUser, examCommittee);
+                String batchName = examCommittee.getSemesterYearName() + " " + examCommittee.getSemester().getSemesterParity() + " Semester";
+                CommitteeBillDTO committeeBillDTO = new CommitteeBillDTO(batchName, examCommittee.getCommitteeId(), examCommittee.getChairman().getName(), billAmount);
+                committeeBillDTOList.add(committeeBillDTO);
+            }
+        }
+
+
+        model.addAttribute("conductedCourses", conductedCourses);
+        model.addAttribute("coursesAsSetter", coursesAsSetter);
+        model.addAttribute("semester", semester);
+        model.addAttribute("thirdExaminationList", thirdExaminationList);
+        model.addAttribute("teacherName", targetUser.getName());
+        model.addAttribute("role", targetUser.getRole());
+        model.addAttribute("committeeBillDTOList", committeeBillDTOList);
+
+        return "semester_user_details";
     }
 
 }

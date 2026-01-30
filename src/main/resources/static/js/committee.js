@@ -353,7 +353,8 @@ async function assignSupervisors(event){
 
         const data = await response.json();
         if(response.ok){
-            alert("Supervisors has been assigned successfully for the selected course!");
+            alert(data.message);
+            window.location.href = `/committee/manage/${committeeId}`;
         }
         else{
             alert(data.message);
