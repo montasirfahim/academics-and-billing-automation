@@ -465,7 +465,7 @@ public class ExamCommitteeService {
         }catch(Exception e){
             log.error("Failed to publish result for committee {}: {}", examCommittee.getCommitteeId(), e.getMessage());
             System.out.println(e.getMessage());
-            return false;
+            throw new RuntimeException("Rollback: " + e.getMessage());
         }
     }
 }

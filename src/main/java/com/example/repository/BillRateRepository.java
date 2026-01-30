@@ -8,10 +8,10 @@ import org.springframework.data.repository.query.Param;
 public interface BillRateRepository extends JpaRepository<BillRate, Long> {
 
     @Query("SELECT b.rate FROM BillRate b WHERE b.task = :task")
-    double getRateByTask(@Param("task") String task);
+    Double getRateByTask(@Param("task") String task);
 
     @Query("SELECT b.rate FROM BillRate b WHERE b.task = :task AND b.rateParameter = :rateParameter")
-    double getRateByTaskAndRateParameter(@Param("task") String task, @Param("rateParameter") String rateParameter);
+    Double getRateByTaskAndRateParameter(@Param("task") String task, @Param("rateParameter") String rateParameter);
 
     BillRate getBillRateById(Long id);
 }

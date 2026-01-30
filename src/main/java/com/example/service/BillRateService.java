@@ -18,11 +18,13 @@ public class BillRateService {
     }
 
     public double getRateByTask(String task){
-        return billRateRepository.getRateByTask(task);
+        Double rate = billRateRepository.getRateByTask(task);
+        return (rate != null) ? rate : 0.0;
     }
 
     public double getRateByTaskAndParameter(String task, String parameter){
-        return billRateRepository.getRateByTaskAndRateParameter(task, parameter);
+        Double rate = billRateRepository.getRateByTaskAndRateParameter(task, parameter);
+        return (rate != null) ? rate : 0.0;
     }
 
     public Boolean updateRateById(Long id, double newRate, Long modifiedById){
