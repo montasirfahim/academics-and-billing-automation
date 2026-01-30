@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface ThirdExaminationRepository extends JpaRepository<ThirdExamination, Long> {
 
-    public Optional<ThirdExamination> findById(Long thirdExaminationId);
+    Optional<ThirdExamination> findById(Long thirdExaminationId);
 
-    public List<ThirdExamination> findByExaminer(User examiner);
+    List<ThirdExamination> findByExaminer(User examiner);
 
-    public List<ThirdExamination> findByExaminerAndSemester(User examiner, Semester semester);
+    List<ThirdExamination> findByExaminerAndSemester(User examiner, Semester semester);
 
-    public List<ThirdExamination> findByExamCommittee(ExamCommittee examCommittee);
+    List<ThirdExamination> findByExamCommittee(ExamCommittee examCommittee);
 
     boolean existsByExamCommitteeAndCourseAndExaminer(ExamCommittee examCommittee, Course course, User examiner);
     ThirdExamination findByCourseAndExamCommittee(Course course, ExamCommittee examCommittee);

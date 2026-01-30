@@ -45,6 +45,35 @@ async function assignQuesSetter(event, committeeId){
 
 }
 
+async function  editStudentCount(event, committeeId){
+    event.preventDefault();
+    const newValue = document.getElementById("student").value;
+    if(!newValue || isNaN(newValue)){
+        alert("Please provide valid integer number.")
+        return;
+    }
+    try{
+        const response = await fetch(`/api/committee/update-student`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({committeeId, newValue})
+        });
+        const data = await response.json();
+        if(response.ok){
+            alert("Student count has been updated successfully");
+            window.location.href = `/committee/manage/${committeeId}`;
+        }
+        else{
+            alert(data.message);
+        }
+    }catch (err){
+        console.log(err);
+        alert("An error occurred!");
+    }
+}
+
 async function updateExamineeCount(element){
     const committeeId = element.getAttribute("data-id");
     console.log(committeeId);
@@ -246,4 +275,92 @@ async function markResultPublished(element){
         console.log(err);
         element.disabled = false;
     }
+}
+
+
+function addNewSupervisorRow() {
+    const container = document.getElementById("details-container");
+    const firstRow = document.querySelector(".details-row");
+
+    //cloning first row
+    const newRow = firstRow.cloneNode(true);
+
+    //cleaning values in the cloned row
+    newRow.querySelectorAll('input').forEach(input => input.value = '');
+    newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+    container.appendChild(newRow);
+}
+
+function deleteSupervisorRow(button){
+    const container = document.getElementById("details-container");
+
+    if(container.querySelectorAll('.details-row').length > 1){
+        button.closest('.details-row').remove();
+    }
+    else{
+        alert("You must have at least one supervisor row.");
+    }
+}
+
+async function assignSupervisors(event){
+    event.preventDefault();
+
+    const courseId = document.getElementById("thesis-course").value;
+    console.log("course id: " + courseId);
+
+    const committeeId = event.currentTarget.dataset.committeeId;
+
+    if(!courseId || isNaN(courseId)){
+        alert("Invalid course ID");
+        return;
+    }
+    if(!committeeId || isNaN(committeeId)){
+        alert("Did not find valid committee ID");
+        return;
+    }
+    const superVisorRows = document.querySelectorAll('.details-row');
+    const superVisionData = [];
+    let totalStudent = 0;
+
+    superVisorRows.forEach(row => {
+        const internalId = row.querySelector('select').value;
+        const groupCount = row.querySelector('input[placeholder*="groups"]').value;
+        const studentCount = row.querySelector('input[placeholder*="students"]').value;
+        totalStudent += parseInt(studentCount);
+
+        if(internalId && groupCount && studentCount){
+            superVisionData.push({
+                teacherId: parseInt(internalId),
+                numberOfGroups: parseInt(groupCount),
+                numberOfStudents: parseInt(studentCount)
+            });
+        }
+    });
+
+    if(superVisionData.length === 0) {
+        alert("Please add at least one supervisor entry.");
+        return;
+    }
+
+    console.log("sending data: ", superVisionData);
+    try{
+        const response = await fetch('/api/thesis-project/assign-supervisors', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({superVisionData, courseId, committeeId, totalStudent})
+        });
+
+        const data = await response.json();
+        if(response.ok){
+            alert("Supervisors has been assigned successfully for the selected course!");
+        }
+        else{
+            alert(data.message);
+        }
+    } catch(err){
+        alert("Connection failed: " + err);
+    }
+
+
 }

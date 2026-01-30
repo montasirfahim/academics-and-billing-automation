@@ -91,35 +91,7 @@
         </div>
     </div>
 </div>
-<script th:inline="javascript">
-    async function  editStudentCount(event, committeeId){
-        event.preventDefault();
-        const newValue = document.getElementById("student").value;
-        if(!newValue || isNaN(newValue)){
-            alert("Please provide valid integer number.")
-            return;
-        }
-        try{
-            const response = await fetch(`/api/committee/update-student`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({committeeId, newValue})
-            });
-            const data = await response.json();
-            if(response.ok){
-                alert("Student count has been updated successfully");
-                window.location.href = `/committee/manage/${committeeId}`;
-            }
-            else{
-                alert(data.message);
-            }
-        }catch (err){
-            console.log(err);
-            alert("An error occurred!");
-        }
-    }
-</script>
+
+<script th:src="@{/js/committee.js}"></script>
 </body>
 </html>

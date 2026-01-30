@@ -29,6 +29,8 @@ public class ExamCommitteeService {
     private CourseRepository courseRepository;
     @Autowired
     private ThirdExaminationRepository thirdExaminationRepository;
+    @Autowired
+    private ThesisProjectSupervisionService thesisProjectSupervisionService;
 
 
     public List<ExamCommittee> findAllBySemesterId(Long semesterId){
@@ -361,10 +363,98 @@ public class ExamCommitteeService {
 
                 }
                 else if(course.getCourseType().equals("Project") || course.getCourseType().equals("Thesis")){
-                    GratuityBill projectCourseBill = new GratuityBill();
+                    ThesisProjectSupervision thesisProjectEvaluation = thesisProjectSupervisionService.findByCourseAndExamCommittee(course, examCommittee);
+
+                    if(thesisProjectEvaluation != null){
+                        String courseType = course.getCourseType();
+
+                        List<ThesisProjectSupervision.Internal> internalsList = thesisProjectEvaluation.getInternalTeachers();
+
+                        double projectThesisEvaluationBillRate = billRateService.getRateByTask("Project/Thesis Paper Evaluation"); //per group
+                        double projectThesisSupervisionBillRate = billRateService.getRateByTask("Project/Thesis Supervision");
+                        long totalGroup = 0L;
+                        long totalStudents = 0L;
+
+                        for(ThesisProjectSupervision.Internal detail : internalsList){
+                           Long numberOfGroups = detail.getGroupCount();
+                           Long numberOfStudents = detail.getStudentCount();
+                           User internal = detail.getInternalTeacher();
+
+                           totalGroup += numberOfGroups;
+                           totalStudents += numberOfStudents;
+
+                           //evaluation bill
+                            GratuityBill projectCourseBill = new GratuityBill();
+                           projectCourseBill.setBillUser(internal);
+                           projectCourseBill.setCommittee(examCommittee);
+                           projectCourseBill.setCourseCode(course.getCourseCode());
+                           projectCourseBill.setCreditHour(course.getCourseCredit());
+                           projectCourseBill.setTaskName(courseType + " Evaluation");
+                           projectCourseBill.setNumberOfScriptsOrStudents(numberOfStudents);
+                           projectCourseBill.setBillRate(projectThesisEvaluationBillRate);
+                           projectCourseBill.setTotalBillAmount(numberOfGroups * projectThesisEvaluationBillRate);
+
+                           gratuityBillService.saveGratuityBill(projectCourseBill);
+
+
+                            //supervision bill
+                            GratuityBill supervisionBill = new GratuityBill();
+
+                            supervisionBill.setBillUser(internal);
+                            supervisionBill.setCommittee(examCommittee);
+                            supervisionBill.setCourseCode(course.getCourseCode());
+                            supervisionBill.setCreditHour(course.getCourseCredit());
+                            supervisionBill.setTaskName(courseType + " Supervision");
+                            supervisionBill.setNumberOfScriptsOrStudents(numberOfStudents);
+                            supervisionBill.setBillRate(projectThesisSupervisionBillRate);
+                            supervisionBill.setTotalBillAmount(numberOfGroups * projectThesisSupervisionBillRate);
+
+                            gratuityBillService.saveGratuityBill(supervisionBill);
+                        }
+
+                        //only project/thesis evaluation bill for external, no supervision
+                        GratuityBill externalEvaluationBill = new GratuityBill();
+                        externalEvaluationBill.setCommittee(examCommittee);
+                        externalEvaluationBill.setBillUser(thesisProjectEvaluation.getExternalTeacher());
+                        externalEvaluationBill.setCourseCode(course.getCourseCode());
+                        externalEvaluationBill.setCreditHour(course.getCourseCredit());
+                        externalEvaluationBill.setTaskName(courseType + " Evaluation");
+                        externalEvaluationBill.setNumberOfScriptsOrStudents(totalStudents);
+                        externalEvaluationBill.setTotalBillAmount(totalGroup * projectThesisEvaluationBillRate);
+                        gratuityBillService.saveGratuityBill(externalEvaluationBill);
+
+                    }
+                }
+                else if(course.getCourseType().equals("Viva Voce")){
+                    double vivaVoceBillRate = billRateService.getRateByTask("Viva Voce");
+                    for(int i = 0; i < 4; i++){
+                        GratuityBill vivaVoceBill = new GratuityBill();
+                        vivaVoceBill.setCommittee(examCommittee);
+                        vivaVoceBill.setCourseCode(course.getCourseCode());
+                        vivaVoceBill.setCreditHour(course.getCourseCredit());
+                        vivaVoceBill.setNumberOfScriptsOrStudents(studentCount);
+                        vivaVoceBill.setBillRate(vivaVoceBillRate);
+                        vivaVoceBill.setTotalBillAmount(studentCount * vivaVoceBillRate);
+                        vivaVoceBill.setTaskName("Viva Voce");
+
+                        if(i == 0){
+                            vivaVoceBill.setBillUser(examCommittee.getChairman());
+                        }
+                        else if(i == 1){
+                            vivaVoceBill.setBillUser(examCommittee.getInternalMember1());
+                        }
+                        else if(i == 2){
+                            vivaVoceBill.setBillUser(examCommittee.getInternalMember2());
+                        }
+                        else{
+                            vivaVoceBill.setBillUser(examCommittee.getExternalMember1());
+                        }
+
+                        gratuityBillService.saveGratuityBill(vivaVoceBill);
+
+                    }
                 }
             }
-
 
             examCommittee.setResultPublished(true);
             examCommitteeRepository.save(examCommittee);

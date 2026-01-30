@@ -115,6 +115,8 @@ public class ExamCommitteController {
 
         List<Course> committeeCourses = courseService.findByCommitteeId(id);
         model.addAttribute("committeeCourses",committeeCourses);
+        List<Course> thesisOrProjectCourses = courseService.findThesisOrProjectCourseByExamCommittee(examCommittee);
+        model.addAttribute("thesisOrProjectCourses",thesisOrProjectCourses);
 
         List<ThirdExamination> thirdExaminationList = thirdExaminationService.findByExamCommitteeId(id);
         model.addAttribute("thirdExaminationList",thirdExaminationList);
@@ -140,7 +142,7 @@ public class ExamCommitteController {
             model.addAttribute("error", "Committee not found");
             return "error_page";
         }
-        if(examCommitteeService.checkViewPermission(user, committee)){
+        if(!examCommitteeService.checkEditPermission(user, committee)){
             model.addAttribute("status", "Access Denied");
             model.addAttribute("error", "You are not allowed to perform this action");
             return "error_page";
@@ -207,14 +209,6 @@ public class ExamCommitteController {
                 map.put("message", "Exam committee or course not found.");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
             }
-            if(examCommittee.isResultPublished()){
-                map.put("message", "Conflict: Result of this exam committee has already published!\nYou can't update it right now.");
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
-            }
-            if(examineeCount <= 0){
-                map.put("message", "Number of student participated in exam can not be zero or less than zero.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
-            }
 
             if(!examCommitteeService.checkEditPermission(user, examCommittee)) {
                 map.put("message", "Permission denied! Only committee chairman or admins can edit or update anything of an exam committee.");
@@ -224,6 +218,21 @@ public class ExamCommitteController {
             if(examCommitteeService.isNotCommitteeCourse(examCommittee, course)) {
                 map.put("message", "Data Mismatch! The selected course does not belong to this committee.");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
+            }
+
+            if(!course.getCourseType().equals("Theory")){
+                map.put("message", "Bad Request: It's not a theory course! \nExaminee count is required only for theory courses.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+
+            }
+
+            if(examCommittee.isResultPublished()){
+                map.put("message", "Conflict: Result of this exam committee has already published!\nYou can't update it right now.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
+            }
+            if(examineeCount <= 0){
+                map.put("message", "Number of student participated in exam can not be zero or less than zero.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
 
             if(courseService.updateExamineeCount(course, examineeCount)) {

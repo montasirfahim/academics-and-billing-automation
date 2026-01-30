@@ -119,4 +119,12 @@ public class CourseService {
     public long getTotalTheoryCoursesCount() {
         return courseRepository.countByCourseType("Theory");
     }
+
+    public boolean existsByCourseTypeAndSessionAndSemester(String courseType, String session, Semester semester) {
+        return courseRepository.existsByCourseTypeAndSessionAndSemester(courseType, session, semester);
+    }
+
+    public List<Course> findThesisOrProjectCourseByExamCommittee(ExamCommittee examCommittee) {
+        return courseRepository.findThesisProjectCourseByExamCommittee(examCommittee.getSemester(), examCommittee.getSession(), "Thesis", "Project");
+    }
 }

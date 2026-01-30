@@ -203,15 +203,16 @@
                         <option value="">-- Select Course --</option>
                         <option th:each="course : ${committeeCourses}" th:value="${course.id}" th:text="${course.courseName}"></option>
                     </select>
+
                     <label for="examiner" class="form-label fw-bold">Examiner</label>
                     <select id="examiner" class="form-select mb-2">
                         <option value="">-- Select Examiner --</option>
                         <option th:each="i : ${internals}" th:value="${i.userId}" th:text="${i.name}"></option>
                     </select>
-<!--                    <label for="scripts-count" class="form-label fw-bold">Number of Scripts</label>-->
-<!--                    <input id="scripts-count" type="number" class="form-control mb-3" placeholder="e.g: 3" required>-->
+
                     <label for="studentsId" class="form-label fw-bold">Students ID</label>
                     <input id="studentsId" class="form-control mb-3" type="text" placeholder="Enter IDs separated by comma. e.g: IT22016, IT22002" required>
+
                     <div class="d-flex justify-content-center">
                         <button type="submit" id="third-examiner-btn" class="btn btn-outline-primary w-50">Assign</button>
                     </div>
@@ -225,10 +226,11 @@
                 <div class="px-3">
                     <label for="meeting-date" class="form-label fw-bold">Select Meeting Time</label>
                     <input type="datetime-local" id="meeting-date" class="form-control mb-4" required>
+
                     <div class="d-flex justify-content-center gap-2" style="margin-bottom: 20px">
-<!--                        <h5>Moderation Status: </h5>-->
                         <span id="mod-status" class="badge" th:text="${moderationStatus} ? 'Moderation Completed' : 'Not Moderated'" th:classappend="${moderationStatus} ? ' bg-success' : ' bg-warning text-dark'" style="font-size: 0.85rem; padding: 0.5em 0.7em;">Status</span>
                     </div>
+
                     <div class="d-flex justify-content-center">
                         <button type="button" class="btn btn-outline-primary w-50 mt-4" th:data-id="${committee.committeeId}" onclick="callModeration(this)">Call Meeting</button>
                     </div>
@@ -259,6 +261,41 @@
 
 </div>
 
+<div id="thesis-project" th:unless="${thesisOrProjectCourses.isEmpty()}" class="d-flex flex-column justify-content-center align-items-center my-5 mx-auto gap-2 shadow" style="max-width: 1300px">
+    <div class="d-flex justify-content-center py-2 w-100 text-white" style="background-color: rebeccapurple">
+        <h3>Assign Supervisors : Thesis or Project</h3>
+    </div>
+
+    <form id="thesis-project-evaluation-form" class="w-100 p-5" th:data-committee-id="${committeeId}" onsubmit="assignSupervisors(event)">
+        <div class="d-flex justify-content-between gap-3 align-items-center mb-5">
+            <div class="d-flex gap-2 w-auto">
+                <label for="thesis-course" class="form-label fw-bold">Select Course</label>
+                <select id="thesis-course" class="form-select w-auto" required>
+                    <option value="">-- Select Project or Thesis Course --</option>
+                    <option th:each="course : ${thesisOrProjectCourses}" th:text="${course.courseName}" th:value="${course.id}">Course Name</option>
+                </select>
+            </div>
+            <button type="button" id="new-entry-btn" class="btn bg-success text-white btn-sm text-nowrap" onclick="addNewSupervisorRow()">Add New Supervisor</button>
+        </div>
+
+        <div id="details-container">
+            <div class="d-flex gap-2 my-2 details-row" id="details-row">
+                <select id="internal-examiner" class="form-select" required>
+                    <option value="">-- Select Internal(Supervisor and Examiner) --</option>
+                    <option th:each="internal: ${internals}" th:value="${internal.userId}" th:text="${internal.name}">Teacher Name</option>
+                </select>
+                <input type="number" id="group" class="form-control" placeholder="Enter number of groups" required>
+                <input type="number" id="student" class="form-control" placeholder="Enter number of students" required>
+                <button type="button" id="entry-dlt-btn" class="btn bg-danger text-white btn-sm text-nowrap" onclick="deleteSupervisorRow(this)">Delete Supervisor</button>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center">
+            <button type="submit" id="supervisors-submit-btn" class="btn btn-outline-primary btn-sm mt-5 mb-3">Assign Supervisors</button>
+        </div>
+
+    </form>
+</div>
 
 <div id="courses" class="course-table my-5 d-flex justify-content-center align-items-center">
     <table border="1" th:object="${committeeCourses}" id="course-table" class="shadow">
