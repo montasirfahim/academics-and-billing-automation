@@ -65,6 +65,11 @@ public class ThesisProjectSupervisionController {
                 return new ResponseEntity<>(map, HttpStatus.CONFLICT);
             }
 
+            if(examCommittee.isResultPublished()){
+                map.put("message", "Conflict: Result of this exam committee has already published!\nYou can't re-assign supervisors right now.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
+            }
+
             if(thesisProjectSupervisionService.existsByCourseAndExamCommittee(course, examCommittee)){
                 map.put("message", "Bad Request : Supervisors have already been assigned for this course - " + course.getCourseName());
                 return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);

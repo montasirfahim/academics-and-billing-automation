@@ -42,8 +42,15 @@ public class CourseController {
             model.addAttribute("error", "You are not allowed to perform this action");
             return "error_page";
         }
-        courseService.saveCourse(course);
-        return "redirect:/courses/view";
+        if(courseService.saveCourse(course)){
+            return "redirect:/courses/view";
+        }
+        else{
+            model.addAttribute("status", "Access Denied");
+            model.addAttribute("error", "You can't add a new course to any Exam Committee which Result has been published or Question Moderation of that Exam Committee has been completed already!");
+            return "error_page";
+        }
+
     }
 
     @GetMapping("/course/assign/{id}")

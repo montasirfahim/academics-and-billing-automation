@@ -172,6 +172,10 @@ public class ExamCommitteController {
                 map.put("message", "Committee not found or Invalid student count.");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
             }
+            if(committee.isResultPublished()){
+                map.put("message", "Conflict: Result of this Exam Committee has published already. \nYou can't modify this committee right now!");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
+            }
             if(examCommitteeService.checkEditPermission(user, committee)) {
                 examCommitteeService.updateStudentCount(committee, studentCount);
                 map.put("message", "Student count has been updated successfully!");
@@ -278,7 +282,7 @@ public class ExamCommitteController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
         }
         if(!examCommitteeService.checkResultPublicationEligibility(examCommittee)){
-            map.put("message", "Bad Request: Please update number of students participated in examination for each theory course!");
+            map.put("message", "Bad Request: Please update number of students participated in examination for all Theory courses and \nAssign Supervisors for Thesis or Project courses (if exists)!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
         }
 

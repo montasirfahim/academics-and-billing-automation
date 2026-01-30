@@ -21,8 +21,13 @@ public class CourseService {
     @Autowired
     private ExamCommitteeService examCommitteeService;
 
-    public void saveCourse(Course course) {
+    public boolean saveCourse(Course course) {
+        ExamCommittee examCommittee = examCommitteeService.findCommitteeBySemesterAndSession(course.getSemester(), course.getSession());
+        if(examCommittee != null && (examCommittee.isModerated() || examCommittee.isResultPublished())){
+            return false;
+        }
         courseRepository.save(course);
+        return true;
     }
 
     public List<Course> findAll() {

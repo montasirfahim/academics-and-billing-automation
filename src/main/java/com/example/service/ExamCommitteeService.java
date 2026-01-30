@@ -138,6 +138,9 @@ public class ExamCommitteeService {
             if(course.getCourseType().equals("Theory")){
                 if(course.getExamineeCount() == null || course.getExamineeCount() <= 0) return false;
             }
+            else if(course.getCourseType().equals("Project") || course.getCourseType().equals("Thesis")){
+                if(!thesisProjectSupervisionService.existsByCourseAndExamCommittee(course, examCommittee)) return false;
+            }
         }
         return true;
     }
