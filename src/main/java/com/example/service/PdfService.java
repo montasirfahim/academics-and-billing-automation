@@ -693,7 +693,7 @@ public class PdfService {
 
             document.add(new Paragraph("\n"));
 
-            float[] columnWidths2 = {0.8f, 3.5f, 2f, 1f, 1.5f, 1.5f, 1.5f, 1f, 1f, 1f, 1.5f, 1f};
+            float[] columnWidths2 = {0.8f, 3.5f, 2f, 1f, 1f, 1.5f, 1.5f, 1f, 1f, 1f, 2f, 1f};
             Table table = new Table(UnitValue.createPercentArray(columnWidths2));
             table.setWidth(UnitValue.createPercentValue(100));
             table.setFontSize(8.5f);
@@ -712,7 +712,7 @@ public class PdfService {
 
             String[] categories = {
                     "Question Setting", "Question Moderation", "Script Evaluation",
-                    "Oral/Comprehensive Exam", "Practical/Lab/Sessional", "Tabulation",
+                    "Oral/Comprehensive Oral Exam", "Practical/Lab/Sessional", "Tabulation",
                     "Chairman Honorarium","Member Honorarium", "Question Typing & Checking", "Thesis/Research Project",
                     "Special Topic Seminar/Term Paper/Industrial Training & Viva", "Internship/Monograph/Presentation & Viva-Voce", "Class Test"
             };
@@ -939,7 +939,7 @@ public class PdfService {
 
             Paragraph payTo = new Paragraph()
                     .add(new Text("Please pay to " + billUser.getName()).setFontSize(11))
-                    .add(new Text(" TK: ").setFontSize(12))
+                    .add(new Text(" TK: " + grossTotal).setFontSize(12))
                     .add(new Text(" (In words): ").setFontSize(12))
                     .add(new Text(UtilityService.formatBDT(grossTotal)).setFontSize(11));
             document.add(payTo);

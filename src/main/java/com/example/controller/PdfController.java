@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -151,6 +152,7 @@ public class PdfController {
         if(user.getRole().equals("admin") || user.getRole().equals("co-admin") || user.getUserId().equals(billUser.getUserId())) {
             List<GratuityBill> gratuityBillList = gratuityBillService.findAllByUserAndExamCommittee(billUser, examCommittee);
 
+            //List<GratuityBill> gratuityBillList2 = new ArrayList<>();
 
             byte[] pdfBytes = pdfService.createGratuityBillPdf(billUser,examCommittee, gratuityBillList);
 

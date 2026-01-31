@@ -144,6 +144,10 @@
             <a class="btn btn-outline-primary w-50 my-4" th:href="@{'/print/committee/' + ${committee.committeeId}}">Print Committee</a>
         </div>
 
+       <div class="d-flex justify-content-center mb-5">
+           <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#activitiesModal">Committee Activities</button>
+       </div>
+
 
         <div class="d-flex align-items-center gap-2" style="margin-bottom: 20px; font-size: 1.25rem;">
             <span style="font-weight: 500;">Result Status: </span>
@@ -358,6 +362,46 @@
         <p>ICT'19</p>
     </div>
 </footer>
+
+<!-- Modal -->
+<div class="modal fade" id="activitiesModal" tabindex="-1" aria-labelledby="activitiesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="activitiesModalLabel">Committee Activities</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body w-auto">
+              <div class="table-responsive w-auto">
+                  <table class="table table-hover mb-2">
+                      <thead class="bg-dark">
+                      <tr class="bg-dark text-white">
+                          <th scope="col" class="text-nowrap">Action</th>
+                          <th scope="col" class="text-nowrap">Timestamp</th>
+                          <th scope="col">Performed by</th>
+                          <th scope="col" class="text-center">Details</th>
+                      </tr>
+                      </thead>
+                      <tbody id="activity-table-body">
+                            <tr>
+                                <td class="text-nowrap">Question Moderation Meeting Call</td>
+                                <td class="text-nowrap">20-01-2026 12:10PM</td>
+                                <td>Dr. Badrul Alam Miah</td>
+                                <td>Question moderation meeting has been called on 25-01-2026 9:30AM</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-center text-danger">This is a demo modal-dialog... will be implemented later</td>
+                            </tr>
+                      </tbody>
+                  </table>
+              </div>
+            </div>
+            <div class="modal-footer mt-5">
+                <button type="button" class="btn text-white bg-danger btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script th:src="@{/js/auth.js}"></script>
