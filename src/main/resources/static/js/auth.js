@@ -81,7 +81,7 @@ async function login(event) {
 
         }
     } catch (err) {
-        console.error(err);
+        console.log(err);
         statusEl.textContent = "Server error. Try again later.";
         statusEl.style.backgroundColor = "#fee2e2";
         statusEl.style.color = "#991b1b";
