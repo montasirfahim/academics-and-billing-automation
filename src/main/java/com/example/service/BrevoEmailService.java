@@ -31,11 +31,11 @@ public class BrevoEmailService {
 
         SendSmtpEmailSender sender = new SendSmtpEmailSender();
         sender.setEmail(senderEmail);
-        sender.setName("Deot of ICT, MBSTU");
+        sender.setName("Dept of ICT, MBSTU");
 
 
         SendSmtpEmailTo mainTo = new SendSmtpEmailTo();
-        mainTo.setEmail(senderEmail);
+        //mainTo.setEmail(senderEmail);
 
         //Set BCC Recipients
         List<SendSmtpEmailBcc> bccList = Arrays.stream(bccRecipients)

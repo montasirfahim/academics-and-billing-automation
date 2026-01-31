@@ -938,9 +938,9 @@ public class PdfService {
 
 
             Paragraph payTo = new Paragraph()
-                    .add(new Text("Please pay to " + billUser.getName()).setFontSize(11))
-                    .add(new Text(" TK: " + grossTotal).setFontSize(12))
-                    .add(new Text(" (In words): ").setFontSize(12))
+                    .add(new Text("Please Pay to " + billUser.getName()).setFontSize(11))
+                    .add(new Text(" TK: " + grossTotal).setFontSize(11))
+                    .add(new Text(" BDT (In words): ").setFontSize(11))
                     .add(new Text(UtilityService.formatBDT(grossTotal)).setFontSize(11));
             document.add(payTo);
             document.add(new Paragraph("\n"));
