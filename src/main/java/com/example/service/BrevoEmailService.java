@@ -35,7 +35,8 @@ public class BrevoEmailService {
 
 
         SendSmtpEmailTo mainTo = new SendSmtpEmailTo();
-        //mainTo.setEmail(senderEmail);
+        mainTo.setEmail(senderEmail);
+
 
         //Set BCC Recipients
         List<SendSmtpEmailBcc> bccList = Arrays.stream(bccRecipients)

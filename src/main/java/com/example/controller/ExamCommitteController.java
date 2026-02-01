@@ -29,6 +29,8 @@ public class ExamCommitteController {
     private CourseService courseService;
     @Autowired
     private ThirdExaminationService thirdExaminationService;
+    @Autowired
+    private CommitteeActivityService committeeActivityService;
 
     public ExamCommitteController(PdfService pdfService) {
         this.pdfService = pdfService;
@@ -120,6 +122,9 @@ public class ExamCommitteController {
 
         List<ThirdExamination> thirdExaminationList = thirdExaminationService.findByExamCommitteeId(id);
         model.addAttribute("thirdExaminationList",thirdExaminationList);
+
+        List<CommitteeActivity> committeeActivityList = committeeActivityService.findByExamCommittee(examCommittee);
+        model.addAttribute("committeeActivityList", committeeActivityList);
 
         List<User> internals = userService.getInternals();
         List<User> externals = userService.getExternals();
@@ -286,7 +291,7 @@ public class ExamCommitteController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
         }
 
-        if(examCommitteeService.markResultPublished(examCommittee)){
+        if(examCommitteeService.markResultPublished(user, examCommittee)){
             map.put("message", "Success: Result has been marked as published and all kind of bills related to this committee has been created successfully!");
             return ResponseEntity.status(HttpStatus.OK).body(map);
         }

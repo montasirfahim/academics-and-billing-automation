@@ -331,7 +331,7 @@
 <div id="third-examination" class="course-table my-5 d-flex justify-content-center align-items-center">
     <table border="1" th:if="${thirdExaminationList != null and !thirdExaminationList.isEmpty()}" th:object="${thirdExaminationList}" id="third-examination-table" class="shadow">
         <thead>
-            <td colspan="6" class="fw-bold text-center"><h2>Third Examination</h2></td>
+            <td colspan="7" class="fw-bold text-center"><h2>Third Examination</h2></td>
         </thead>
         <thead>
         <th>Course Code</th>
@@ -340,6 +340,7 @@
         <th>Course Teacher</th>
         <th>Third Examiner</th>
         <th>Total Scripts</th>
+        <th>Action</th>
         </thead>
         <tr th:each="thirdExamination: ${thirdExaminationList}">
             <td th:text="${thirdExamination.course.courseCode}" data-label="Code"></td>
@@ -348,6 +349,7 @@
             <td th:text="${thirdExamination.course.courseTeacher?.name ?: 'Not Assigned'}"></td>
             <td th:text="${thirdExamination.examiner?.name ?: 'Not Assigned'}"></td>
             <td th:text="${thirdExamination.scriptsCount}"></td>
+            <td><button th:data-third-id="${thirdExamination.id}" data-bs-toggle="modal" data-bs-target="#stuIdModal" onclick="displayStudentsId(event)" class="btn btn-outline-primary btn-sm">Details</button></td>
         </tr>
     </table>
 </div>
@@ -363,12 +365,12 @@
     </div>
 </footer>
 
-<!-- Modal -->
+<!-- Activity Modal -->
 <div class="modal fade" id="activitiesModal" tabindex="-1" aria-labelledby="activitiesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="activitiesModalLabel">Committee Activities</h1>
+                <h1 class="modal-title fs-5 fw-bold" id="activitiesModalLabel">Committee Activities</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body w-auto">
@@ -377,26 +379,50 @@
                       <thead class="bg-dark">
                       <tr class="bg-dark text-white">
                           <th scope="col" class="text-nowrap">Action</th>
-                          <th scope="col" class="text-nowrap">Timestamp</th>
-                          <th scope="col">Performed by</th>
+                          <th scope="col" class="text-nowrap">Date</th>
+                          <th scope="col" class="text-nowrap">Performed by</th>
                           <th scope="col" class="text-center">Details</th>
                       </tr>
                       </thead>
                       <tbody id="activity-table-body">
-                            <tr>
-                                <td class="text-nowrap">Question Moderation Meeting Call</td>
-                                <td class="text-nowrap">20-01-2026 12:10PM</td>
-                                <td>Dr. Badrul Alam Miah</td>
-                                <td>Question moderation meeting has been called on 25-01-2026 9:30AM</td>
+                            <tr th:each="activity : ${committeeActivityList}">
+                                <td class="text-nowrap" th:classappend="${activity.priority == 10 ? 'text-success' :
+                    (activity.priority == 5 ? 'text-warning' : '')}" th:text="${activity.actionTitle}">Title</td>
+                                <td class="text-nowrap" th:text="${activity.timestamp}">Time</td>
+                                <td class="text-nowrap" th:text="${activity.performedBy.name}">Name</td>
+                                <td th:text="${activity.details}">Question moderation meeting has been called on 25-01-2026 9:30AM</td>
                             </tr>
-                            <tr>
-                                <td colspan="4" class="text-center text-danger">This is a demo modal-dialog... will be implemented later</td>
+
+                            <tr th:if="${committeeActivityList.isEmpty()}">
+                                <td colspan="4" class="text-center text-danger">No activity found yet for this exam committee</td>
                             </tr>
                       </tbody>
                   </table>
               </div>
             </div>
             <div class="modal-footer mt-5">
+                <button type="button" class="btn text-white bg-danger btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Students ID Modal -->
+<div class="modal fade" id="stuIdModal" tabindex="-1" aria-labelledby="stuIdModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 fw-bold" id="stuIdModalLabel">Student ID(s)</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body w-auto">
+                <div class="w-auto">
+                  <h5 id="stu-id-list" class="mb-4"> </h5>
+                    <p class="text-secondary">The answer scripts for the aforementioned student IDs have been assigned for third examination</p>
+                </div>
+            </div>
+            <div class="modal-footer mt-2">
                 <button type="button" class="btn text-white bg-danger btn-sm" data-bs-dismiss="modal">Close</button>
             </div>
         </div>

@@ -31,6 +31,8 @@ public class ExamCommitteeService {
     private ThirdExaminationRepository thirdExaminationRepository;
     @Autowired
     private ThesisProjectSupervisionService thesisProjectSupervisionService;
+    @Autowired
+    private CommitteeActivityService committeeActivityService;
 
 
     public List<ExamCommittee> findAllBySemesterId(Long semesterId){
@@ -146,7 +148,7 @@ public class ExamCommitteeService {
     }
 
     @Transactional
-    public boolean markResultPublished(ExamCommittee examCommittee) {
+    public boolean markResultPublished(User performedBy, ExamCommittee examCommittee) {
         if(examCommittee == null){ return false; }
         try{
             List<Course> committeeCourses = courseRepository.findBySemesterAndSessionOrderByCourseCodeAsc(examCommittee.getSemester(), examCommittee.getSession());
@@ -461,6 +463,7 @@ public class ExamCommitteeService {
 
             examCommittee.setResultPublished(true);
             examCommitteeRepository.save(examCommittee);
+            committeeActivityService.saveResultPublicationActivity(performedBy, examCommittee);
             return true;
         }catch(Exception e){
             log.error("Failed to publish result for committee {}: {}", examCommittee.getCommitteeId(), e.getMessage());

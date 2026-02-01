@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.entity.CommitteeActivity;
 import com.example.entity.Course;
 import com.example.entity.ExamCommittee;
 import com.example.entity.User;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -36,6 +38,8 @@ public class ExamCommitteeRestController {
     private CourseService courseService;
     @Autowired
     private BrevoEmailService brevoEmailService;
+    @Autowired
+    private CommitteeActivityService committeeActivityService;
 
     @GetMapping("/api/{id}")
     public ResponseEntity<ExamCommittee> getCommittee(@PathVariable Long id) {
@@ -192,7 +196,16 @@ public class ExamCommitteeRestController {
         committee.setModerated(true);
         examCommitteeService.saveCommittee(committee);
 
-        return new  ResponseEntity<>("Moderation meeting has been called successfully!", HttpStatus.OK);
+        CommitteeActivity activity = new CommitteeActivity();
+        activity.setPerformedBy(user);
+        activity.setExamCommittee(committee);
+        activity.setTimestamp(LocalDate.now());
+        activity.setPriority(5);
+        activity.setActionTitle("Question Moderation Meeting Call");
+        activity.setDetails("Question Moderation Meeting of this exam committee has been scheduled for " + meetingDateTime);
+        committeeActivityService.saveCommitteeActivity(activity);
+
+        return new ResponseEntity<>("Moderation meeting has been called successfully!", HttpStatus.OK);
 
     }
 

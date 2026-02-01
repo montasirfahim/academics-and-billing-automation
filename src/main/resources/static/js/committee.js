@@ -362,6 +362,31 @@ async function assignSupervisors(event){
     } catch(err){
         alert("Connection failed: " + err);
     }
+}
 
+async function displayStudentsId(event){
+    const thirdExaminationId = event.currentTarget.dataset.thirdId;
+    if(!thirdExaminationId){
+        alert("Invalid Third Examination ID");
+        return;
+    }
 
+    try{
+        const response = await fetch(`/details/third-examination/${thirdExaminationId}`, {
+            method: 'GET'
+        });
+
+        const data = await response.json();
+        if(response.ok){
+            const stuIdList = document.getElementById("stu-id-list");
+            stuIdList.innerText = data.studentsId;
+            console.log(data.message);
+        }
+        else{
+            alert(data.message);
+        }
+
+    }catch (err){
+        alert(err);
+    }
 }

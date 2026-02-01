@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -111,6 +109,27 @@ public class ThirdExaminationController {
             map.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
         }
+    }
+
+    @GetMapping("/details/third-examination/{thirdExaminationId}")
+    @ResponseBody
+    public ResponseEntity<Object> getStudentIds(@PathVariable Long thirdExaminationId, HttpSession session){
+        User user = (User) session.getAttribute("user");
+        Map<String, Object> map = new HashMap<>();
+        if(user == null){
+            map.put("message", "Unauthorized: You are not logged in!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+        }
+
+       try{
+           String studentsId = thirdExaminationService.getStudentsIdById(thirdExaminationId);
+           map.put("studentsId", studentsId);
+           map.put("message", "Successfully fetched students ID");
+           return ResponseEntity.status(HttpStatus.OK).body(map);
+       }catch(Exception e){
+           map.put("message", e.getMessage());
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
+       }
     }
 
 }

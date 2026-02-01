@@ -200,7 +200,7 @@
             <th>Scheduled Year</th>
             <th>Scheduled Month</th>
             <th>Semester</th>
-            <th>Actions</th>
+            <th class="text-center">Actions</th>
         </tr>
         </thead>
         <tbody id="semester-table-body">
@@ -299,10 +299,8 @@
                     <td>${semester.semesterScheduledYear}</td>
                     <td>${semester.semesterScheduledMonths}</td>
                     <td>${semester.semesterParity}</td>
-                    <td class="actions">
-                        <a class="btn btn-outline-primary btn-sm" href="/details/${userId}/${semester.semesterId}">Details</a> |
-                        <a href="/bill/${userId}/${semester.semesterId}"
-                           class="btn btn-outline-primary btn-sm" target="_blank"> Print Bill </a>
+                    <td class="actions text-center">
+                        <a class="btn btn-outline-primary btn-sm" href="/details/${userId}/${semester.semesterId}">Details & Bills</a>
                     </td>
                 `;
 

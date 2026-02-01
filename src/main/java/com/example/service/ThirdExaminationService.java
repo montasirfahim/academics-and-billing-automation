@@ -62,4 +62,16 @@ public class ThirdExaminationService {
         }
         return null;
     }
+
+    public String getStudentsIdById(Long thirdExaminationId){
+        ThirdExamination optionalThirdExamination = thirdExaminationRepository.findById(thirdExaminationId).orElse(null);
+        if(optionalThirdExamination != null){
+            List<String> studentsId = optionalThirdExamination.getStudentsId();
+            if(studentsId != null){
+               return String.join(", ", studentsId);
+            }
+            return "Students ID not provided explicitly!";
+        }
+        return "Error: Students ID not found!";
+    }
 }
