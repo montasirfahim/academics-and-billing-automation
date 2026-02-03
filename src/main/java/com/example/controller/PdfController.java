@@ -168,5 +168,35 @@ public class PdfController {
         }
     }
 
+    @GetMapping("/bill-summary/download/{committeeId}")
+    public void generateBillSummaryPdf(HttpServletResponse response, @PathVariable Long committeeId, HttpSession session) throws IOException {
+        User user = (User) session.getAttribute("user");
+        if(user == null){
+            return;
+        }
+
+        ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(committeeId);
+        if(examCommittee == null) {
+            return;
+        }
+
+        if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin") && !user.getUserId().equals(examCommittee.getChairman().getUserId())){
+            return;
+        }
+
+        List<Course> committeeCourses = courseService.findByCommitteeId(committeeId);
+
+        byte[] pdfBytes = pdfService.createBillSummary(examCommittee, committeeCourses);
+
+        String filePath = "bill_summary_committee" + committeeId + ".pdf";
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=" + filePath);
+        response.setContentLength(pdfBytes.length);
+
+        response.getOutputStream().write(pdfBytes);
+        response.getOutputStream().flush();
+
+    }
+
 
 }

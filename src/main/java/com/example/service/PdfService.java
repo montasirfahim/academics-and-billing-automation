@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -961,6 +962,160 @@ public class PdfService {
         return baos.toByteArray();
     }
 
+    public byte[] createBillSummary(ExamCommittee examCommittee, List<Course> committeeCourses) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try (PdfWriter writer = new PdfWriter(baos);
+             PdfDocument pdfDoc = new PdfDocument(writer);
+             Document document = new Document(pdfDoc)) {
+
+            pdfDoc.setDefaultPageSize(PageSize.LEGAL);
+
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/times.ttf");
+
+            if (fontStream == null) {
+                throw new IOException("Font file not found! Check if it is in src/main/resources/fonts/times.ttf");
+            }
+
+            byte[] fontBytes = fontStream.readAllBytes();
+
+            PdfFont font = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H);
+            document.setFont(font);
+
+            InputStream is = getClass().getResourceAsStream("/static/logo.PNG");
+
+            if (is == null) {
+                throw new IOException("Logo not found in classpath! Check path: /static/logo.PNG");
+            }
+
+            byte[] imageBytes = is.readAllBytes();
+
+            ImageData imageData = ImageDataFactory.create(imageBytes);
+            Image logo = new Image(imageData);
+            logo.setWidth(60);
+            logo.setHeight(60);
+            // logo.setAutoScale(true);
+            logo.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            document.add(logo);
+
+            addHeader(document, "Mawlana Bhashani Science and Technology University\nDept. of Information and Communication Technology, MBSTU");
+
+            LineSeparator ls = new LineSeparator(new SolidLine(1f));
+            ls.setWidth(UnitValue.createPercentValue(100));
+            document.add(ls);
+
+            document.add(new Paragraph("Cue: MBSTU/ICT/             / List of teachers responsible for various examination related tasks for " + examCommittee.getSemesterYearName() + " " + examCommittee.getSemester().getSemesterParity() + " Semester Final Examination - " + examCommittee.getSemester().getSemesterScheduledYear() + ", Session: " + examCommittee.getSession()));
+            document.add(new Paragraph("\n"));
+
+            document.add(new Paragraph("Examination Held Date: " + examCommittee.getSemester().getSemesterHeldYear() + ", " + examCommittee.getSemester().getSemesterHeldMonths()).setTextAlignment(TextAlignment.CENTER).setBold());
+
+            List<Course> theoryCourses = new ArrayList<>();
+            List<Course> labCourses = new ArrayList<>();
+            for(Course course: committeeCourses) {
+                if(course.getCourseType().equals("Theory")){
+                    theoryCourses.add(course);
+                }
+                else if(course.getCourseType().equals("Lab")){
+                    labCourses.add(course);
+                }
+            }
+
+            document.add(new Paragraph("A. List of Participated Teachers on Question Moderation Meeting: (" + theoryCourses.size() + " Questions for " +  theoryCourses.size() + " Courses)").setTextAlignment(TextAlignment.CENTER).setBold());
+            ls.setWidth(UnitValue.createPercentValue(80));
+            ls.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            document.add(ls);
+
+            Table modTable = new Table(UnitValue.createPercentArray(new float[]{1, 5.5f, 3.5f}));
+            modTable.setWidth(UnitValue.createPercentValue(100));
+            modTable.setMarginTop(10);
+
+            modTable.addCell(createStyledHeaderCell("SL"));
+            modTable.addCell(createStyledHeaderCell("Name & Address"));
+            modTable.addCell(createStyledHeaderCell("Signature"));
+
+            for(int i = 1; i <= 4; i++){
+                modTable.addCell(new Cell().add(new Paragraph(String.valueOf(i)).setTextAlignment(TextAlignment.CENTER)));
+                if(i == 1){
+                    User member = examCommittee.getChairman();
+                    modTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    modTable.addCell(new Cell().add(new Paragraph("Chairman, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else if(i == 2){
+                    User member = examCommittee.getInternalMember1();
+                    modTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    modTable.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else if(i == 3){
+                    User member = examCommittee.getInternalMember2();
+                    modTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    modTable.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else{
+                    User member = examCommittee.getExternalMember1();
+                    modTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    modTable.addCell(new Cell().add(new Paragraph("External Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+
+            }
+
+            document.add(modTable);
+
+            Paragraph p = new Paragraph();
+            p.add("\nB. List of Question Setters & Script Evaluators:\n").setBold().add(examCommittee.getSemesterYearName()  + " " + examCommittee.getSemester().getSemesterParity() + "(Session: " + examCommittee.getSession() + ")").setTextAlignment(TextAlignment.CENTER);
+            document.add(p);
+
+            ls.setWidth(UnitValue.createPercentValue(80));
+            ls.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            document.add(ls);
+
+            Table setterTable = new Table(UnitValue.createPercentArray(new float[]{0.5f,1f, 2f, 0.5f, 3f, 3f}));
+            setterTable.setWidth(UnitValue.createPercentValue(100));
+            setterTable.setMarginTop(10);
+
+            setterTable.addCell(createStyledHeaderCell("SL"));
+            setterTable.addCell(createStyledHeaderCell("Course Code"));
+            setterTable.addCell(createStyledHeaderCell("Course Title"));
+            setterTable.addCell(createStyledHeaderCell("Credit"));
+            setterTable.addCell(createStyledHeaderCell("Internal Examiner's Name"));
+            setterTable.addCell(createStyledHeaderCell("External Examiner's Name"));
+
+            int sl = 1;
+            for(Course course : theoryCourses) {
+                setterTable.addCell(new Cell().add(new Paragraph(String.valueOf(sl))));
+                setterTable.addCell(new Cell().add(new Paragraph(course.getCourseCode() + "\nStudent-" + examCommittee.getStudentCount()).setTextAlignment(TextAlignment.CENTER)));
+                setterTable.addCell(new Cell().add(new Paragraph(course.getCourseName())).setTextAlignment(TextAlignment.CENTER));
+                setterTable.addCell(new Cell().add(new Paragraph(String.valueOf(course.getCourseCredit()))).setTextAlignment(TextAlignment.CENTER));
+                setterTable.addCell(new Cell().add(new Paragraph(course.getInternalQuesSetterEvaluator().getName() + "\n" + course.getInternalQuesSetterEvaluator().getDesignation() + "\n Dept. of " + course.getInternalQuesSetterEvaluator().getDepartment() + ", MBSTU")).setTextAlignment(TextAlignment.LEFT));
+                setterTable.addCell(new Cell().add(new Paragraph(course.getExternalQuesSetterEvaluator().getName() + "\n" + course.getExternalQuesSetterEvaluator().getDesignation() + "\n Dept. of " + course.getExternalQuesSetterEvaluator().getDepartment() + ", " + course.getExternalQuesSetterEvaluator().getUniversity() + "\n" + course.getExternalQuesSetterEvaluator().getEmail())).setTextAlignment(TextAlignment.LEFT));
+                sl++;
+            }
+
+            document.add(setterTable);
+
+            document.add(new Paragraph("\nC. List of Question Paper Writers & Verifiers:").setBold().setTextAlignment(TextAlignment.LEFT));
+
+            document.add(new Paragraph("\nD. Lab Sessional: Course Teacher").setBold().setTextAlignment(TextAlignment.LEFT));
+
+            Table labCourseTeacherTable = new Table(UnitValue.createPercentArray(new float[]{2f, 8f}));
+            labCourseTeacherTable.setWidth(UnitValue.createPercentValue(100));
+            labCourseTeacherTable.setMarginTop(10);
+            labCourseTeacherTable.addCell(createStyledHeaderCell("Course Code"));
+            labCourseTeacherTable.addCell(createStyledHeaderCell("Internal Examiner"));
+
+            for(Course course : labCourses){
+                labCourseTeacherTable.addCell(new Cell().add(new Paragraph(course.getCourseCode() + "\nStudent-" + examCommittee.getStudentCount())).setTextAlignment(TextAlignment.CENTER));
+                User internal = course.getCourseTeacher();
+                labCourseTeacherTable.addCell(new Cell().add(new Paragraph(internal.getName() + ", " + internal.getDesignation() + ", Dept. of " + internal.getDepartment() + ", MBSTU")).setTextAlignment(TextAlignment.LEFT));
+            }
+
+            document.add(labCourseTeacherTable);
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return baos.toByteArray();
+    }
+
     private void addTaDaHeader(Document document, String text) {
         Paragraph p = new Paragraph(text)
                 .setTextAlignment(TextAlignment.CENTER)
@@ -1126,5 +1281,6 @@ public class PdfService {
                 .setBackgroundColor(ColorConstants.LIGHT_GRAY)
                 .setTextAlignment(TextAlignment.CENTER).setBold();
     }
+
 
 }

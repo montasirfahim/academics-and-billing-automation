@@ -259,6 +259,15 @@ public class ExamCommitteeRestController {
 
             if(examCommitteeService.checkEditPermission(loggedInUser, committee)) {
                 if(courseService.updateQuesSetterAndEvaluator(courseId, internalTeacher, externalTeacher, committee)){
+                    CommitteeActivity activity = new CommitteeActivity();
+                    activity.setExamCommittee(committee);
+                    activity.setPriority(5);
+                    activity.setPerformedBy(loggedInUser);
+                    activity.setTimestamp(LocalDate.now());
+                    activity.setActionTitle("Question Setter & Evaluator Assigning");
+                    activity.setDetails("Question Setter & Script Evaluator has been assigned for " + course.getCourseName() + " course");
+                    committeeActivityService.saveCommitteeActivity(activity);
+
                     map.put("message", "Success: Question Setter & Script Evaluator has been assigned successfully for selected course!");
                     return ResponseEntity.status(HttpStatus.OK).body(map);
                 }

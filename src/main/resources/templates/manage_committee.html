@@ -157,11 +157,18 @@
                   style="font-size: 0.75em; padding: 0.5em 0.8em; vertical-align: middle;">Status
             </span>
 
-            <button id="result-status-toggler" class="btn btn-outline-secondary btn-sm"
+            <button id="result-status-toggler" class="btn btn-outline-secondary btn-sm" th:unless="${resultStatus}"
                     th:disabled="${resultStatus}" th:data-id="${committee.committeeId}"
                     onclick="markResultPublished(this)" style="font-size: 0.7rem; margin-left: 5px;">
                 Mark as Published
             </button>
+
+            <a id="bill-summary-btn" class="btn btn-outline-secondary btn-sm" th:if="${resultStatus}"
+                    th:disabled="${!resultStatus}" target="_blank"
+                    th:href="@{/bill-summary/download/{id}(id=${committee.committeeId})}" style="font-size: 0.7rem; margin-left: 5px;">
+                Download Bill Summary
+            </a>
+
         </div>
 
     </div>

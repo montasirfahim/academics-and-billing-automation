@@ -32,5 +32,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     @Query("SELECT c FROM Course c WHERE c.semester = :semester AND c.session = :session AND c.courseType IN (:type1, :type2)")
     List<Course> findThesisProjectCourseByExamCommittee(@Param("semester") Semester semester, @Param("session") String session,  @Param("type1") String type1, @Param("type2") String type2);
 
+    @Query("SELECT c FROM Course c WHERE c.semester = :semester AND c.session = :session AND c.courseType = :type1")
+    List<Course> findTCourseByExamCommitteeAndCourseType(@Param("semester") Semester semester, @Param("session") String session,  @Param("type1") String type1);
 
 }
