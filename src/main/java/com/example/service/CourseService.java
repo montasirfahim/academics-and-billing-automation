@@ -132,4 +132,8 @@ public class CourseService {
     public List<Course> findThesisOrProjectCourseByExamCommittee(ExamCommittee examCommittee) {
         return courseRepository.findThesisProjectCourseByExamCommittee(examCommittee.getSemester(), examCommittee.getSession(), "Thesis", "Project");
     }
+
+    public List<Course> findCourseByExamCommitteeAndCourseType(ExamCommittee examCommittee, String courseType) {
+        return courseRepository.findTCourseByExamCommitteeAndCourseType(examCommittee.getSemester(), examCommittee.getSession(), courseType);
+    }
 }

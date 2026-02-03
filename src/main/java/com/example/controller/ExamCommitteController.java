@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,6 +184,15 @@ public class ExamCommitteController {
             }
             if(examCommitteeService.checkEditPermission(user, committee)) {
                 examCommitteeService.updateStudentCount(committee, studentCount);
+
+                CommitteeActivity activity = new CommitteeActivity();
+                activity.setExamCommittee(committee);
+                activity.setPerformedBy(user);
+                activity.setActionTitle("Updating Student Count");
+                activity.setDetails("Registered student count of this exam committee has been updated successfully");
+                activity.setTimestamp(LocalDate.now());
+                committeeActivityService.saveCommitteeActivity(activity);
+
                 map.put("message", "Student count has been updated successfully!");
                 return ResponseEntity.status(HttpStatus.OK).body(map);
             }
@@ -245,6 +255,14 @@ public class ExamCommitteController {
             }
 
             if(courseService.updateExamineeCount(course, examineeCount)) {
+                CommitteeActivity activity = new CommitteeActivity();
+                activity.setExamCommittee(examCommittee);
+                activity.setPerformedBy(user);
+                activity.setActionTitle("Updating Examinee Count");
+                activity.setDetails("Examinee count has been updated successfully for " + course.getCourseName() + " course");
+                activity.setTimestamp(LocalDate.now());
+                committeeActivityService.saveCommitteeActivity(activity);
+
                 map.put("message", "Examinee count has been updated successfully!");
                 return ResponseEntity.status(HttpStatus.OK).body(map);
             }

@@ -1,13 +1,7 @@
 package com.example.controller;
 
-import com.example.entity.Course;
-import com.example.entity.ExamCommittee;
-import com.example.entity.ThirdExamination;
-import com.example.entity.User;
-import com.example.service.CourseService;
-import com.example.service.ExamCommitteeService;
-import com.example.service.ThirdExaminationService;
-import com.example.service.UserService;
+import com.example.entity.*;
+import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +26,8 @@ public class ThirdExaminationController {
     private UserService userService;
     @Autowired
     private ExamCommitteeService examCommitteeService;
+    @Autowired
+    private CommitteeActivityService committeeActivityService;
 
     @PostMapping("/api/assign-thirdexaminer")
     @ResponseBody
@@ -96,6 +93,15 @@ public class ThirdExaminationController {
             }
 
             if(thirdExaminationService.saveThirdExamination(examCommittee, course, examiner, rawStudentsId, studentsId, scriptsCount)){
+                CommitteeActivity activity = new CommitteeActivity();
+                activity.setExamCommittee(examCommittee);
+                activity.setPerformedBy(user);
+                activity.setPriority(10);
+                activity.setActionTitle("Assigning Third Examiner");
+                activity.setDetails("Third examiner has been assigned successfully for " + course.getCourseName() + " course");
+                activity.setTimestamp(LocalDate.now());
+                committeeActivityService.saveCommitteeActivity(activity);
+
                 map.put("message", "Success: Third examiner has been assigned successfully for selected course.");
                 return ResponseEntity.status(HttpStatus.OK).body(map);
             }

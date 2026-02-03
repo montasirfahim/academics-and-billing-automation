@@ -1,13 +1,7 @@
 package com.example.controller;
 
-import com.example.entity.Course;
-import com.example.entity.ExamCommittee;
-import com.example.entity.User;
-import com.example.entity.ThesisProjectSupervision;
-import com.example.service.CourseService;
-import com.example.service.ExamCommitteeService;
-import com.example.service.ThesisProjectSupervisionService;
-import com.example.service.UserService;
+import com.example.entity.*;
+import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -27,12 +22,14 @@ public class ThesisProjectSupervisionController {
     private final CourseService courseService;
     private final UserService userService;
     private final ThesisProjectSupervisionService thesisProjectSupervisionService;
+    private final CommitteeActivityService committeeActivityService;
 
-    public ThesisProjectSupervisionController(ExamCommitteeService examCommitteeService, CourseService courseService, UserService userService, ThesisProjectSupervisionService thesisProjectSupervisionService) {
+    public ThesisProjectSupervisionController(ExamCommitteeService examCommitteeService, CourseService courseService, UserService userService, ThesisProjectSupervisionService thesisProjectSupervisionService, CommitteeActivityService committeeActivityService) {
         this.examCommitteeService = examCommitteeService;
         this.courseService = courseService;
         this.userService = userService;
         this.thesisProjectSupervisionService = thesisProjectSupervisionService;
+        this.committeeActivityService = committeeActivityService;
     }
 
     @PostMapping("/api/thesis-project/assign-supervisors")
@@ -101,6 +98,15 @@ public class ThesisProjectSupervisionController {
             thesisProjectSupervision.setExternalTeacher(externalTeacher);
             thesisProjectSupervision.setInternalTeachers(supervisorsList);
             thesisProjectSupervisionService.save(thesisProjectSupervision);
+
+            CommitteeActivity activity = new CommitteeActivity();
+            activity.setExamCommittee(examCommittee);
+            activity.setPerformedBy(user);
+            activity.setTimestamp(LocalDate.now());
+            activity.setPriority(10);
+            activity.setActionTitle("Assigning Supervisors");
+            activity.setDetails("Supervisors has been assigned successfully for " + course.getCourseName() + " course");
+            committeeActivityService.saveCommitteeActivity(activity);
 
             map.put("message", "Success : Supervisors has been assigned successfully for selected course - " + course.getCourseName() + "!\nTotal Students: " + totalStudent);
             return new ResponseEntity<>(map, HttpStatus.OK);
