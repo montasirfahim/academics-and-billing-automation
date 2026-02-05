@@ -30,6 +30,18 @@ public class CourseService {
         return true;
     }
 
+    public boolean validateNewCourse(Course course) {
+        String courseCode = course.getCourseCode().trim();
+        if(courseCode.length() != 7){
+            return false;
+        }
+        if(course.getCourseCredit() <= 0){
+            return false;
+        }
+
+        return courseCode.matches("ICT\\d{4}");
+    }
+
     public List<Course> findAll() {
         return courseRepository.findAllByOrderByIdDesc(); //findAll()
     }

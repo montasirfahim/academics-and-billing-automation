@@ -10,10 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,7 +26,7 @@ public class ThirdExaminationController {
     @Autowired
     private CommitteeActivityService committeeActivityService;
 
-    @PostMapping("/api/assign-thirdexaminer")
+    @PostMapping("/api/assign/third-examiner")
     @ResponseBody
     public ResponseEntity<Object> assignThirdExaminer(@RequestBody Map<String, String> payload, HttpSession session) {
         User user = (User)session.getAttribute("user");
@@ -49,9 +46,21 @@ public class ThirdExaminationController {
                     .filter(s -> !s.isEmpty())
                     .toList();
 
+            Set<String> studentIdSet = new HashSet<>();
+            for(String studentId : studentsId){
+                if(!studentIdSet.add(studentId)){
+                    map.put("message", "Bad Request: Duplicate student ID found: " + studentId);
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+                }
+                if(!UtilityService.validateStudentId(studentId)){
+                    map.put("message", "Bad Request: Invalid Student ID : " + studentId + ". Please follow the correct format(e.g: ICT22016)");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+                }
+            }
+
             Long scriptsCount = (long) studentsId.size();
             if(scriptsCount == 0){
-                map.put("message", "Please enter one or more student IDs separated by comma!");
+                map.put("message", "Bad Request: Please enter one or more student IDs separated by comma!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
 

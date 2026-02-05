@@ -79,16 +79,26 @@ public class ThesisProjectSupervisionController {
 
             List<Map<String, Object>> rows = (List<Map<String, Object>>) payload.get("superVisionData");
             List<ThesisProjectSupervision.Internal> supervisorsList = new ArrayList<>();
+            Set<Long> teacherIds = new HashSet<>();
             for(Map<String, Object> row : rows) {
                 Long teacherId = Long.valueOf(row.get("teacherId").toString());
                 Long groupCount = Long.valueOf(row.get("numberOfGroups").toString());
                 Long studentCount = Long.valueOf(row.get("numberOfStudents").toString());
                 totalStudent += studentCount;
 
+                if(studentCount <= 0 || groupCount <= 0){
+                    map.put("message", "Bad Request : Student/Group count should be a positive integer");
+                    return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+                }
+
                 User supervisor = userService.getUserById(teacherId);
                 supervisorsList.add(new ThesisProjectSupervision.Internal(supervisor, groupCount, studentCount));
 
                 System.out.println("Processing Teacher: " + supervisor.getName() + " GroupCount: " + groupCount + " StudentCount: " + studentCount);
+                if(!teacherIds.add(teacherId)){
+                    map.put("message", "Bad Request : Duplicate teacher entry found: " + supervisor.getName());
+                    return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+                }
             }
             User externalTeacher = examCommittee.getExternalMember1();
 

@@ -40,6 +40,16 @@ public class CourseController {
             model.addAttribute("error", "You are not allowed to perform this action");
             return "error_page";
         }
+
+        if(!courseService.validateNewCourse(course)){
+            model.addAttribute("status", "Bad Request");
+            model.addAttribute("error", "Invalid course code format(e.g: ICT3206) or credit hour.");
+            return "error_page";
+        }
+
+        String courseCode = course.getCourseCode().trim();
+        course.setCourseCode(courseCode);
+
         if(courseService.saveCourse(course)){
             return "redirect:/courses/view";
         }

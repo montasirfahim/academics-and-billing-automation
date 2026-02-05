@@ -146,7 +146,7 @@ async function assignThirdExaminer(event, committeeId){
     try{
         if(btn) btn.disabled = true;
 
-        const response = await fetch('/api/assign-thirdexaminer', {
+        const response = await fetch('/api/assign/third-examiner', {
             method: 'POST',
             headers: {'Content-Type' : 'application/json'},
             body: JSON.stringify({committeeId, courseId, examinerId, rawStudentsId})
@@ -249,6 +249,11 @@ async function markResultPublished(element){
         return;
     }
     element.disabled = true;
+
+    if(!confirm("Are you sure to mark result status as published?\nGratuity bills will be generated automatically for this exam committee and you can't undo it further. \nYou can't also  add or modify anything of this exam committee once result has been marked as published!")){
+        element.disabled = false;
+        return;
+    }
 
     try{
         const committeeId = parseInt(rawId, 10);

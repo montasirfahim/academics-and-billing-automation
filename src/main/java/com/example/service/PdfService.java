@@ -673,7 +673,7 @@ public class PdfService {
 
             document.add(headerTable);
 
-            document.add(new Paragraph("\nThe relevant documents must be submitted to the Office of the Controller of Examinations through the Chairman of the Examination Committee upon completion of all examination-related duties. \nBill must be submitted for each course separately.").setTextAlignment(TextAlignment.CENTER).setFontSize(9));
+            document.add(new Paragraph("\nThe relevant documents must be submitted to the Office of the Controller of Examinations through the Chairman of the Examination Committee upon completion of all examination-related tasks. \nBill must be submitted for each course separately.").setTextAlignment(TextAlignment.CENTER).setFontSize(9));
 
 
             Table infoTable = new Table(UnitValue.createPercentArray(new float[]{10, 3}));
@@ -689,7 +689,7 @@ public class PdfService {
 
             document.add(new Paragraph("\n"));
 
-            document.add(new Paragraph("Details of Examination-Related Duties Given Below:").setFontSize(15).setTextAlignment(TextAlignment.CENTER).setBold());
+            document.add(new Paragraph("Details of Examination-Related Tasks Given Below:").setFontSize(15).setTextAlignment(TextAlignment.CENTER).setBold());
             document.add(new Paragraph("Duration of Examination: " + examCommittee.getSemester().getSemesterHeldMonths() + ", " + examCommittee.getSemester().getSemesterHeldYear()).setTextAlignment(TextAlignment.CENTER));
 
             document.add(new Paragraph("\n"));
@@ -945,6 +945,21 @@ public class PdfService {
                     .add(new Text(UtilityService.formatBDT(grossTotal)).setFontSize(11));
             document.add(payTo);
             document.add(new Paragraph("\n"));
+
+
+//            Table photoBox = new Table(1);
+//            photoBox.setWidth(50f);
+//            photoBox.setHorizontalAlignment(HorizontalAlignment.LEFT);
+//            Paragraph boxTitle = new Paragraph("Revenue Ticket")
+//                    .setFontSize(7f)
+//                    .setTextAlignment(TextAlignment.CENTER);
+//            Cell boxCell = new Cell()
+//                    .add(boxTitle)
+//                    .setHeight(40f)
+//                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+//                    .setBorder(new SolidBorder(1f));
+//            photoBox.addCell(boxCell);
+//            document.add(photoBox);
 
             Table footerSigs = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1})).setBorder(Border.NO_BORDER);
             footerSigs.setWidth(UnitValue.createPercentValue(100)).setMarginTop(20);

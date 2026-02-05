@@ -137,4 +137,8 @@ public class UtilityService {
 
         return finalResult.append(" Only").toString();
     }
+
+    public static boolean validateStudentId(String studentId) {
+        return studentId.length() == 7 && studentId.matches("IT\\d{5}");
+    }
 }
