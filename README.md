@@ -22,7 +22,7 @@ A Real-world, modern, full-stack Java application designed to streamline departm
 - Create Tour Allowance Bill for external faculty members
 ---
 
-##  Features
+##  Features & Key Highlights
 - Role-based access (Admin, Faculty, Chairman)
 - Storing hashed password with BCryptPasswordEncoder for user security
 - Secured HttpSession based auth handling to maintain authenticated states
@@ -39,7 +39,7 @@ A Real-world, modern, full-stack Java application designed to streamline departm
 - **Backend:** Spring Boot (Java 17+), MVC & REST API with Spring Data JPA
 - **Database:** MySQL 
 - **Frontend:** Thymeleaf, HTML, CSS, Bootstrap 5, Javascript
-- **Email Service:** Spring Mail + SMTP
+- **Email Service:** Spring Mail + SMTP and REST API Based Brevo's Email API
 - **Build Tool:** Maven 
 
 ---
@@ -64,6 +64,22 @@ spring.datasource.url=jdbc:mysql://localhost:3306/db_name
 spring.datasource.username=root
 spring.datasource.password=yourpassword
 spring.jpa.hibernate.ddl-auto=update
+
+server.port=${PORT:8080}
+server.servlet.session.timeout=4320m
+spring.thymeleaf.cache=false
+
+
+#cookie must match session timeout
+server.servlet.session.cookie.max-age=259200
+server.servlet.session.cookie.http-only=true
+server.servlet.session.cookie.secure=false
+server.servlet.session.cookie.same-site=lax
+spring.session.jdbc.initialize-schema=always
+
+
+brevo.api.key=${BREVO_API_KEY}
+brevo.sender.email=${MAIL_SENDER}
 ```
 
 ### Run the application

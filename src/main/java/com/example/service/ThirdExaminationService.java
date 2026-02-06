@@ -23,9 +23,7 @@ public class ThirdExaminationService {
     public boolean saveThirdExamination(ExamCommittee examCommittee, Course course, User examiner, String rawStudentsId, List<String> studentsId, Long scriptsCount) {
         ThirdExamination thirdExamination = new ThirdExamination();
 
-        boolean exists = thirdExaminationRepository.existsByExamCommitteeAndCourseAndExaminer(
-                examCommittee, course, examiner
-        );
+        boolean exists = thirdExaminationRepository.existsByExamCommitteeAndCourse(examCommittee, course);
 
         if (exists) {
             return false;
