@@ -53,7 +53,7 @@ public class ThirdExaminationController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
                 }
                 if(!UtilityService.validateStudentId(studentId)){
-                    map.put("message", "Bad Request: Invalid Student ID : " + studentId + ". Please follow the correct format(e.g: ICT22016)");
+                    map.put("message", "Bad Request: Invalid Student ID : " + studentId + ". Please follow the correct format(e.g: IT22016)");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
                 }
             }

@@ -33,10 +33,8 @@ public class ThirdExamination {
     @JoinColumn(name = "examiner_id", referencedColumnName = "userId")
     private User examiner;
 
-
     private Long scriptsCount;
     private String rawStudentsId;
     private List<String> studentsId;
-
 
 }

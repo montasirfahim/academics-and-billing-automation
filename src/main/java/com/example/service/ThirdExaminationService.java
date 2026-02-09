@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -28,6 +30,8 @@ public class ThirdExaminationService {
         if (exists) {
             return false;
         }
+
+        studentsId.sort(Comparator.naturalOrder());
 
         thirdExamination.setCourse(course);
         thirdExamination.setExaminer(examiner);
@@ -65,11 +69,12 @@ public class ThirdExaminationService {
         ThirdExamination optionalThirdExamination = thirdExaminationRepository.findById(thirdExaminationId).orElse(null);
         if(optionalThirdExamination != null){
             List<String> studentsId = optionalThirdExamination.getStudentsId();
-            if(studentsId != null){
+            if(studentsId != null && !studentsId.isEmpty()){
+                studentsId.sort(Comparator.naturalOrder());
                return String.join(", ", studentsId);
             }
-            return "Students ID not provided explicitly!";
+            return "Student IDs not provided explicitly!";
         }
-        return "Error: Students ID not found!";
+        return "Error: Student IDs not found!";
     }
 }

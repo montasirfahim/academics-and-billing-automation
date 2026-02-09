@@ -304,6 +304,10 @@ public class ExamCommitteController {
             map.put("message", "Failed to update result status: Question Moderation of this committee is not completed!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
         }
+        if(!examCommittee.isQuesPrintingStatus()){
+            map.put("message", "Failed to update result status: Question Printing Info is not updated yet!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
         if(!examCommitteeService.checkResultPublicationEligibility(examCommittee)){
             map.put("message", "Bad Request: Please update number of students participated in examination for all Theory courses and \nAssign Supervisors for Thesis or Project courses (if exists)!");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
@@ -316,6 +320,75 @@ public class ExamCommitteController {
         else{
             map.put("message", "Internal Server Error: Could not update result status! Please try again...");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
+        }
+    }
+
+    @PutMapping("/api/committee/update/question-printing-info")
+    @ResponseBody
+    public ResponseEntity<Object> updateQuestionPrintingInfo(HttpSession session, @RequestBody Map<String, Object> payload) {
+        User user = (User) session.getAttribute("user");
+        Map<Object, Object> map = new HashMap<>();
+        if(user == null) {
+            map.put("message", "Unauthorized: Please login first!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+        }
+
+        try{
+            Long committeeId = payload.get("committeeId") != null ? Long.parseLong(payload.get("committeeId").toString()) : null;
+            Long chairmanId = payload.get("chairmanId") != null ? Long.parseLong(payload.get("chairmanId").toString()) : null;
+            Long member1Id = payload.get("member1Id") != null ? Long.parseLong(payload.get("member1Id").toString()) : null;
+            Long member2Id = payload.get("member2Id") != null ? Long.parseLong(payload.get("member2Id").toString()) : null;
+
+            Long quesCount1 = Long.parseLong(String.valueOf(payload.get("quesCount1")));
+            Long quesCount2 = Long.parseLong(String.valueOf(payload.get("quesCount2")));
+            Long quesCount3 = Long.parseLong(String.valueOf(payload.get("quesCount3")));
+
+            if(chairmanId == null || committeeId == null || member1Id == null || member2Id == null) {
+                map.put("message", "Bad Request: Invalid parameters!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
+
+            ExamCommittee examCommittee = examCommitteeService.findCommitteeByCommitteeId(committeeId);
+            User chairman = userService.getUserById(chairmanId);
+            User member1 = userService.getUserById(member1Id);
+            User member2 = userService.getUserById(member2Id);
+
+            if(examCommittee == null || chairman == null || member1 == null || member2 == null) {
+                map.put("message", "Bad Request: Exam committee or teachers not found!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
+
+            if(!examCommitteeService.checkEditPermission(user, examCommittee)) {
+                map.put("message", "Forbidden: You do not have permission to update anything in this examination committee.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
+            }
+
+            if(quesCount1 <= 0 || quesCount2 <= 0 || quesCount3 <= 0) {
+                map.put("message", "Bad Request: Question count must be positive integer!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
+
+            if(!examCommittee.getChairman().getUserId().equals(chairman.getUserId()) || !examCommitteeService.isMember(member1, examCommittee) || !examCommitteeService.isMember(member2, examCommittee)) {
+                map.put("message", "Conflict: One or more teachers are not member of this examination committee!");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
+            }
+
+            examCommitteeService.updateQuestionPrintingInfo(examCommittee, quesCount1, quesCount2, quesCount3);
+
+            CommitteeActivity activity = new CommitteeActivity();
+            activity.setActionTitle("Updating Question Printing Info");
+            activity.setPerformedBy(user);
+            activity.setExamCommittee(examCommittee);
+            activity.setTimestamp(LocalDate.now());
+            activity.setDetails("Question printing & verifying information has been updated for total " + (quesCount1 + quesCount2 + quesCount3) + " questions");
+            committeeActivityService.saveCommitteeActivity(activity);
+
+            map.put("message", "Success: Question printing information updated successfully!\nTotal questions: " + (quesCount1 + quesCount2 + quesCount3));
+            return ResponseEntity.status(HttpStatus.OK).body(map);
+
+        }catch (Exception err){
+          map.put("message", "Internal Server Error: Could not update question printing info! Please try again...!\n" + err.getMessage());
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(map);
         }
     }
 

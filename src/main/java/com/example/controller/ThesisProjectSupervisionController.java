@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
@@ -73,9 +72,6 @@ public class ThesisProjectSupervisionController {
             }
 
             long totalStudent = 0L;
-//            if(!examCommittee.getStudentCount().equals(totalStudent)){
-//
-//            }
 
             List<Map<String, Object>> rows = (List<Map<String, Object>>) payload.get("superVisionData");
             List<ThesisProjectSupervision.Internal> supervisorsList = new ArrayList<>();
@@ -100,6 +96,12 @@ public class ThesisProjectSupervisionController {
                     return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
                 }
             }
+
+            if(examCommittee.getStudentCount() > totalStudent){
+                map.put("message", "Bad Request: Total registered students of this examination committee is " + examCommittee.getStudentCount() + ", but you are trying to assign supervisors for " + totalStudent + " students.");
+                return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+            }
+
             User externalTeacher = examCommittee.getExternalMember1();
 
             ThesisProjectSupervision thesisProjectSupervision = new ThesisProjectSupervision();

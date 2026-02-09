@@ -2,12 +2,19 @@ package com.example.controller;
 
 import com.example.entity.*;
 import com.example.service.*;
+import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.utils.PdfMerger;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +155,9 @@ public class PdfController {
         if(examCommittee == null) {
             return;
         }
+        if(!examCommittee.isResultPublished()){
+            return;
+        }
 
         if(user.getRole().equals("admin") || user.getRole().equals("co-admin") || user.getUserId().equals(billUser.getUserId())) {
             List<GratuityBill> gratuityBillList = gratuityBillService.findAllByUserAndExamCommittee(billUser, examCommittee);
@@ -179,6 +189,9 @@ public class PdfController {
         if(examCommittee == null) {
             return;
         }
+        if(!examCommittee.isResultPublished()){
+            return;
+        }
 
         if(!user.getRole().equals("admin") && !user.getRole().equals("co-admin") && !user.getUserId().equals(examCommittee.getChairman().getUserId())){
             return;
@@ -187,15 +200,41 @@ public class PdfController {
         List<Course> committeeCourses = courseService.findByCommitteeId(committeeId);
 
         byte[] pdfBytes = pdfService.createBillSummary(examCommittee, committeeCourses);
+        byte[] classTests = pdfService.createClassTestsSummary(examCommittee, committeeCourses);
+
+        byte[] finalPdf = getFinalPdf(pdfBytes, classTests);
 
         String filePath = "bill_summary_committee" + committeeId + ".pdf";
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "inline; filename=" + filePath);
-        response.setContentLength(pdfBytes.length);
+        response.setContentLength(finalPdf.length);
 
-        response.getOutputStream().write(pdfBytes);
+        response.getOutputStream().write(finalPdf);
         response.getOutputStream().flush();
 
+    }
+
+    private static byte  [] getFinalPdf(byte[] pdfBytes, byte[] classTests) throws IOException {
+        ByteArrayOutputStream mergedStream = new ByteArrayOutputStream();
+        PdfDocument mergedDoc = new PdfDocument(new PdfWriter(mergedStream));
+        PdfMerger merger = new PdfMerger(mergedDoc);
+
+        // 2. Add the first PDF (Bill Summary)
+        PdfDocument firstSource = new PdfDocument(new PdfReader(new ByteArrayInputStream(pdfBytes)));
+        merger.merge(firstSource, 1, firstSource.getNumberOfPages());
+
+        // 3. Add the second PDF (Class Tests)
+        PdfDocument secondSource = new PdfDocument(new PdfReader(new ByteArrayInputStream(classTests)));
+        merger.merge(secondSource, 1, secondSource.getNumberOfPages());
+
+        // 4. Close everything to finalize the merged stream
+        firstSource.close();
+        secondSource.close();
+        mergedDoc.close();
+
+
+        byte[] finalPdf = mergedStream.toByteArray();
+        return finalPdf;
     }
 
 

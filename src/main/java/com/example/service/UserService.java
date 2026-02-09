@@ -149,4 +149,18 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    public boolean isAdministrator(User user) {
+        return user.getRole().equals("admin") || user.getRole().equals("co-admin");
+    }
+
+    public boolean updateSalaryGrade(Long userId, String salaryGrade) {
+        User user = userRepository.findByUserId(userId);
+        if(user != null && salaryGrade != null){
+            user.setSalaryGrade(salaryGrade);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
 }

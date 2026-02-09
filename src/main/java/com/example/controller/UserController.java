@@ -375,4 +375,57 @@ public class UserController {
         map.put("message", "Something went wrong");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
     }
+
+    @GetMapping("/user/edit-grade/{id}")
+    public String editGradeForm(@PathVariable("id") Long id, HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("user");
+        if(currentUser == null){
+            return "redirect:/login";
+        }
+        User targetUser = userService.getUserById(id);
+        if(targetUser == null){
+            model.addAttribute("status", "Not Found");
+            model.addAttribute("message", "User not found");
+            return "error_page";
+        }
+        if(userService.isAdministrator(currentUser)) {
+            model.addAttribute("user", targetUser);
+            return "edit_grade_form";
+        }
+
+        model.addAttribute("status", "Access Denied");
+        model.addAttribute("error", "Only chairman and officers of department can update salary grade. Please contact them.");
+        return "error_page";
+    }
+
+    @PutMapping("/api/user/update/salary-grade/{userId}")
+    @ResponseBody
+    public ResponseEntity<Object> updateSalaryGrade(HttpSession session, @RequestBody Map<String, String> payload, @PathVariable Long userId) {
+        User currentUser = (User) session.getAttribute("user");
+        Map<Object, Object> map = new HashMap<>();
+        if(currentUser == null){
+            map.put("message", "Unauthorized: Please login first.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(map);
+        }
+
+        if(!userService.isAdministrator(currentUser)) {
+            map.put("message", "Forbidden: You are not allowed to perform this action.\nPlease contact Registrar or Deputy Registrar of ICT, MBSTU.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(map);
+        }
+
+        if(userId == null){
+            map.put("message", "Bad Request: Invalid User ID");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+
+        if(userService.updateSalaryGrade(userId, payload.get("newSalaryGrade"))){
+            map.put("message", "Salary grade updated successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(map);
+        }
+        else{
+            map.put("message", "Bad Request: User not found or something went wrong");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        }
+    }
+
 }

@@ -132,6 +132,15 @@ public class ExamCommitteeService {
         examCommitteeRepository.save(examCommittee);
     }
 
+    public void updateQuestionPrintingInfo(ExamCommittee examCommittee, Long quesCount1, Long quesCount2, Long quesCount3){
+        examCommittee.setQuesPrintingStatus(true);
+        examCommittee.setQuesCountOfChairman(quesCount1);
+        examCommittee.setQuesCountOfMember1(quesCount2);
+        examCommittee.setQuesCountOfMember2(quesCount3);
+
+        examCommitteeRepository.save(examCommittee);
+    }
+
     public boolean checkResultPublicationEligibility(ExamCommittee examCommittee){
         if(examCommittee.getSemester() == null){ return false; }
         List<Course> committeeCourses = courseRepository.findBySemesterAndSessionOrderByCourseCodeAsc(examCommittee.getSemester(), examCommittee.getSession());
@@ -169,6 +178,7 @@ public class ExamCommitteeService {
             double labExamCommitteeBillRate = billRateService.getRateByTask("Lab(Exam Committee)");
             double tabulationBillRate = billRateService.getRateByTask("Tabulation");
             double comprehensiveTabulationRate = billRateService.getRateByTask("Comprehensive Tabulation");
+            double quesPrintingBillRate = billRateService.getRateByTask("Question Printing & Verifying");
             Long studentCount = examCommittee.getStudentCount();
             double moderationBillPerMember = Math.max(2000.00, (theoryCourses.size() * quesSettingBillRate) / 4);
 
@@ -177,6 +187,7 @@ public class ExamCommitteeService {
                 GratuityBill tabulationBill = new GratuityBill();
                 GratuityBill comprehensiveTabulationBill = new GratuityBill();
                 GratuityBill quesModerationBill = new GratuityBill();
+                GratuityBill quesPrintingBill = new GratuityBill();
 
                 gratuityBill.setExamCommittee(examCommittee);
 
@@ -196,6 +207,10 @@ public class ExamCommitteeService {
                 quesModerationBill.setTaskName("Question Moderation");
                 quesModerationBill.setTotalBillAmount(moderationBillPerMember);
 
+                quesPrintingBill.setExamCommittee(examCommittee);
+                quesPrintingBill.setTaskName("Question Printing & Verifying");
+                quesPrintingBill.setBillRate(quesPrintingBillRate);
+
                 if(i == 0){
                     gratuityBill.setBillUser(examCommittee.getChairman());
                     gratuityBill.setTaskName("Allowance of Chairman");
@@ -212,6 +227,11 @@ public class ExamCommitteeService {
 
                     quesModerationBill.setBillUser(examCommittee.getChairman());
                     gratuityBillService.saveGratuityBill(quesModerationBill);
+
+                    quesPrintingBill.setBillUser(examCommittee.getChairman());
+                    quesPrintingBill.setTotalBillAmount(quesPrintingBillRate*examCommittee.getQuesCountOfChairman());
+                    quesPrintingBill.setNumberOfScriptsOrStudents(examCommittee.getQuesCountOfChairman());
+                    gratuityBillService.saveGratuityBill(quesPrintingBill);
                 }
                 else{
                     gratuityBill.setTaskName("Allowance of Member");
@@ -229,6 +249,11 @@ public class ExamCommitteeService {
 
                         quesModerationBill.setBillUser(examCommittee.getInternalMember1());
                         gratuityBillService.saveGratuityBill(quesModerationBill);
+
+                        quesPrintingBill.setBillUser(examCommittee.getInternalMember1());
+                        quesPrintingBill.setTotalBillAmount(quesPrintingBillRate * examCommittee.getQuesCountOfMember1());
+                        quesPrintingBill.setNumberOfScriptsOrStudents(examCommittee.getQuesCountOfMember1());
+                        gratuityBillService.saveGratuityBill(quesPrintingBill);
                     }
                     else if(i == 2){
                         gratuityBill.setBillUser(examCommittee.getInternalMember2());
@@ -240,6 +265,11 @@ public class ExamCommitteeService {
 
                         quesModerationBill.setBillUser(examCommittee.getInternalMember2());
                         gratuityBillService.saveGratuityBill(quesModerationBill);
+
+                        quesPrintingBill.setBillUser(examCommittee.getInternalMember2());
+                        quesPrintingBill.setTotalBillAmount(quesPrintingBillRate * examCommittee.getQuesCountOfMember2());
+                        quesPrintingBill.setNumberOfScriptsOrStudents(examCommittee.getQuesCountOfMember2());
+                        gratuityBillService.saveGratuityBill(quesPrintingBill);
                     }
                     else {
                         quesModerationBill.setBillUser(examCommittee.getExternalMember1());

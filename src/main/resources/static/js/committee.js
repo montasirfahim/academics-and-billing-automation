@@ -395,3 +395,55 @@ async function displayStudentsId(event){
         alert(err);
     }
 }
+
+async function updateQuesPrintingInfo(event){
+    event.preventDefault();
+    const committeeIdRaw = event.currentTarget.dataset.committeeId;
+    console.log("c id: " + committeeIdRaw);
+
+    const committeeId = parseInt(committeeIdRaw, 10);
+
+    const chairmanId = document.getElementById("chairman").value;
+    const quesCount1 = document.getElementById("ques-count1").value;
+
+    const member1Id = document.getElementById("member1").value;
+    const quesCount2 = document.getElementById("ques-count2").value;
+
+    const member2Id = document.getElementById("member2").value;
+    const quesCount3 = document.getElementById("ques-count3").value;
+
+    if(!chairmanId || !quesCount1 || !member1Id || !quesCount2 || !member2Id || !quesCount3){
+        alert("Please provide valid data!");
+        return;
+    }
+
+    const btn = document.getElementById("ques-typing-submit-btn");
+    btn.innerText = "Updating...";
+    btn.disabled = true;
+
+    try{
+        const response = await fetch('/api/committee/update/question-printing-info', {
+            method: 'PUT',
+            headers: {'Content-Type' : 'application/json'},
+            body: JSON.stringify({committeeId, chairmanId, quesCount1, member1Id, quesCount2, member2Id, quesCount3})
+        });
+
+        const data = await response.json();
+        if(response.ok){
+            alert(data.message);
+            window.location.href = `/committee/manage/${committeeId}`;
+        }
+        else if(response.status === 401){
+            alert(data.message);
+            window.location.href = "/login";
+        }
+        else{
+            alert(data.message);
+        }
+    }catch (err){
+        alert("Error: " + err);
+    }finally {
+        btn.innerText = "Update";
+        btn.disabled = false;
+    }
+}

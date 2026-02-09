@@ -1,6 +1,8 @@
 package com.example.service;
 
 import com.example.entity.*;
+import com.example.repository.ThesisProjectSupervisionRepository;
+import com.example.repository.ThirdExaminationRepository;
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -20,12 +22,14 @@ import com.itextpdf.layout.borders.DottedBorder;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.*;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,9 +37,13 @@ public class PdfService {
 
 
     private final ExamCommitteeService examCommitteeService;
+    private final ThesisProjectSupervisionRepository thesisProjectSupervisionRepository;
+    private final ThirdExaminationRepository thirdExaminationRepository;
 
-    public PdfService(ExamCommitteeService examCommitteeService) {
+    public PdfService(ExamCommitteeService examCommitteeService, ThesisProjectSupervisionRepository thesisProjectSupervisionRepository, ThirdExaminationRepository thirdExaminationRepository) {
         this.examCommitteeService = examCommitteeService;
+        this.thesisProjectSupervisionRepository = thesisProjectSupervisionRepository;
+        this.thirdExaminationRepository = thirdExaminationRepository;
     }
 
     public byte[] createCommitteePdf(ExamCommittee examCommittee, Semester semester, List<Course> assignedCourses) throws IOException {
@@ -721,6 +729,7 @@ public class PdfService {
             int sl = 1;
             double totalQuesSettingBill = 0;
             double totalScriptEvaluationBill = 0;
+            double quesBill = 0;
             double grossTotal = 0;
             for(String category : categories){
                 table.addCell(new Cell().add(new Paragraph(String.valueOf(sl))));
@@ -858,6 +867,26 @@ public class PdfService {
                         else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
                         continue;
                     }
+                    else if(sl == 9){
+                        if(i == 4 && billUser.getRole().equals("internal") && examCommitteeService.isMember(billUser, examCommittee)){
+                            String tmp = "";
+                            for(GratuityBill gratuityBill : gratuityBillList) {
+                                if(gratuityBill.getTaskName().equals("Question Printing & Verifying") && gratuityBill.getBillUser().getUserId().equals(billUser.getUserId())){
+                                    grossTotal += gratuityBill.getTotalBillAmount();
+                                    tmp += gratuityBill.getNumberOfScriptsOrStudents() + "x";
+                                    tmp += gratuityBill.getBillRate();
+                                    quesBill+= gratuityBill.getTotalBillAmount();
+                                    System.out.println(billUser.getName() + " ques bill: " + gratuityBill.getTotalBillAmount());
+                                }
+                            }
+                            table.addCell(new Cell().add(new Paragraph(tmp).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else if(i == 8){
+                            table.addCell(new  Cell().add(new Paragraph(String.valueOf(quesBill)).setTextAlignment(TextAlignment.CENTER)));
+                        }
+                        else table.addCell(new Cell().add(new Paragraph("").setTextAlignment(TextAlignment.CENTER)));
+                        continue;
+                    }
                     else if(sl == 13){
                         if(i == 3){
                             StringBuilder courseCodes = new StringBuilder();
@@ -909,7 +938,7 @@ public class PdfService {
             table.addCell(new Cell().add(new Paragraph("")));
 
 
-            table.addCell(new Cell(1, 9)
+            table.addCell(new Cell(1, 10)
                     .add(new Paragraph("Total"))
                     .setTextAlignment(TextAlignment.RIGHT)
                     .setPaddingRight(10f)
@@ -1019,19 +1048,23 @@ public class PdfService {
             ls.setWidth(UnitValue.createPercentValue(100));
             document.add(ls);
 
-            document.add(new Paragraph("Cue: MBSTU/ICT/             / List of teachers responsible for various examination related tasks for " + examCommittee.getSemesterYearName() + " " + examCommittee.getSemester().getSemesterParity() + " Semester Final Examination - " + examCommittee.getSemester().getSemesterScheduledYear() + ", Session: " + examCommittee.getSession()));
+            document.add(new Paragraph("Cue: MBSTU/ICT/                     / List of teachers responsible for various examination related tasks for " + examCommittee.getSemesterYearName() + " " + examCommittee.getSemester().getSemesterParity() + " Semester Final Examination - " + examCommittee.getSemester().getSemesterScheduledYear() + ", Session: " + examCommittee.getSession()));
             document.add(new Paragraph("\n"));
 
             document.add(new Paragraph("Examination Held Date: " + examCommittee.getSemester().getSemesterHeldYear() + ", " + examCommittee.getSemester().getSemesterHeldMonths()).setTextAlignment(TextAlignment.CENTER).setBold());
 
             List<Course> theoryCourses = new ArrayList<>();
             List<Course> labCourses = new ArrayList<>();
+            List<Course> projectThesisCourses = new ArrayList<>();
             for(Course course: committeeCourses) {
                 if(course.getCourseType().equals("Theory")){
                     theoryCourses.add(course);
                 }
                 else if(course.getCourseType().equals("Lab")){
                     labCourses.add(course);
+                }
+                else if(course.getCourseType().equals("Project") || course.getCourseType().equals("Thesis")){
+                    projectThesisCourses.add(course);
                 }
             }
 
@@ -1076,7 +1109,7 @@ public class PdfService {
             document.add(modTable);
 
             Paragraph p = new Paragraph();
-            p.add("\nB. List of Question Setters & Script Evaluators:\n").setBold().add(examCommittee.getSemesterYearName()  + " " + examCommittee.getSemester().getSemesterParity() + "(Session: " + examCommittee.getSession() + ")").setTextAlignment(TextAlignment.CENTER);
+            p.add("\n\nB. List of Question Setters & Script Evaluators:\n").setBold().add(examCommittee.getSemesterYearName()  + " " + examCommittee.getSemester().getSemesterParity() + "(Session: " + examCommittee.getSession() + ")").setTextAlignment(TextAlignment.CENTER);
             document.add(p);
 
             ls.setWidth(UnitValue.createPercentValue(80));
@@ -1086,6 +1119,7 @@ public class PdfService {
             Table setterTable = new Table(UnitValue.createPercentArray(new float[]{0.5f,1f, 2f, 0.5f, 3f, 3f}));
             setterTable.setWidth(UnitValue.createPercentValue(100));
             setterTable.setMarginTop(10);
+            setterTable.setKeepTogether(false);
 
             setterTable.addCell(createStyledHeaderCell("SL"));
             setterTable.addCell(createStyledHeaderCell("Course Code"));
@@ -1099,17 +1133,65 @@ public class PdfService {
                 setterTable.addCell(new Cell().add(new Paragraph(String.valueOf(sl))));
                 setterTable.addCell(new Cell().add(new Paragraph(course.getCourseCode() + "\nStudent-" + examCommittee.getStudentCount()).setTextAlignment(TextAlignment.CENTER)));
                 setterTable.addCell(new Cell().add(new Paragraph(course.getCourseName())).setTextAlignment(TextAlignment.CENTER));
-                setterTable.addCell(new Cell().add(new Paragraph(String.valueOf(course.getCourseCredit()))).setTextAlignment(TextAlignment.CENTER));
+
+                String creditStr = String.format("%.2f", course.getCourseCredit());
+                setterTable.addCell(new Cell().add(new Paragraph(creditStr)).setTextAlignment(TextAlignment.CENTER));
+
                 setterTable.addCell(new Cell().add(new Paragraph(course.getInternalQuesSetterEvaluator().getName() + "\n" + course.getInternalQuesSetterEvaluator().getDesignation() + "\n Dept. of " + course.getInternalQuesSetterEvaluator().getDepartment() + ", MBSTU")).setTextAlignment(TextAlignment.LEFT));
                 setterTable.addCell(new Cell().add(new Paragraph(course.getExternalQuesSetterEvaluator().getName() + "\n" + course.getExternalQuesSetterEvaluator().getDesignation() + "\n Dept. of " + course.getExternalQuesSetterEvaluator().getDepartment() + ", " + course.getExternalQuesSetterEvaluator().getUniversity() + "\n" + course.getExternalQuesSetterEvaluator().getEmail())).setTextAlignment(TextAlignment.LEFT));
                 sl++;
             }
 
+            for(IElement element : setterTable.getChildren()){
+                if(element instanceof Cell) {
+                    ((Cell) element).setKeepTogether(true);
+                }
+            }
             document.add(setterTable);
 
             document.add(new Paragraph("\nC. List of Question Paper Writers & Verifiers:").setBold().setTextAlignment(TextAlignment.LEFT));
 
-            document.add(new Paragraph("\nD. Lab Sessional: Course Teacher").setBold().setTextAlignment(TextAlignment.LEFT));
+            Table quesWritterTable = new Table(UnitValue.createPercentArray(new float[]{0.5f,7.5f, 2f}));
+            quesWritterTable.setWidth(UnitValue.createPercentValue(100));
+            quesWritterTable.setMarginTop(10f);
+
+            for(int i = 1; i <= 3; i++){
+                quesWritterTable.addCell(new Cell().add(new Paragraph(String.valueOf(i)).setTextAlignment(TextAlignment.CENTER)));
+                if(i == 1){
+                    User member = examCommittee.getChairman();
+                    quesWritterTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    quesWritterTable.addCell(new Cell().add(new Paragraph(examCommittee.getQuesCountOfChairman() + " Question(s)").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else if(i == 2){
+                    User member = examCommittee.getInternalMember1();
+                    quesWritterTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    quesWritterTable.addCell(new Cell().add(new Paragraph(examCommittee.getQuesCountOfMember1() + " Question(s)").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else{
+                    User member = examCommittee.getInternalMember2();
+                    quesWritterTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    quesWritterTable.addCell(new Cell().add(new Paragraph(examCommittee.getQuesCountOfMember2() + " Question(s)").setTextAlignment(TextAlignment.CENTER)));
+                }
+            }
+
+            document.add(quesWritterTable);
+
+            Table quesWrittingDetailsTable = new Table(UnitValue.createPercentArray(new float[]{5f, 5f}));
+            quesWrittingDetailsTable.setWidth(UnitValue.createPercentValue(100));
+            quesWrittingDetailsTable.setMarginTop(15f);
+
+            quesWrittingDetailsTable.addCell(new Paragraph("Course Code").setTextAlignment(TextAlignment.CENTER));
+            quesWrittingDetailsTable.addCell(new Paragraph("Number of Question").setTextAlignment(TextAlignment.CENTER));
+
+            for(Course course : theoryCourses){
+                quesWrittingDetailsTable.addCell(new Paragraph(course.getCourseCode()).setTextAlignment(TextAlignment.CENTER));
+                quesWrittingDetailsTable.addCell(new Paragraph("1 Question").setTextAlignment(TextAlignment.CENTER));
+            }
+
+            document.add(quesWrittingDetailsTable);
+
+
+            document.add(new Paragraph("\nD. Lab/Sessional: Course Teacher").setBold().setTextAlignment(TextAlignment.LEFT));
 
             Table labCourseTeacherTable = new Table(UnitValue.createPercentArray(new float[]{2f, 8f}));
             labCourseTeacherTable.setWidth(UnitValue.createPercentValue(100));
@@ -1117,13 +1199,393 @@ public class PdfService {
             labCourseTeacherTable.addCell(createStyledHeaderCell("Course Code"));
             labCourseTeacherTable.addCell(createStyledHeaderCell("Internal Examiner"));
 
+            StringBuilder labCourseCode = new StringBuilder();
             for(Course course : labCourses){
+                labCourseCode.append(course.getCourseCode()).append(" ");
                 labCourseTeacherTable.addCell(new Cell().add(new Paragraph(course.getCourseCode() + "\nStudent-" + examCommittee.getStudentCount())).setTextAlignment(TextAlignment.CENTER));
                 User internal = course.getCourseTeacher();
                 labCourseTeacherTable.addCell(new Cell().add(new Paragraph(internal.getName() + ", " + internal.getDesignation() + ", Dept. of " + internal.getDepartment() + ", MBSTU")).setTextAlignment(TextAlignment.LEFT));
             }
 
             document.add(labCourseTeacherTable);
+
+            document.add(new Paragraph("\nE. Lab/Sessional: Examination Committee " + labCourseCode).setBold());
+            Table labCourseCommitteeTable = new Table(UnitValue.createPercentArray(new float[]{1f, 6f, 3f}));
+            labCourseCommitteeTable.setWidth(UnitValue.createPercentValue(100));
+            labCourseCommitteeTable.setMarginTop(8f);
+
+            //labCourseTeacherTable.addCell(createStyledHeaderCell("Course Code"));
+            for(int i = 1; i <= 4; i++){
+                labCourseCommitteeTable.addCell(new Cell().add(new Paragraph(String.valueOf(i)).setTextAlignment(TextAlignment.CENTER)));
+                if(i == 1){
+                    User member = examCommittee.getChairman();
+                    labCourseCommitteeTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    labCourseCommitteeTable.addCell(new Cell().add(new Paragraph("Chairman, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else if(i == 2){
+                    User member = examCommittee.getInternalMember1();
+                    labCourseCommitteeTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    labCourseCommitteeTable.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else if(i == 3){
+                    User member = examCommittee.getInternalMember2();
+                    labCourseCommitteeTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    labCourseCommitteeTable.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else{
+                    User member = examCommittee.getExternalMember1();
+                    labCourseCommitteeTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    labCourseCommitteeTable.addCell(new Cell().add(new Paragraph("External Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+            }
+
+            document.add(labCourseCommitteeTable);
+
+            List<Character> contentSequence = new ArrayList<>();
+            for(int i = 26; i >= 6; i--){
+                char letter = (char) (i + 64);
+                contentSequence.add(letter);
+            }
+
+            System.out.println(contentSequence);
+
+            if(!projectThesisCourses.isEmpty()){
+                ThesisProjectSupervision thesisProjectSupervision = thesisProjectSupervisionRepository.findByCourseAndExamCommittee(projectThesisCourses.get(0), examCommittee);
+                if(thesisProjectSupervision != null){
+                    char currSequence = contentSequence.get(contentSequence.size() - 1);
+                    contentSequence.remove(contentSequence.size() - 1);
+
+                    document.add(new Paragraph("\n" + currSequence + ". Project/Thesis Paper Evaluation: List of Internal & External Examiners:").setBold());
+
+                    Table projectThesisTable = new Table(UnitValue.createPercentArray(new float[]{1.5f,0.5f, 1.5f, 4f, 2.5f}));
+                    projectThesisTable.setWidth(UnitValue.createPercentValue(100));
+                    projectThesisTable.setMarginTop(10f);
+                    projectThesisTable.setKeepTogether(false);
+
+                    projectThesisTable.addCell(createStyledHeaderCell("Course Code").setTextAlignment(TextAlignment.CENTER));
+                    projectThesisTable.addCell(createStyledHeaderCell("Group").setTextAlignment(TextAlignment.CENTER));
+                    projectThesisTable.addCell(createStyledHeaderCell("Student Count").setTextAlignment(TextAlignment.CENTER));
+                    projectThesisTable.addCell(createStyledHeaderCell("Internal Examiner").setTextAlignment(TextAlignment.CENTER));
+                    projectThesisTable.addCell(createStyledHeaderCell("External Examiner").setTextAlignment(TextAlignment.CENTER));
+
+                    List<ThesisProjectSupervision.Internal> internalList = thesisProjectSupervision.getInternalTeachers();
+                    boolean rowspan = false;
+                    for(ThesisProjectSupervision.Internal internal: internalList){
+                        User teacher = internal.getInternalTeacher();
+                        projectThesisTable.addCell(new Paragraph(thesisProjectSupervision.getCourse().getCourseCode()).setTextAlignment(TextAlignment.CENTER));
+                        projectThesisTable.addCell(new Paragraph(String.valueOf(internal.getGroupCount())).setTextAlignment(TextAlignment.CENTER));
+                        projectThesisTable.addCell(new Paragraph(String.valueOf(internal.getStudentCount())).setTextAlignment(TextAlignment.CENTER));
+                        projectThesisTable.addCell(new Paragraph(teacher.getName() + ", " + teacher.getDesignation() + ", Dept of " + teacher.getDepartment() + ", MBSTU"));
+                        if(!rowspan){
+                            User external = thesisProjectSupervision.getExternalTeacher();
+                            projectThesisTable.addCell(new Cell(internalList.size(), 1).add(new Paragraph(external.getName() + ", " + external.getDesignation() + ", Dept. of " + external
+                                    .getDepartment() + ", " + external.getUniversity())).setTextAlignment(TextAlignment.CENTER));
+
+                            rowspan = true;
+                        }
+                    }
+
+                    for(IElement element : projectThesisTable.getChildren()){
+                        if(element instanceof Cell) {
+                            ((Cell) element).setKeepTogether(true);
+                        }
+                    }
+                    document.add(projectThesisTable);
+
+                    char currSequence2 = contentSequence.get(contentSequence.size() - 1);
+                    contentSequence.remove(contentSequence.size() - 1);
+
+                    document.add(new Paragraph("\n" + currSequence2 + ". Project/Thesis Paper Supervisors List:").setBold());
+                    Table superVisorsTable = new Table(UnitValue.createPercentArray(new float[]{1.5f,0.5f, 1.5f, 6.5f}));
+                    superVisorsTable.setWidth(UnitValue.createPercentValue(100));
+                    superVisorsTable.setMarginTop(10f);
+
+                    superVisorsTable.addCell(createStyledHeaderCell("Course Code").setTextAlignment(TextAlignment.CENTER));
+                    superVisorsTable.addCell(createStyledHeaderCell("Group").setTextAlignment(TextAlignment.CENTER));
+                    superVisorsTable.addCell(createStyledHeaderCell("Student Count").setTextAlignment(TextAlignment.CENTER));
+                    superVisorsTable.addCell(createStyledHeaderCell("Internal Examiner").setTextAlignment(TextAlignment.CENTER));
+
+                    for(ThesisProjectSupervision.Internal internal: internalList){
+                        User teacher = internal.getInternalTeacher();
+                        superVisorsTable.addCell(new Paragraph(thesisProjectSupervision.getCourse().getCourseCode()).setTextAlignment(TextAlignment.CENTER));
+                        superVisorsTable.addCell(new Paragraph(String.valueOf(internal.getGroupCount())).setTextAlignment(TextAlignment.CENTER));
+                        superVisorsTable.addCell(new Paragraph(String.valueOf(internal.getStudentCount())).setTextAlignment(TextAlignment.CENTER));
+                        superVisorsTable.addCell(new Paragraph(teacher.getName() + ", " + teacher.getDesignation() + ", Dept of " + teacher.getDepartment() + ", MBSTU"));
+                    }
+
+
+                    document.add(superVisorsTable);
+                }
+            }
+
+
+
+
+            char currSequence = contentSequence.get(contentSequence.size() - 1);
+            contentSequence.remove(contentSequence.size() - 1);
+            document.add(new Paragraph("\n" + currSequence + ". List of Teachers Presented on Project/Thesis Presentation/Defense/Oral Examination: Number of Students - " + examCommittee.getStudentCount()).setBold());
+
+            Table oralTable = new Table(UnitValue.createPercentArray(new float[]{1.5f, 8.5f}));
+            oralTable.setWidth(UnitValue.createPercentValue(100));
+            oralTable.setMarginTop(10f);
+            for(int i = 1; i <= 4; i++){
+                oralTable.addCell(new Cell().add(new Paragraph(String.valueOf(i)).setTextAlignment(TextAlignment.CENTER)));
+                if(i == 1){
+                    User member = examCommittee.getChairman();
+                    oralTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                }
+                else if(i == 2){
+                    User member = examCommittee.getInternalMember1();
+                    oralTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                }
+                else if(i == 3){
+                    User member = examCommittee.getInternalMember2();
+                    oralTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                }
+                else {
+                    User member = examCommittee.getExternalMember1();
+                    oralTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                }
+            }
+
+            document.add(oralTable);
+
+            currSequence = contentSequence.get(contentSequence.size() - 1);
+            contentSequence.remove(contentSequence.size() - 1);
+
+            document.add(new Paragraph("\n" + currSequence + ". List of Third Examination: ").setBold());
+            Table thirdExamTable = new Table(UnitValue.createPercentArray(new float[]{1.5f, 3f, 2, 1, 2.5f}));
+            thirdExamTable.setWidth(UnitValue.createPercentValue(100));
+            thirdExamTable.setMarginTop(10f);
+            thirdExamTable.setKeepTogether(false);
+
+            thirdExamTable.addCell(createStyledHeaderCell("Course Code"));
+            thirdExamTable.addCell(createStyledHeaderCell("Course Title"));
+            thirdExamTable.addCell(createStyledHeaderCell("Student IDs"));
+            thirdExamTable.addCell(createStyledHeaderCell("Total Scripts"));
+            thirdExamTable.addCell(createStyledHeaderCell("Name of Examiner"));
+
+            List<ThirdExamination> thirdExaminationList = thirdExaminationRepository.findByExamCommittee(examCommittee);
+            for(ThirdExamination thirdExamination: thirdExaminationList){
+                thirdExamTable.addCell(new Paragraph(thirdExamination.getCourse().getCourseCode()).setTextAlignment(TextAlignment.CENTER));
+                thirdExamTable.addCell(new Paragraph(thirdExamination.getCourse().getCourseName()).setTextAlignment(TextAlignment.CENTER));
+
+                String studentIds = (thirdExamination.getStudentsId() != null && !thirdExamination.getStudentsId().isEmpty()) ? String.join(", ", thirdExamination.getStudentsId()) : " ";
+                thirdExamTable.addCell(new Paragraph(studentIds).setTextAlignment(TextAlignment.CENTER));
+
+                thirdExamTable.addCell(new Paragraph(thirdExamination.getScriptsCount().toString()).setTextAlignment(TextAlignment.CENTER));
+
+                User examiner = thirdExamination.getExaminer();
+                thirdExamTable.addCell(new Paragraph(examiner.getName() + "\n" + examiner.getDesignation() + "\nDept. of " + examiner.getDepartment() + ", MBSTU").setTextAlignment(TextAlignment.LEFT));
+            }
+
+            for(IElement element : thirdExamTable.getChildren()){
+                if(element instanceof Cell) {
+                    ((Cell) element).setKeepTogether(true);
+                }
+            }
+            document.add(thirdExamTable);
+
+
+            currSequence = contentSequence.get(contentSequence.size() - 1);
+            contentSequence.remove(contentSequence.size() - 1);
+
+            document.add(new Paragraph("\n" + currSequence + ". List of Tabulators: (Number of Students - " + examCommittee.getStudentCount() + ")").setBold());
+
+            Table tabulatorsTable = new Table(UnitValue.createPercentArray(new float[]{1f, 6.5f, 2.5f}));
+            tabulatorsTable.setWidth(UnitValue.createPercentValue(100));
+            tabulatorsTable.setMarginTop(10f);
+            tabulatorsTable.setKeepTogether(false);
+
+            for(int i = 1; i <= 3; i++){
+                tabulatorsTable.addCell(new Cell().add(new Paragraph(String.valueOf(i)).setTextAlignment(TextAlignment.CENTER)));
+                if(i == 1){
+                    User member = examCommittee.getChairman();
+                    tabulatorsTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    tabulatorsTable.addCell(new Cell().add(new Paragraph("Chairman, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else if(i == 2){
+                    User member = examCommittee.getInternalMember1();
+                    tabulatorsTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    tabulatorsTable.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else{
+                    User member = examCommittee.getInternalMember2();
+                    tabulatorsTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    tabulatorsTable.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+            }
+
+            for(IElement element : tabulatorsTable.getChildren()){
+                if(element instanceof Cell) {
+                    ((Cell) element).setKeepTogether(true);
+                }
+            }
+            document.add(tabulatorsTable);
+
+
+            document.add(new Paragraph("List of Comprehensive Tabulators: (Number of Students - " + examCommittee.getStudentCount() + ")").setBold());
+
+            Table tabulatorsTable2 = new Table(UnitValue.createPercentArray(new float[]{1f, 6.5f, 2.5f}));
+            tabulatorsTable2.setWidth(UnitValue.createPercentValue(100));
+            tabulatorsTable2.setMarginTop(8f);
+            tabulatorsTable2.setKeepTogether(false);
+
+            for(int i = 1; i <= 3; i++){
+                tabulatorsTable2.addCell(new Cell().add(new Paragraph(String.valueOf(i)).setTextAlignment(TextAlignment.CENTER)));
+                if(i == 1){
+                    User member = examCommittee.getChairman();
+                    tabulatorsTable2.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    tabulatorsTable2.addCell(new Cell().add(new Paragraph("Chairman, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else if(i == 2){
+                    User member = examCommittee.getInternalMember1();
+                    tabulatorsTable2.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    tabulatorsTable2.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else{
+                    User member = examCommittee.getInternalMember2();
+                    tabulatorsTable2.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    tabulatorsTable2.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+            }
+
+            for(IElement element : tabulatorsTable2.getChildren()){
+                if(element instanceof Cell) {
+                    ((Cell) element).setKeepTogether(true);
+                }
+            }
+            document.add(tabulatorsTable2);
+
+
+            currSequence = contentSequence.get(contentSequence.size() - 1);
+            contentSequence.remove(contentSequence.size() - 1);
+            document.add(new Paragraph("\n\n" + currSequence + ". Examination Committee").setBold());
+
+            Table committeeTable = new Table(UnitValue.createPercentArray(new float[]{1f, 6.5f, 2.5f}));
+            committeeTable.setWidth(UnitValue.createPercentValue(100));
+            committeeTable.setMarginTop(10f);
+            committeeTable.setKeepTogether(false);
+
+            for(int i = 1; i <= 3; i++){
+                committeeTable.addCell(new Cell().add(new Paragraph(String.valueOf(i)).setTextAlignment(TextAlignment.CENTER)));
+                if(i == 1){
+                    User member = examCommittee.getChairman();
+                    committeeTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    committeeTable.addCell(new Cell().add(new Paragraph("Chairman, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else if(i == 2){
+                    User member = examCommittee.getInternalMember1();
+                    committeeTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    committeeTable.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+                else{
+                    User member = examCommittee.getInternalMember2();
+                    committeeTable.addCell(new Cell().add(new Paragraph(member.getName() + ", " + member.getDesignation() + ", " + member.getDepartment() + ", " + member.getUniversity())));
+                    committeeTable.addCell(new Cell().add(new Paragraph("Member, Exam Committee").setTextAlignment(TextAlignment.CENTER)));
+                }
+            }
+
+            for(IElement element : committeeTable.getChildren()){
+                if(element instanceof Cell) {
+                    ((Cell) element).setKeepTogether(true);
+                }
+            }
+            document.add(committeeTable);
+
+            document.add(new Paragraph("Chairman").setMarginTop(90f).setMarginBottom(0f));
+            document.add(new Paragraph("Examination Committee").setMarginTop(-1f).setMarginBottom(0f));
+            document.add(new Paragraph(examCommittee.getSemesterYearName() + ", " + examCommittee.getSemester().getSemesterParity() + " Semester Final Examination - " + examCommittee.getSemester().getSemesterScheduledYear() + " (Session: " + examCommittee.getSession() + ")").setMarginTop(-1f).setMarginBottom(0f));
+            document.add(new Paragraph("Dept. of ICT, MBSTU").setMarginTop(-1f).setMarginBottom(0f));
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return baos.toByteArray();
+    }
+
+    public byte[] createClassTestsSummary(ExamCommittee examCommittee, List<Course> courseList){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try(PdfWriter writer = new PdfWriter(baos);
+             PdfDocument pdfDoc = new PdfDocument(writer);
+             Document document = new Document(pdfDoc)) {
+
+            pdfDoc.setDefaultPageSize(PageSize.LEGAL);
+
+            InputStream fontStream = getClass().getResourceAsStream("/fonts/times.ttf");
+
+            if (fontStream == null) {
+                throw new IOException("Font file not found! Check if it is in src/main/resources/fonts/times.ttf");
+            }
+
+            byte[] fontBytes = fontStream.readAllBytes();
+
+            PdfFont font = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H);
+            document.setFont(font);
+
+            InputStream is = getClass().getResourceAsStream("/static/logo.PNG");
+
+            if (is == null) {
+                throw new IOException("Logo not found in classpath! Check path: /static/logo.PNG");
+            }
+
+            byte[] imageBytes = is.readAllBytes();
+
+            ImageData imageData = ImageDataFactory.create(imageBytes);
+            Image logo = new Image(imageData);
+            logo.setWidth(60);
+            logo.setHeight(60);
+            // logo.setAutoScale(true);
+            logo.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            document.add(logo);
+
+            addHeader(document, "Mawlana Bhashani Science and Technology University\nDept. of Information and Communication Technology, MBSTU");
+
+            LineSeparator ls = new LineSeparator(new SolidLine(1f));
+            ls.setWidth(UnitValue.createPercentValue(100));
+            document.add(ls);
+
+            document.add(new Paragraph("Cue: MBSTU/ICT/                     / Information about Incourse/Tutorial/Class Test for " + examCommittee.getSemesterYearName() + " " + examCommittee.getSemester().getSemesterParity() + " Semester Final Examination - " + examCommittee.getSemester().getSemesterScheduledYear() + ", Session: " + examCommittee.getSession()));
+            document.add(new Paragraph("\n"));
+
+            Table table = new Table(UnitValue.createPercentArray(new float[]{3f, 1f, 1f, 1f, 1f, 1.5f, 1.5f}));
+            table.setWidth(UnitValue.createPercentValue(100));
+            table.setMarginTop(20f);
+
+            table.addCell(createStyledHeaderCell("Course Teacher"));
+            table.addCell(createStyledHeaderCell("Course Code"));
+            table.addCell(createStyledHeaderCell("Credit Hour"));
+            table.addCell(createStyledHeaderCell("Class Test/ Incourse/ Tutorial"));
+            table.addCell(createStyledHeaderCell("Date"));
+            table.addCell(createStyledHeaderCell("Total Student"));
+            table.addCell(createStyledHeaderCell("Total Class Test/ Incourse/ Tutorial"));
+
+            for(Course course: courseList){
+                if(course.getCourseType().equals("Theory")){
+                    User teacher = course.getCourseTeacher();
+                    table.addCell(new Cell(4, 1).add(new Paragraph(teacher.getName() + "\n" + teacher.getDesignation()  + "\n Dept of " + teacher.getDepartment() + ", MBSTU")));
+                    table.addCell(new Cell(4, 1).add(new Paragraph(course.getCourseCode()).setTextAlignment(TextAlignment.CENTER)));
+
+                    String creditStr = String.format("%.2f", course.getCourseCredit());
+                    table.addCell(new Cell(4, 1).add(new Paragraph(creditStr).setTextAlignment(TextAlignment.CENTER)));
+
+                    double ctCount = (course.getCourseCredit() >= 3.00 ? 4.00 : 3.00);
+                    table.addCell(new Cell(4, 1).add(new Paragraph(String.valueOf(ctCount)).setTextAlignment(TextAlignment.CENTER)));
+
+                    table.addCell(new Cell().setHeight(13f).add(new Paragraph("")));
+                    table.addCell(new Cell(4, 1).add(new Paragraph(String.valueOf(examCommittee.getStudentCount())).setTextAlignment(TextAlignment.CENTER)));
+                    table.addCell(new Cell(4, 1).add(new Paragraph(ctCount + " × " + examCommittee.getStudentCount()).setTextAlignment(TextAlignment.CENTER)));
+
+                    for(int i = 1; i <= 3; i++){ //others 3 rows
+                        table.addCell(new Cell().setHeight(13f).add(new Paragraph("")));
+                    }
+                }
+            }
+
+            document.add(table);
+
+
+            document.add(new Paragraph("\n\n\n\n\n\nChairman\nDept. of ICT\nMBSTU"));
 
         }catch (Exception ex){
             ex.printStackTrace();
