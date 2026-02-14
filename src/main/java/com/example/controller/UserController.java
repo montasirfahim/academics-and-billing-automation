@@ -377,7 +377,7 @@ public class UserController {
     }
 
     @GetMapping("/user/edit-grade/{id}")
-    public String editGradeForm(@PathVariable("id") Long id, HttpSession session, Model model) {
+    public String updateGradeForm(@PathVariable("id") Long id, HttpSession session, Model model) {
         User currentUser = (User) session.getAttribute("user");
         if(currentUser == null){
             return "redirect:/login";

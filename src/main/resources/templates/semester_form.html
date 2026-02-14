@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Semester Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -29,95 +31,208 @@
             padding: 30px 40px;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            width: 350px;
+            max-width: 900px;
+            width: 100%;
         }
 
         label {
-            display: block;
             font-weight: 600;
             margin-bottom: 6px;
             color: #555;
         }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        select {
-            width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 18px;
+        select,
+        input {
             border: 1.5px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
-            transition: border-color 0.3s ease;
         }
 
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        select:focus {
-            border-color: #4CAF50;
-            outline: none;
+        select:focus,
+        input:focus {
+            border-color: #667eea;
+            box-shadow: none;
         }
 
         button[type="submit"] {
             background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px;
-            width: 100%;
+            padding: 12px 40px;
             font-size: 16px;
             font-weight: bold;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
 
         button[type="submit"]:hover {
             background: black;
         }
-
-        input[type="hidden"] {
-            display: none;
-        }
     </style>
 </head>
+
 <body>
+
 <form th:action="@{/semester/new}" th:object="${semester}" method="post">
+
     <h2>Add New Semester</h2>
 
-    <label for="year_held"> Held Year:</label>
-    <select id="year_held" th:field="*{semesterHeldYear}" required>
-        <option value=""> Select Held Year </option>
-        <option th:each="i : ${#numbers.sequence(2024, 2050)}" th:value="${i}"> [[${i}]] </option>
-    </select>
+    <div class="row g-3">
 
-    <label for="held-month">Held Month</label>
-    <input type="text" id="held-month" th:field="*{semesterHeldMonths}" placeholder="e.g: January-February" required>
+        <div class="col-12">
+            <label for="semester_parity" class="form-label">Semester Name</label>
+            <select id="semester_parity" class="form-select" th:field="*{semesterParity}" required>
+                <option value="">Select Semester Name</option>
+                <option th:value="'B.Sc(Engg.) 1st'">B.Sc(Engg.) 1st Semester</option>
+                <option th:value="'B.Sc(Engg.) 2nd'">B.Sc(Engg.) 2nd Semester</option>
+                <option th:value="'M.Sc(Engg.) 1st'">M.Sc(Engg.) 1st Semester</option>
+                <option th:value="'M.Sc(Engg.) 2nd'">M.Sc(Engg.) 2nd Semester</option>
+                <option th:value="'M.Sc(Engg.) 3rd'">M.Sc(Engg.) 3rd Semester</option>
+                <option th:value="'M.Engineering 1st'">M.Engineering 1st Semester</option>
+                <option th:value="'M.Engineering 2nd'">M.Engineering 2nd Semester</option>
+                <option th:value="'M.Engineering 3rd'">M.Engineering 3rd Semester</option>
+            </select>
+        </div>
 
-    <label for="year"> Scheduled Year:</label>
-    <select id="year" th:field="*{semesterScheduledYear}" required>
-        <option value=""> Select Scheduled Year </option>
-        <option th:each="i : ${#numbers.sequence(2023, 2050)}" th:value="${i}"> [[${i}]] </option>
-    </select>
+        <div class="col-12 text-center mt-5">
+            <h4>Examination Held Information</h4>
+        </div>
 
-    <label for="scheduled-month">Scheduled Month</label>
-    <input type="text" id="scheduled-month" th:field="*{semesterScheduledMonths}" placeholder="e.g: January-February" required>
+        <div class="col-12 mt-0">
+            <hr class="opacity-50">
+        </div>
 
-    <label for="semester_parity">Semester Name:</label>
-    <select id="semester_parity" th:field="*{semesterParity}" required>
-        <option value="">Select Semester Name</option>
-        <option th:value="'B.Sc(Engg.) 1st'"> B.Sc(Engg.) 1st Semester </option>
-        <option th:value="'B.Sc(Engg.) 2nd'"> B.Sc(Engg.) 2nd Semester </option>
-        <option th:value="'M.Sc(Engg.) 1st'"> M.Sc(Engg.) 1st Semester </option>
-        <option th:value="'M.Sc(Engg.) 2nd'"> M.Sc(Engg.) 2nd Semester </option>
-        <option th:value="'M.Sc(Engg.) 3rd'"> M.Sc(Engg.) 3rd Semester </option>
-        <option th:value="'M.Engineering 1st'"> M.Engineering 1st Semester </option>
-        <option th:value="'M.Engineering 2nd'"> M.Engineering 2nd Semester </option>
-        <option th:value="'M.Engineering 3rd'"> M.Engineering 3rd Semester </option>
-    </select>
+        <div class="col-12 col-md-6">
+            <label for="year_held" class="form-label">Starting Year</label>
+            <select id="year_held" class="form-select" th:field="*{semesterHeldYear}" required>
+                <option value="">Select Starting Year</option>
+                <option th:each="i : ${#numbers.sequence(2024, 2050)}"
+                        th:value="${i}" th:text="${i}">
+                </option>
+            </select>
+        </div>
 
-    <button type="submit">Save Semester</button>
+        <div class="col-12 col-md-6">
+            <label for="held-month" class="form-label">Starting Month</label>
+            <select id="held-month" class="form-select" th:field="*{semesterHeldMonths}" required>
+                <option value="">Select Starting Month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="held-end-year" class="form-label">Ending Year</label>
+            <select id="held-end-year" class="form-select" th:field="*{heldEndingYear}" required>
+                <option value="">Select Ending Year</option>
+                <option th:each="i : ${#numbers.sequence(2024, 2050)}"
+                        th:value="${i}" th:text="${i}">
+                </option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="held-end-month" class="form-label">Ending Month</label>
+            <select id="held-end-month" class="form-select" th:field="*{heldEndingMonth}" required>
+                <option value="">Select Ending Month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+        </div>
+
+        <div class="col-12 text-center mt-5">
+            <h4>Examination Scheduled Information</h4>
+        </div>
+
+        <div class="col-12 mt-0">
+            <hr class="opacity-50">
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="year" class="form-label">Starting Year</label>
+            <select id="year" class="form-select" th:field="*{semesterScheduledYear}" required>
+                <option value="">Select Starting Year</option>
+                <option th:each="i : ${#numbers.sequence(2023, 2050)}"
+                        th:value="${i}" th:text="${i}">
+                </option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="scheduled-month" class="form-label">Starting Month</label>
+            <select id="scheduled-month" class="form-select" th:field="*{semesterScheduledMonths}" required>
+                <option value="">Select Starting Month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="sch-end-year" class="form-label">Ending Year</label>
+            <select id="sch-end-year" class="form-select" th:field="*{scheduledEndingYear}" required>
+                <option value="">Select Ending Year</option>
+                <option th:each="i : ${#numbers.sequence(2023, 2050)}"
+                        th:value="${i}" th:text="${i}">
+                </option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="scheduled-end-month" class="form-label">Ending Month</label>
+            <select id="scheduled-end-month" class="form-select" th:field="*{scheduledEndingMonth}" required>
+                <option value="">Select Ending Month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+        </div>
+
+        <div class="col-12 text-center mt-5">
+            <button type="submit" class="btn btn-primary w-100">Save Semester</button>
+        </div>
+
+    </div>
+
 </form>
+
 </body>
 </html>

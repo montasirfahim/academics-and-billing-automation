@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
@@ -24,42 +23,34 @@ public class BrevoEmailService {
     private String senderEmail;
 
     @Async
-    public void sendEmail(String[] bccRecipients, String subject, String htmlBody, File attachment) {
+    public void sendModerationEmail(String[] bccRecipients, String subject, String htmlBody, byte[] attachment, String fileName) {
         setupBrevoClient();
         TransactionalEmailsApi apiInstance = new TransactionalEmailsApi();
-
 
         SendSmtpEmailSender sender = new SendSmtpEmailSender();
         sender.setEmail(senderEmail);
         sender.setName("Dept of ICT, MBSTU");
 
-
         SendSmtpEmailTo mainTo = new SendSmtpEmailTo();
         mainTo.setEmail(senderEmail);
 
-
-        //Set BCC Recipients
+        //BCC Recipients
         List<SendSmtpEmailBcc> bccList = Arrays.stream(bccRecipients)
                 .map(email -> new SendSmtpEmailBcc().email(email))
                 .collect(Collectors.toList());
 
-        //Handle Attachment
         List<SendSmtpEmailAttachment> attachments = new ArrayList<>();
-        if (attachment != null && attachment.exists()) {
+        if (attachment != null) {
             try {
-                byte[] fileContent = Files.readAllBytes(attachment.toPath());
-                String base64Content = Base64.getEncoder().encodeToString(fileContent);
-
                 SendSmtpEmailAttachment brevoAttachment = new SendSmtpEmailAttachment();
-                brevoAttachment.setName(attachment.getName());
-                brevoAttachment.setContent(fileContent);
+                brevoAttachment.setName(fileName);
+                brevoAttachment.setContent(attachment);
                 attachments.add(brevoAttachment);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.err.println("Error processing attachment: " + e.getMessage());
             }
         }
 
-        //Build Final Email Object
         SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
         sendSmtpEmail.setSender(sender);
         sendSmtpEmail.setTo(Collections.singletonList(mainTo));
@@ -73,7 +64,7 @@ public class BrevoEmailService {
         try {
             apiInstance.sendTransacEmail(sendSmtpEmail);
         } catch (ApiException e) {
-            System.err.println("Brevo API Error: " + e.getResponseBody());
+            System.err.println("Brevo Email Error: " + e.getResponseBody());
         }
     }
 

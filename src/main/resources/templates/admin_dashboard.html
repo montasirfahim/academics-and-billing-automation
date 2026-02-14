@@ -194,12 +194,10 @@
             <td colspan="7" class="text-center"><h1>All Semesters</h1></td>
         </tr>
         <tr>
-            <th>Semester ID</th>
-            <th>Held Year</th>
-            <th>Held Month</th>
-            <th>Scheduled Year</th>
-            <th>Scheduled Month</th>
-            <th>Semester</th>
+            <th>ID</th>
+            <th>Semester Name</th>
+            <th>Examination Held On</th>
+            <th>Examination Scheduled On</th>
             <th class="text-center">Actions</th>
         </tr>
         </thead>
@@ -293,12 +291,10 @@
                 const row = document.createElement("tr");
 
                 row.innerHTML = `
-                    <td>${semester.semesterId}</td>
-                    <td>${semester.semesterHeldYear}</td>
-                    <td>${semester.semesterHeldMonths}</td>
-                    <td>${semester.semesterScheduledYear}</td>
-                    <td>${semester.semesterScheduledMonths}</td>
+                     <td>${semester.semesterId}</td>
                     <td>${semester.semesterParity}</td>
+                    <td>${semester.semesterHeldMonths} ${semester.semesterHeldYear} - ${semester.heldEndingMonth} ${semester.heldEndingYear}</td>
+                    <td>${semester.semesterScheduledMonths} ${semester.semesterScheduledYear} - ${semester.scheduledEndingMonth} ${semester.scheduledEndingYear}</td>
                     <td class="actions text-center">
                         <a class="btn btn-outline-primary btn-sm" href="/details/${userId}/${semester.semesterId}">Details & Bills</a>
                     </td>

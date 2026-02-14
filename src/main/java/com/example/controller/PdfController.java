@@ -53,39 +53,19 @@ public class PdfController {
         }
 
         if(user.getRole().equals("admin") || user.getRole().equals("co-admin") || examCommitteeService.isMember(user, examCommittee)) {
-            Semester semester = examCommittee.getSemester();
+            byte[] pdfBytes = pdfService.createCommitteePdf(examCommittee);
 
-            List<Course> committeeCourses = courseService.findByCommitteeId(id);
-
-            byte[] pdfBytes = pdfService.createCommitteePdf(examCommittee, semester, committeeCourses);
-
-            // Set response headers
             String filePath = "committee" + id + ".pdf";
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "inline; filename=" + filePath);
             response.setContentLength(pdfBytes.length);
 
-            // Write PDF bytes to response
             response.getOutputStream().write(pdfBytes);
             response.getOutputStream().flush();
         }
         else return;
     }
 
-    //Simple DTO used by the POST endpoint
-    public static class TableRequest {
-        private List<List<String>> rows;
-
-        public TableRequest() {}
-
-        public List<List<String>> getRows() {
-            return rows;
-        }
-
-        public void setRows(List<List<String>> rows) {
-            this.rows = rows;
-        }
-    }
 
     @GetMapping("/print/tada/{id}")
     public void generateTadaBillPdf(HttpServletResponse response, @PathVariable Long id, HttpSession session) throws IOException {
@@ -219,15 +199,12 @@ public class PdfController {
         PdfDocument mergedDoc = new PdfDocument(new PdfWriter(mergedStream));
         PdfMerger merger = new PdfMerger(mergedDoc);
 
-        // 2. Add the first PDF (Bill Summary)
         PdfDocument firstSource = new PdfDocument(new PdfReader(new ByteArrayInputStream(pdfBytes)));
         merger.merge(firstSource, 1, firstSource.getNumberOfPages());
 
-        // 3. Add the second PDF (Class Tests)
         PdfDocument secondSource = new PdfDocument(new PdfReader(new ByteArrayInputStream(classTests)));
         merger.merge(secondSource, 1, secondSource.getNumberOfPages());
 
-        // 4. Close everything to finalize the merged stream
         firstSource.close();
         secondSource.close();
         mergedDoc.close();

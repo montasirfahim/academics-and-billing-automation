@@ -130,7 +130,7 @@
         <h1>Conducted Courses</h1>
         <div class="sem-container d-flex flex-column flex-md-row justify-content-between mb-4">
             <h6 th:text="'Semester: ' + ${semester.semesterParity}"></h6>
-            <h6 th:text="'Held on: ' + ${semester.semesterHeldYear} + ' ' + ${semester.semesterHeldMonths}"></h6>
+            <h6 th:text="'Duration of Examination: ' + ${semester.semesterHeldMonths} + ' ' + ${semester.semesterHeldYear} + ' - ' + ${semester.heldEndingMonth} + ' ' + ${semester.heldEndingYear}"></h6>
         </div>
         <table border="1">
             <thead>

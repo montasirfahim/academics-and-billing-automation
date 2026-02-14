@@ -20,9 +20,9 @@
         }
 
         .container {
-            max-width: max-content;
             margin: 0 auto;
             background: white;
+            min-width: 1300px;
             padding: 25px 30px;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
@@ -39,6 +39,7 @@
             font-weight: bold;
             transition: background-color 0.3s ease;
             cursor: pointer;
+            max-width: max-content;
         }
 
         .add-new:hover {
@@ -78,9 +79,13 @@
         @media (max-width: 600px) {
             .container {
                 padding: 15px 10px;
+                min-width: max-content;
+                flex-wrap: wrap;
             }
             table, thead, tbody, th, td, tr {
-                display: block;
+                border-collapse: collapse;
+                width: 100%;
+                overflow-x: auto;
             }
             thead tr {
                 display: none;
@@ -140,18 +145,16 @@
     </div>
 </nav>
 
-<div class="container">
+<div class="container d-flex flex-column mx-auto">
     <h1>All Semesters</h1>
     <a href="/semester/new" class="add-new">Add New Semester</a>
     <table border="1">
         <thead>
         <tr>
             <th>Semester ID</th>
-            <th>Held Year</th>
-            <th>Held Month</th>
-            <th>Scheduled Year</th>
-            <th>Scheduled Month</th>
-            <th>Semester</th>
+            <th>Semester Name</th>
+            <th>Held On</th>
+            <th>Scheduled On</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -178,11 +181,10 @@
 
                 row.innerHTML = `
                     <td>${semester.semesterId}</td>
-                    <td>${semester.semesterHeldYear}</td>
-                    <td>${semester.semesterHeldMonths}</td>
-                    <td>${semester.semesterScheduledYear}</td>
-                    <td>${semester.semesterScheduledMonths}</td>
                     <td>${semester.semesterParity}</td>
+                    <td>${semester.semesterHeldMonths} ${semester.semesterHeldYear} - ${semester.heldEndingMonth} ${semester.heldEndingYear}</td>
+                    <td>${semester.semesterScheduledMonths} ${semester.semesterScheduledYear} - ${semester.scheduledEndingMonth} ${semester.scheduledEndingYear}</td>
+
                     <td class="actions">
                         <a class="btn btn-outline-primary btn-sm" href="/semester/manage/${semester.semesterId}">Manage</a> |
                         <a href="/semester/delete/${semester.semesterId}"

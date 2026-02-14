@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.entity.*;
+import com.example.repository.CourseRepository;
 import com.example.repository.ThesisProjectSupervisionRepository;
 import com.example.repository.ThirdExaminationRepository;
 import com.itextpdf.io.font.PdfEncodings;
@@ -39,21 +40,25 @@ public class PdfService {
     private final ExamCommitteeService examCommitteeService;
     private final ThesisProjectSupervisionRepository thesisProjectSupervisionRepository;
     private final ThirdExaminationRepository thirdExaminationRepository;
+    private final CourseRepository courseRepository;
 
-    public PdfService(ExamCommitteeService examCommitteeService, ThesisProjectSupervisionRepository thesisProjectSupervisionRepository, ThirdExaminationRepository thirdExaminationRepository) {
+    public PdfService(ExamCommitteeService examCommitteeService, ThesisProjectSupervisionRepository thesisProjectSupervisionRepository, ThirdExaminationRepository thirdExaminationRepository, CourseRepository courseRepository) {
         this.examCommitteeService = examCommitteeService;
         this.thesisProjectSupervisionRepository = thesisProjectSupervisionRepository;
         this.thirdExaminationRepository = thirdExaminationRepository;
+        this.courseRepository = courseRepository;
     }
 
-    public byte[] createCommitteePdf(ExamCommittee examCommittee, Semester semester, List<Course> assignedCourses) throws IOException {
+    public byte[] createCommitteePdf(ExamCommittee examCommittee) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Semester semester = examCommittee.getSemester();
+        List<Course> committeeCourses = courseRepository.findBySemesterAndSessionOrderByCourseCodeAsc(semester, examCommittee.getSession());
 
         try (PdfWriter writer = new PdfWriter(baos);
              PdfDocument pdfDoc = new PdfDocument(writer);
              Document document = new Document(pdfDoc)) {
 
-            pdfDoc.setDefaultPageSize(PageSize.A4);
+            pdfDoc.setDefaultPageSize(PageSize.LEGAL);
 //            document.setMargins(70, 36, 50, 36);
 
             InputStream fontStream = getClass().getResourceAsStream("/fonts/times.ttf");
@@ -88,16 +93,16 @@ public class PdfService {
             LineSeparator ls = new LineSeparator(new SolidLine(1f));
             ls.setWidth(UnitValue.createPercentValue(100));
             document.add(ls);
-            addHeader(document, "Exam Committee");
+            addHeader(document, "Examination Committee");
             document.add(new Paragraph("\n"));
 
             addSemesterInfo(document, pdfDoc, semester, examCommittee);
             addCommitteeMemberTable(document, examCommittee);
 
             addSubHeader(document, "\nCourses\n");
-            addCommitteeCourseTable(document, assignedCourses);
+            addCommitteeCourseTable(document, committeeCourses);
 
-            addSignatureSpace(document, "-----------------------\nChairman\nDepartmental Academic Committee, Dept. of ICT, MBSTU");
+            document.add(new Paragraph("-----------------------\nChairman\nDepartmental Academic Committee, Dept. of ICT, MBSTU").setKeepTogether(true).setMarginTop(80f));
 
             addFooter(pdfDoc);
 
@@ -698,7 +703,7 @@ public class PdfService {
             document.add(new Paragraph("\n"));
 
             document.add(new Paragraph("Details of Examination-Related Tasks Given Below:").setFontSize(15).setTextAlignment(TextAlignment.CENTER).setBold());
-            document.add(new Paragraph("Duration of Examination: " + examCommittee.getSemester().getSemesterHeldMonths() + ", " + examCommittee.getSemester().getSemesterHeldYear()).setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("Duration of Examination: " + examCommittee.getSemester().getSemesterHeldMonths() + ", " + examCommittee.getSemester().getSemesterHeldYear() + " - " + examCommittee.getSemester().getHeldEndingMonth() + ", " + examCommittee.getSemester().getHeldEndingYear()).setTextAlignment(TextAlignment.CENTER));
 
             document.add(new Paragraph("\n"));
 
@@ -1051,7 +1056,7 @@ public class PdfService {
             document.add(new Paragraph("Cue: MBSTU/ICT/                     / List of teachers responsible for various examination related tasks for " + examCommittee.getSemesterYearName() + " " + examCommittee.getSemester().getSemesterParity() + " Semester Final Examination - " + examCommittee.getSemester().getSemesterScheduledYear() + ", Session: " + examCommittee.getSession()));
             document.add(new Paragraph("\n"));
 
-            document.add(new Paragraph("Examination Held Date: " + examCommittee.getSemester().getSemesterHeldYear() + ", " + examCommittee.getSemester().getSemesterHeldMonths()).setTextAlignment(TextAlignment.CENTER).setBold());
+            document.add(new Paragraph("Examination Held Date: " + examCommittee.getSemester().getSemesterHeldMonths() + ", " + examCommittee.getSemester().getSemesterHeldYear() + " - " + examCommittee.getSemester().getHeldEndingMonth() + ", " + examCommittee.getSemester().getHeldEndingYear()).setTextAlignment(TextAlignment.CENTER).setBold());
 
             List<Course> theoryCourses = new ArrayList<>();
             List<Course> labCourses = new ArrayList<>();
@@ -1109,7 +1114,7 @@ public class PdfService {
             document.add(modTable);
 
             Paragraph p = new Paragraph();
-            p.add("\n\nB. List of Question Setters & Script Evaluators:\n").setBold().add(examCommittee.getSemesterYearName()  + " " + examCommittee.getSemester().getSemesterParity() + "(Session: " + examCommittee.getSession() + ")").setTextAlignment(TextAlignment.CENTER);
+            p.add("\n\nB. List of Question Setters & Script Evaluators:\n").setBold().add(examCommittee.getSemesterYearName()  + " " + examCommittee.getSemester().getSemesterParity() + " Semester (Session: " + examCommittee.getSession() + ")").setTextAlignment(TextAlignment.CENTER);
             document.add(p);
 
             ls.setWidth(UnitValue.createPercentValue(80));
@@ -1638,11 +1643,10 @@ public class PdfService {
 
     private void addSemesterInfo(Document document, PdfDocument pdfDoc, Semester semester, ExamCommittee examCommittee) throws IOException {
         StringBuilder nsb = new StringBuilder();
-       // nsb.append("\n");
         nsb.append("Exam: ");
         nsb.append( examCommittee.getSemesterYearName() + " " + semester.getSemesterParity() + " Semester Final Examination - " + semester.getSemesterScheduledYear() + " \n");
         nsb.append("Session: " + examCommittee.getSession() + "\n");
-        nsb.append("Held Year: " + semester.getSemesterHeldYear());
+        nsb.append("Held: " + semester.getSemesterHeldMonths() + " " + semester.getSemesterHeldYear() + " - " + semester.getHeldEndingMonth() + " " + semester.getHeldEndingYear());
         nsb.append("\n\n");
 
         Paragraph paragraph = new Paragraph(nsb.toString())
@@ -1651,7 +1655,6 @@ public class PdfService {
 
         document.add(paragraph);
     }
-
 
     private void addFooter(PdfDocument pdfDoc) {
         int totalPages = pdfDoc.getNumberOfPages();
@@ -1662,14 +1665,6 @@ public class PdfService {
             float y = 20; //footer Y position from bottom
 
             Canvas canvas = new Canvas(page, pageSize);
-
-            //main footer info (centered)
-//            Paragraph contact = new Paragraph(text)
-//                    .setFontSize(10)
-//                    .setTextAlignment(TextAlignment.CENTER);
-//            canvas.showTextAligned(contact, pageSize.getWidth() / 2, y, TextAlignment.CENTER);
-
-            //Page number (right aligned)
             Paragraph pageNum = new Paragraph("Page " + i + " of " + totalPages)
                     .setFontSize(8)
                     .setTextAlignment(TextAlignment.RIGHT);

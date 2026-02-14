@@ -5,6 +5,7 @@ import com.example.entity.Course;
 import com.example.entity.ExamCommittee;
 import com.example.entity.User;
 import com.example.service.*;
+import com.itextpdf.io.exceptions.IOException;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class ExamCommitteeRestController {
     private BrevoEmailService brevoEmailService;
     @Autowired
     private CommitteeActivityService committeeActivityService;
+    @Autowired
+    private PdfService pdfService;
 
     @GetMapping("/api/{id}")
     public ResponseEntity<ExamCommittee> getCommittee(@PathVariable Long id) {
@@ -89,7 +92,7 @@ public class ExamCommitteeRestController {
     }
 
     @PutMapping("api/moderation/{id}")
-    public ResponseEntity<String> callModerationMeeting(@PathVariable Long id, @RequestBody Map<String, String> payload, HttpSession session) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<String> callModerationMeeting(@PathVariable Long id, @RequestBody Map<String, String> payload, HttpSession session) throws MessagingException, UnsupportedEncodingException , java.io.IOException {
         User user =(User) session.getAttribute("user");
         if(user == null) {
             return new ResponseEntity<>("Unauthorized: Please login first.", HttpStatus.UNAUTHORIZED);
@@ -182,12 +185,14 @@ public class ExamCommitteeRestController {
         </div>
         """;
 
-
-        brevoEmailService.sendEmail(
+        byte [] committeePdf = pdfService.createCommitteePdf(committee);
+        String fileName = "examination_committee" + id + ".pdf";
+        brevoEmailService.sendModerationEmail(
                 new String[] {"montasirtuhin1128@gmail.com", "it22016@mbstu.ac.bd"},
                 "Question Moderation Meeting",
                 htmlBody,
-                null
+                committeePdf,
+                fileName
         );
 
         System.out.println("Email sent, chairman: " + committee.getChairman().getName());
