@@ -33,6 +33,8 @@ public class UserController {
     private BillRateService billRateService;
     @Autowired
     private GratuityBillService gratuityBillService;
+    @Autowired
+    private EmailValidationService emailValidationService;
 
     @GetMapping("/")
     public String landingPage(HttpSession session) {
@@ -221,7 +223,7 @@ public class UserController {
     }
 
     @GetMapping("/users/new")
-    public String viewNewUserForm(Model model, HttpSession session) {
+    public String createNewUserForm(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if(user == null) {
             return "redirect:/login";
@@ -242,13 +244,26 @@ public class UserController {
             return "redirect:/login";
         }
         if(!loggedInUser.getRole().equals("admin") && !loggedInUser.getRole().equals("co-admin")) {
-            model.addAttribute("status", "Access Denied");
+            model.addAttribute("status", "Duplicate Email");
             model.addAttribute("error", "You are not allowed to perform this action.");
             return "error_page";
         }
+
         if(userService.getUserByEmail(user.getEmail()) != null) {
             model.addAttribute("status", "Access Denied");
             model.addAttribute("error", "User with this email already exists.");
+            return "error_page";
+        }
+
+        if(!emailValidationService.isEmailDeliverable(user.getEmail())) {
+            model.addAttribute("status", "Invalid Email");
+            model.addAttribute("error", "Please provide a real & active email address.");
+            return "error_page";
+        }
+
+        if(user.getPassword().length() < 6) {
+            model.addAttribute("status", "Password too short");
+            model.addAttribute("error", "Password should contain at least 6 characters.");
             return "error_page";
         }
 

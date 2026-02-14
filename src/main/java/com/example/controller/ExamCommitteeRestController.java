@@ -188,6 +188,7 @@ public class ExamCommitteeRestController {
         byte [] committeePdf = pdfService.createCommitteePdf(committee);
         String fileName = "examination_committee" + id + ".pdf";
         brevoEmailService.sendModerationEmail(
+                //new String[] {committee.getChairman().getEmail(), committee.getInternalMember1().getEmail(), committee.getInternalMember2().getEmail(), committee.getExternalMember1().getEmail()},
                 new String[] {"montasirtuhin1128@gmail.com", "it22016@mbstu.ac.bd"},
                 "Question Moderation Meeting",
                 htmlBody,
