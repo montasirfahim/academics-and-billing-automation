@@ -23,4 +23,7 @@ public interface GratuityBillRepository extends JpaRepository<GratuityBill,Long>
 
     List<GratuityBill> findAllByBillUserAndExamCommittee(User user, ExamCommittee examCommittee);
 
+    @Query("SELECT SUM(b.totalBillAmount) FROM GratuityBill b WHERE b.examCommittee = :examCommittee")
+    Double getTotalBillByExamCommittee(@Param("examCommittee") ExamCommittee examCommittee);
+
 }

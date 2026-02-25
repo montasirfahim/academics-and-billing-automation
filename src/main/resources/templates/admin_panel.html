@@ -36,6 +36,14 @@
             background: linear-gradient(to right, #ec77ab 0%, #7873f5 100%);
         }
 
+        .committee-container, .rate-container {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -48,6 +56,11 @@
             position: sticky;
             z-index: 1;
             top: 0;
+        }
+
+        .committee-table-header{
+            background: linear-gradient(to right, #ec77ab 0%, #7873f5 100%);
+            color: white;
         }
 
         th, td {
@@ -135,7 +148,7 @@
 
 <div class="body-container flex-grow-1">
     <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>
-    <div class="at-a-glance d-flex flex-column flex-md-row justify-content-between gap-md-5">
+    <div class="at-a-glance d-flex flex-column flex-md-row justify-content-between gap-md-5 mb-5">
         <div class="profile shadow text-dark">
             <div class="user-icon-container d-flex justify-content-center">
                 <i class="fas fa-user-alt me-2 user-icon"></i>
@@ -192,14 +205,11 @@
     </div>
 
 
-    <div class="rate-container d-flex flex-column mx-auto justify-content-center align-items-center mt-5 gap-5 shadow" style="width: 80%">
-        <div style="max-height: 450px; overflow-y: auto; min-width: 100%" >
+    <div class="rate-container d-flex flex-column mx-auto justify-content-center align-items-center my-5 shadow" style="width: 95%">
+        <h1 class="text-center mb-3">Billing Rate</h1>
+
+        <div style="max-height: 450px; overflow-y: auto; min-width: 100%">
         <table th:if="${user.role == 'admin' or user.role == 'co-admin'}" border="1" class="justify-content-center w-100">
-            <thead>
-            <tr>
-                <td colspan="4" class="text-center"><h1>Billing Rate</h1></td>
-            </tr>
-            </thead>
             <thead>
             <th>Task</th>
             <th>Rate Parameter</th>
@@ -216,6 +226,34 @@
         </table>
         </div>
     </div>
+
+    <div class="committee-container my-5 mx-auto" style="width: 95%">
+        <h1 class="text-center mb-3">Examination Committees and Bills</h1>
+        <table border="1">
+            <thead class="committee-table-header">
+            <tr>
+                <th>Batch</th>
+                <th>Committee Chairman</th>
+                <th class="text-center">Total Bill(BDT)</th>
+                <th class="text-center">Download</th>
+            </tr>
+            </thead>
+            <tbody id="committees-table-body2">
+            <tr th:if="${#lists.isEmpty(committeeBillDTOList)}">
+                <td colspan="4" class="text-center text-warning">No examination committees found!</td>
+            </tr>
+            <tr th:unless="${#lists.isEmpty(committeeBillDTOList)}" th:each="row : ${committeeBillDTOList}">
+                <td th:text="${row.batchName}"></td>
+                <td th:text="${row.chairmanName}"></td>
+                <td class="text-center" th:text="${row.resultStatus} ? ${#numbers.formatDecimal(row.billAmount, 1, 2)} : 'Result Not Published'">0.0</td>
+                <td class="text-center">
+                    <a th:href="@{/bill-summary/download/{commId}(commId=${row.committeeId})}" class="btn btn-outline-primary btn-sm" target="_blank">Print Bill Summary</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 

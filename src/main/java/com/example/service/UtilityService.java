@@ -1,4 +1,5 @@
 package com.example.service;
+import com.example.entity.ExamCommittee;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -140,5 +141,9 @@ public class UtilityService {
 
     public static boolean validateStudentId(String studentId) {
         return studentId.length() == 7 && studentId.matches("IT\\d{5}");
+    }
+
+    public static String getBatchNameFromExamCommittee(ExamCommittee examCommittee) {
+        return examCommittee.getSemesterYearName() + " " + examCommittee.getSemester().getSemesterParity() + " Semester, Session: " + examCommittee.getSession();
     }
 }

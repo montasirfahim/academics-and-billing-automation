@@ -39,12 +39,16 @@ public class ExamCommitteeService {
         return examCommitteeRepository.findBySemester_SemesterId(semesterId);
     }
 
+    public List<ExamCommittee> findAllOrderByCommitteeIdDesc(){
+        return examCommitteeRepository.findAllByOrderByCommitteeIdDesc();
+    }
+
     public void saveCommittee(ExamCommittee examCommittee){
         examCommitteeRepository.save(examCommittee);
     }
 
     public ExamCommittee findCommitteeByCommitteeId(Long committeeId){
-        return examCommitteeRepository.findBycommitteeId(committeeId);
+        return examCommitteeRepository.findByCommitteeId(committeeId);
     }
 
     public ExamCommittee findCommitteeBySemesterAndSession(Semester semester, String session){

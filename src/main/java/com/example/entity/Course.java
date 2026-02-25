@@ -1,8 +1,14 @@
 package com.example.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,6 +19,7 @@ public class Course {
     private String courseName;
     private double courseCredit;
     private String courseType;
+    private String courseStatus;
     private Long examineeCount = 0L;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -31,88 +38,6 @@ public class Course {
     @JoinColumn(name = "internal_ques_setter_id", referencedColumnName = "userId")
     private User internalQuesSetterEvaluator;
 
-    public Course() {
-    }
 
-    public String getCourseCode() {
-        return courseCode;
-    }
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
-    }
-    public String getCourseName() {
-        return courseName;
-    }
-    public void setCourseName(String course_name) {
-        this.courseName = course_name;
-    }
-    public double getCourseCredit() {
-        return courseCredit;
-    }
-    public void setCourseCredit(double courseCredit) {
-        this.courseCredit = courseCredit;
-    }
-
-    public String getSession() {
-        return session;
-    }
-
-    public void setSession(String session) {
-        this.session = session;
-    }
-
-    public String getCourseType() {
-        return courseType;
-    }
-    public void setCourseType(String courseType) {
-        this.courseType = courseType;
-    }
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getCourseTeacher() {
-        return courseTeacher;
-    }
-
-    public void setCourseTeacher(User courseTeacher) {
-        this.courseTeacher = courseTeacher;
-    }
-
-    public User getExternalQuesSetterEvaluator() {
-        return externalQuesSetterEvaluator;
-    }
-
-    public void setExternalQuesSetterEvaluator(User externalTeacher) {
-        this.externalQuesSetterEvaluator = externalTeacher;
-    }
-
-    public Semester getSemester() {
-        return semester;
-    }
-
-    public void setSemester(Semester semester) {
-        this.semester = semester;
-    }
-
-    public User getInternalQuesSetterEvaluator() {
-        return internalQuesSetterEvaluator;
-    }
-
-    public void setInternalQuesSetterEvaluator(User internalQuesSetterEvaluator) {
-        this.internalQuesSetterEvaluator = internalQuesSetterEvaluator;
-    }
-
-    public Long getExamineeCount() {
-        return examineeCount;
-    }
-
-    public void setExamineeCount(Long examineeCount) {
-        this.examineeCount = examineeCount;
-    }
 }
 

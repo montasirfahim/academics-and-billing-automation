@@ -49,13 +49,6 @@
             transition: border-color 0.3s ease;
         }
 
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        select:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
 
         button[type="submit"] {
             background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
@@ -92,7 +85,7 @@
                 </div>
 
                 <div class="row g-3">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label for="course_name" class="form-label">Course Name</label>
                         <input id="course_name" type="text" class="form-control" th:field="*{courseName}" placeholder="e.g. Database Systems" required/>
                     </div>
@@ -103,8 +96,8 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="course_credit" class="form-label">Course Credit</label>
-                        <input id="course_credit" type="text" class="form-control" th:field="*{courseCredit}" placeholder="e.g. 3.00" required/>
+                        <label for="course_credit" class="form-label">Credit Hour</label>
+                        <input id="course_credit" type="number" class="form-control" th:field="*{courseCredit}" placeholder="e.g. 3.00" required/>
                     </div>
 
                     <div class="col-md-6">
@@ -117,6 +110,16 @@
                             <option value="Thesis">Thesis</option>
                             <option value="Viva Voce">Viva Voce</option>
                             <option value="Industrial Visit">Industrial Visit</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="c-status" class="form-label">Course Status</label>
+                        <select id="c-status" class="form-select" th:field="*{courseStatus}" required>
+                            <option value="">--- Select Status ---</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Backlog">Backlog</option>
+                            <option value="Special">Special</option>
                         </select>
                     </div>
 

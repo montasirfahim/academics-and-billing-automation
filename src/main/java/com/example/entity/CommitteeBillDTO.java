@@ -14,5 +14,6 @@ public class CommitteeBillDTO {
     private Long committeeId;
     private String chairmanName;
     private double billAmount;
+    private boolean resultStatus;
 
 }

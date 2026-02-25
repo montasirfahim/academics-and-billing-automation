@@ -15,11 +15,13 @@ public interface ExamCommitteeRepository extends JpaRepository<ExamCommittee, Lo
 
     List<ExamCommittee> findBySemester_SemesterId(Long semesterId);
 
+    List<ExamCommittee> findAllByOrderByCommitteeIdDesc();
+
     @Query("SELECT c FROM ExamCommittee c WHERE c.semester.semesterId = :semesterId") //alternative
     List<ExamCommittee> findBySemesterId(@Param("semesterId") Long semesterId);
 
 
-    ExamCommittee findBycommitteeId(Long committeeId);
+    ExamCommittee findByCommitteeId(Long committeeId);
 
     ExamCommittee findBySemesterAndSession(Semester semester, String session);
 

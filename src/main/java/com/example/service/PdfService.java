@@ -960,7 +960,7 @@ public class PdfService {
             sigTable.setWidth(UnitValue.createPercentValue(100));
 
             Cell leftSig = new Cell().setBorder(Border.NO_BORDER);
-            leftSig.add(new Paragraph("Signature\nChairman, Exam Committee").setFontSize(11));
+            leftSig.add(new Paragraph("Signature\nChairman, Examination Committee").setFontSize(11));
             sigTable.addCell(leftSig);
 
             Cell rightSig = new Cell().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT);

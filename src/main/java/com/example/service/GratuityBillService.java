@@ -36,4 +36,9 @@ public class GratuityBillService {
     public List<GratuityBill> findAllByUserAndExamCommittee(User user, ExamCommittee examCommittee){
         return  gratuityBillRepository.findAllByBillUserAndExamCommittee(user, examCommittee);
     }
+
+    public double getTotalBillAmountByExamCommittee(ExamCommittee examCommittee){
+        Double total = gratuityBillRepository.getTotalBillByExamCommittee(examCommittee);
+        return (total != null) ? total : 0.0;
+    }
 }

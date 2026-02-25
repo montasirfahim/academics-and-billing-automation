@@ -229,7 +229,7 @@
             <tr th:each="row : ${committeeBillDTOList}">
                 <td th:text="${row.batchName}"></td>
                 <td th:text="${row.chairmanName}"></td>
-                <td th:text="${#numbers.formatDecimal(row.billAmount, 1, 2)}">0.0</td>
+                <td th:text="${row.resultStatus} ? ${#numbers.formatDecimal(row.billAmount, 1, 2)} : 'Result Not Published'">0.0</td>
                 <td class="text-center">
                     <a th:href="@{/print-detailed-bill/{uId}/{commId}(uId=${userId}, commId=${row.committeeId})}" class="btn btn-outline-primary btn-sm" target="_blank">Print Bill</a>
                 </td>

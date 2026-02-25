@@ -38,7 +38,7 @@ public class AuthRestController {
             session.setAttribute("userId", user.getUserId()); //safer
             //session.setAttribute("user", user); //will be deleted later
             response.put("status", "success");
-            response.put("message", "A OTP has been sent to your email. Please verify withing 3 min.");
+            response.put("message", "An OTP has been sent to your email. Please verify withing 3 min.");
             return ResponseEntity.ok(response);
         } else {
             response.put("status", "error");

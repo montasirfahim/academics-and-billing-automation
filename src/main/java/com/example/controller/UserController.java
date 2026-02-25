@@ -1,10 +1,8 @@
 package com.example.controller;
-import com.example.entity.BillRate;
-import com.example.entity.TourAllowanceBill;
+import com.example.entity.*;
 import com.example.service.*;
 import jakarta.servlet.http.HttpSession;
 
-import com.example.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +101,17 @@ public class UserController {
             List<BillRate> billRates = billRateService.getAllBillRate();
             model.addAttribute("billRates", billRates);
 
+            List<ExamCommittee> examCommitteeList = examCommitteeService.findAllOrderByCommitteeIdDesc();
+            List<CommitteeBillDTO> committeeBillDTOList = new ArrayList<>();
+            for(ExamCommittee examCommittee : examCommitteeList){
+                double billAmount = gratuityBillService.getTotalBillAmountByExamCommittee(examCommittee);
+                String batchName = UtilityService.getBatchNameFromExamCommittee(examCommittee);
+                CommitteeBillDTO committeeBillDTO = new CommitteeBillDTO(batchName, examCommittee.getCommitteeId(), examCommittee.getChairman().getName(), billAmount, examCommittee.isResultPublished());
+                committeeBillDTOList.add(committeeBillDTO);
+            }
+
+            model.addAttribute("committeeBillDTOList", committeeBillDTOList);
+
             return "admin_panel";
         }
 
@@ -128,7 +138,7 @@ public class UserController {
         model.addAttribute("totalBills", totalBills);
         model.addAttribute("tadaBills", tadaBills);
 
-        return "admin_dashboard";
+        return "user_dashboard";
     }
 
     @GetMapping("/user/profile/{id}")
@@ -140,35 +150,7 @@ public class UserController {
         User currentUser = (User) session.getAttribute("user");
 
         if(targetUser.getUserId().equals(currentUser.getUserId())) {
-            if(targetUser.getRole().equals("admin") || targetUser.getRole().equals("co-admin")) {
-                return "redirect:/dashboard";
-            }
-
-            model.addAttribute("owner", "self");
-            model.addAttribute("user", targetUser);
-
-            long totalCourses = courseService.getTotalCoursesByUser(targetUser);
-            long theoryCourses = courseService.getTotalCoursesByUserAndType(targetUser, "Theory");
-            long labCourses = courseService.getTotalCoursesByUserAndType(targetUser, "Lab");
-            long totalSemesters = semesterService.countAllSemesters();
-            long totalCommitteeChairman = examCommitteeService.getTotalCommitteesAsChairman(targetUser);
-            long totalCommitteeInternalMember = examCommitteeService.getTotalCommitteesAsInternalMember(targetUser);
-            long totalCommitteeExternalMember = examCommitteeService.getTotalCommitteesAsExternalMember(targetUser);
-            long totalCommittees = totalCommitteeChairman + totalCommitteeInternalMember + totalCommitteeExternalMember;
-
-            double totalBills = tourAllowanceBillService.getTotalTaDaBillByUser(targetUser) + gratuityBillService.getTotalBillByUser(targetUser);
-            List<TourAllowanceBill> tadaBills = tourAllowanceBillService.getAllTourAllowanceBillByUser(targetUser);
-            model.addAttribute("totalCourses", totalCourses);
-            model.addAttribute("theoryCourses", theoryCourses);
-            model.addAttribute("labCourses", labCourses);
-            model.addAttribute("totalSemesters", totalSemesters);
-            model.addAttribute("totalCommittees", totalCommittees);
-            model.addAttribute("committeeChairman", totalCommitteeChairman);
-            model.addAttribute("committeeMember", totalCommitteeInternalMember + totalCommitteeExternalMember);
-            model.addAttribute("totalBills", totalBills);
-            model.addAttribute("tadaBills", tadaBills);
-
-            return "admin_dashboard";
+            return "redirect:/dashboard";
         }
         else if(targetUser.getRole().equals("admin") || targetUser.getRole().equals("co-admin")) {
             model.addAttribute("status", "Access Denied");
@@ -202,7 +184,7 @@ public class UserController {
             model.addAttribute("totalBills", totalBills);
             model.addAttribute("tadaBills", tadaBills);
 
-            return "admin_dashboard";
+            return "user_dashboard";
         }
         else{
             model.addAttribute("status", "Access Denied");
