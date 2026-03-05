@@ -22,6 +22,19 @@ public class BrevoEmailService {
     @Value("${brevo.sender.email}")
     private String senderEmail;
 
+    @Value("${DEPT}")
+    private String deptName;
+
+    @Value("${UNIVERSITY}")
+    private String universityName;
+
+    @Value("${UNI_LOCATION}")
+    private String universityLocation;
+
+    @Value("${WEB_URL}")
+    private String webURL;
+
+
     @Async
     public void sendModerationEmail(String[] bccRecipients, String subject, String htmlBody, byte[] attachment, String fileName) {
         setupBrevoClient();
@@ -104,6 +117,59 @@ public class BrevoEmailService {
         try {
             apiInstance.sendTransacEmail(sendSmtpEmail);
         } catch (ApiException e) {
+            System.err.println("Brevo OTP API Error: " + e.getResponseBody());
+        }
+    }
+
+    @Async
+    public void sendWelcomeEmail(String toEmail){
+        setupBrevoClient();
+        TransactionalEmailsApi apiInstance = new TransactionalEmailsApi();
+
+        SendSmtpEmailSender sender = new SendSmtpEmailSender();
+        sender.setEmail(senderEmail);
+        sender.setName("Dept of " + deptName + ", " + universityName);
+
+        String htmlBody = """
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: auto; padding: 30px; border: 1px solid #e5e7eb; border-radius: 12px; color: #374151;">
+            <h2 style="color: #111827; margin-top: 0; font-size:22px; border-bottom: 2px solid #3b82f6; display: inline-block; padding-bottom: 4px;">Welcome to Automation Software</h2>
+            <p>An account has been successfully created for you at automation software of <strong>Dept. of %1$s, %2$s</strong>.</p>
+            
+            <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 25px 0; border: 1px inset #f3f4f6;">
+                <p style="margin: 0; font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: bold;">Registered Email Address</p>
+                <p style="margin: 5px 0 0 0; font-size: 16px; color: #111827; font-family: monospace;">%3$s</p>
+            </div>
+    
+            <p>Please <strong>ask for your temporary password</strong> from the Registrar of the mentioned department to login using the following URL:</p>
+            <a href="%4$s" style="display: inline-block; padding: 8px 18px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; margin-bottom: 10px;">Visit Automation Software</a>
+           
+             <p style="color: #059669; font-weight: 500;">&#9432; You are highly requested to reset a strong password after first login.</p>
+    
+            <p style="color: #991b1b; background-color: #fef2f2; padding: 10px; border-radius: 4px; font-size: 13px;">
+                If you were not expecting this registration, please ignore this email.
+            </p>
+            <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+            <div style="color: #6b7280; font-size: 14px;">
+                <p style="margin: 0;"><b>Best regards,</b></p>
+                <p style="margin: 0;">Dept. of %1$s, %2$s</p>
+                <p style="margin: 0; font-size: 12px; color: #9ca3af;">%5$s</p>
+            </div>
+        </div>
+        """.formatted(deptName, universityName, toEmail, webURL, universityLocation);
+
+
+        SendSmtpEmailTo recipient = new SendSmtpEmailTo();
+        recipient.setEmail(toEmail);
+
+        SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
+        sendSmtpEmail.setSender(sender);
+        sendSmtpEmail.setTo(Collections.singletonList(recipient));
+        sendSmtpEmail.setSubject("Account Signup Successful");
+        sendSmtpEmail.setHtmlContent(htmlBody);
+
+        try{
+            apiInstance.sendTransacEmail(sendSmtpEmail);
+        }catch(ApiException e){
             System.err.println("Brevo OTP API Error: " + e.getResponseBody());
         }
     }

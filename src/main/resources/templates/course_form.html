@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>New Course</title>
-    <link rel="stylesheet" th:href="@{/lib/bootstrap/css/bootstrap.min.css}">
+    <title>Add Course</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
         * {
             box-sizing: border-box;
@@ -22,7 +22,7 @@
 
         form {
             background: white;
-            padding: 30px 40px;
+            padding: 20px 40px;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
             width: 100%;
@@ -35,20 +35,6 @@
             margin-bottom: 6px;
             color: #555;
         }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        select {
-            width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 18px;
-            border: 1.5px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-
 
         button[type="submit"] {
             background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
@@ -75,7 +61,7 @@
 </head>
 <body>
 <div class="container justify-content-center mt-md-5">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center g-4">
         <div class="form-container col-12 col-md-10 col-lg-8">
             <form th:action="@{/course/new}" th:object="${course}" method="post">
                 <div class="row mb-4">
@@ -97,7 +83,7 @@
 
                     <div class="col-md-6">
                         <label for="course_credit" class="form-label">Credit Hour</label>
-                        <input id="course_credit" type="number" class="form-control" th:field="*{courseCredit}" placeholder="e.g. 3.00" required/>
+                        <input id="course_credit" type="number" class="form-control" placeholder="e.g. 3.00" th:field="*{courseCredit}" required/>
                     </div>
 
                     <div class="col-md-6">

@@ -83,12 +83,14 @@ async function updateExamineeCount(element){
     }
     const courseId = document.getElementById("course3").value;
     const examineeCount = document.getElementById("examinee").value;
-    if(examineeCount <= 0){
-        alert("Error: Number of participated student in examination can not be zero or negative.")
+
+    if(!courseId || isNaN(courseId)){
+        alert("Error: Course ID not found or invalid, please select a course.");
         return;
     }
-    if(courseId == null || isNaN(courseId)){
-        alert("Error: Course ID not found or invalid, please select a course.");
+
+    if(examineeCount <= 0 || !examineeCount){
+        alert("Error: Number of participated student in examination should be a positive value.")
         return;
     }
 

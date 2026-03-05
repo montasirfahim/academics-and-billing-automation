@@ -41,6 +41,7 @@
             padding: 25px 30px;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            border-top: 1px solid lightgray;
 
         }
 
@@ -114,10 +115,6 @@
                 text-align: left;
                 color: #555;
             }
-            td.actions {
-                text-align: center;
-                padding-left: 15px !important;
-            }
         }
 
     </style>
@@ -147,12 +144,13 @@
 
 
 <div class="body-container flex-grow-1">
-    <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>
+<!--    <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>-->
     <div class="at-a-glance d-flex flex-column flex-md-row justify-content-between gap-md-5 mb-5">
         <div class="profile shadow text-dark">
             <div class="user-icon-container d-flex justify-content-center">
                 <i class="fas fa-user-alt me-2 user-icon"></i>
             </div>
+            <p><strong>Name:</strong> <span th:text="${user.name}">Name</span></p>
             <p class="d-flex flex-row gap-1"><strong>Designation:</strong> <span th:text="${user.designation}">Designation</span> <a class="edit-desig" th:href="@{/user/edit-designation/{id}(id=${user.userId})}"><i class="fas fa-edit"></i> </a> </p>
             <p><strong>Department:</strong> <span th:text="${user.department}">Department</span></p>
             <p><strong>University:</strong> <span th:text="${user.university}">University</span></p>
@@ -213,29 +211,29 @@
             <thead>
             <th>Task</th>
             <th>Rate Parameter</th>
-            <th>Rate(BDT)</th>
+            <th>Rate (BDT)</th>
             <th class="text-center">Action</th>
             </thead>
             <tbody th:each="billRate : ${billRates}" class="justify-content-center text-center">
             <td th:text="${billRate.task}">Task</td>
             <td th:text="${billRate.rateParameter}">Rate Parameter</td>
             <td th:text="${billRate.rate}">Rate</td>
-            <td class="text-center"><a th:href="@{/update-bill-rate/{id}(id=${billRate.id})}" class="btn btn-outline-primary btn-sm">Update <i class="fas fa-edit"></i> </a></td>
+            <td class="text-center"><a th:href="@{/update-bill-rate/{id}(id=${billRate.id})}" class="btn btn-outline-primary btn-sm">Update Bill Rate<i class="fas fa-edit"></i> </a></td>
 
             </tbody>
         </table>
         </div>
     </div>
 
-    <div class="committee-container my-5 mx-auto" style="width: 95%">
+    <div class="committee-container shadow my-5 mx-auto" style="width: 95%">
         <h1 class="text-center mb-3">Examination Committees and Bills</h1>
         <table border="1">
             <thead class="committee-table-header">
             <tr>
                 <th>Batch</th>
                 <th>Committee Chairman</th>
-                <th class="text-center">Total Bill(BDT)</th>
-                <th class="text-center">Download</th>
+                <th class="text-center">Total Bill (BDT)</th>
+                <th class="text-center">Action</th>
             </tr>
             </thead>
             <tbody id="committees-table-body2">
@@ -247,7 +245,7 @@
                 <td th:text="${row.chairmanName}"></td>
                 <td class="text-center" th:text="${row.resultStatus} ? ${#numbers.formatDecimal(row.billAmount, 1, 2)} : 'Result Not Published'">0.0</td>
                 <td class="text-center">
-                    <a th:href="@{/bill-summary/download/{commId}(commId=${row.committeeId})}" class="btn btn-outline-primary btn-sm" target="_blank">Print Bill Summary</a>
+                    <a th:href="@{/bill-summary/download/{commId}(commId=${row.committeeId})}" class="btn btn-outline-primary btn-sm" target="_blank">Download Bill Summary</a>
                 </td>
             </tr>
             </tbody>

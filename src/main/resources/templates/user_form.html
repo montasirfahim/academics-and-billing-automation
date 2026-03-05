@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>User Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
         * {
             box-sizing: border-box;
@@ -11,7 +12,7 @@
         body {
             background: #f9f9f9;
             margin: 0;
-            padding: 40px 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -26,15 +27,15 @@
 
         form {
             background: white;
-            padding: 30px 40px;
+            padding: 20px 40px;
             border-radius: 8px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            width: 700px;
+            width: 1000px;
         }
 
         .form-row {
             display: flex;
-            gap: 20px;
+            gap: 50px;
             margin-bottom: 10px;
         }
 
@@ -55,18 +56,10 @@
         select {
             width: 100%;
             padding: 10px 12px;
-            border: 1.5px solid #ccc;
+            border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
             transition: border-color 0.3s ease;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        select:focus {
-            border-color: #4CAF50;
-            outline: none;
         }
 
         button[type="submit"] {
@@ -90,32 +83,43 @@
         input[type="hidden"] {
             display: none;
         }
+
+        @media screen and (max-width: 800px) {
+            form{
+                width: 95%;
+            }
+            .form-row{
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
     </style>
 </head>
 <body>
 <form th:action="@{/users/new}" th:object="${user}" method="post">
-    <h2>New User</h2>
+    <h2>Register New User</h2>
     <input type="hidden" th:if="${user.userId} != null" th:field="*{userId}" />
 
     <div class="form-row">
         <div>
             <label for="name">Name:</label>
-            <input id="name" type="text" th:field="*{name}" required/>
+            <input id="name" class="form-control" type="text" placeholder="Enter name of the user" th:field="*{name}" required/>
         </div>
         <div>
             <label for="phone">Phone:</label>
-            <input id="phone" type="text" th:field="*{phone}" required/>
+            <input id="phone" class="form-control" type="text" placeholder="Enter phone number of the user" th:field="*{phone}" required/>
         </div>
     </div>
 
     <div class="form-row">
         <div>
             <label for="email">Email:</label>
-            <input id="email" type="email" th:field="*{email}" required/>
+            <input id="email" class="form-control" type="email" placeholder="Enter email of the user" th:field="*{email}" required/>
         </div>
         <div>
             <label for="password">Password:</label>
-            <input id="password" type="password" placeholder="At least 6 characters" th:field="*{password}" required/>
+            <input id="password" class="form-control" type="password" placeholder="At least 6 characters" th:field="*{password}" required/>
         </div>
 
     </div>
@@ -123,18 +127,18 @@
     <div class="form-row">
         <div>
             <label for="university">University:</label>
-            <input id="university" type="text" placeholder="e.g: MBSTU,Tangail" th:field="*{university}" required/>
+            <input id="university" class="form-control" type="text" placeholder="e.g: MBSTU,Tangail" th:field="*{university}" required/>
         </div>
         <div>
             <label for="department">Department:</label>
-            <input id="department" type="text" placeholder="e.g: ICT" th:field="*{department}" required/>
+            <input id="department" class="form-control" type="text" placeholder="e.g: ICT" th:field="*{department}" required/>
         </div>
     </div>
 
     <div class="form-row">
         <div>
             <label for="user_type">User Type:</label>
-            <select id="user_type" th:field="*{userType}" required>
+            <select id="user_type" class="form-select" th:field="*{userType}" required>
                 <option value="">Select Type</option>
                 <option value="faculty">Faculty</option>
                 <option value="officer">Officer</option>
@@ -143,14 +147,22 @@
         </div>
         <div>
             <label for="designation">Designation:</label>
-            <input id="designation" type="text" th:field="*{designation}" required/>
+            <select id="designation" class="form-select" th:field="*{designation}" required>
+                <option value=""> Select Designation </option>
+                <option value="Lecturer">Lecturer</option>
+                <option value="Assistant Professor">Assistant Professor</option>
+                <option value="Associate Professor">Associate Professor</option>
+                <option value="Professor">Professor</option>
+                <option value="Registrar">Registrar</option>
+                <option value="Deputy Registrar">Deputy Registrar</option>
+            </select>
         </div>
     </div>
 
     <div class="form-row">
         <div>
             <label for="role">Role:</label>
-            <select id="role" th:field="*{role}" required>
+            <select id="role" class="form-select" th:field="*{role}" required>
                 <option value="">Select Role</option>
                 <option value="admin">Admin</option>
                 <option value="co-admin">Co-Admin</option>
@@ -160,7 +172,7 @@
         </div>
         <div>
             <label for="salaryGrade">Salary Grade:</label>
-            <select id="salaryGrade" th:field="*{salaryGrade}" required>
+            <select id="salaryGrade" class="form-select" th:field="*{salaryGrade}" required>
                 <option value="">Select Grade</option>
                 <option th:each="i : ${#numbers.sequence(1, 20)}" th:value="'Grade ' + ${i}">Grade [[${i}]]</option>
             </select>
@@ -170,14 +182,14 @@
     <div class="form-row">
         <div>
             <label for="gradingCategory">Grading Category:</label>
-            <select id="gradingCategory" th:field="*{gradingCategory}" required>
+            <select id="gradingCategory" class="form-select" th:field="*{gradingCategory}" required>
                 <option value="">Select Category</option>
                 <option th:each="i : ${#numbers.sequence(1, 4)}" th:value="'Category ' + ${i}">Category [[${i}]]</option>
             </select>
         </div>
         <div>
             <label for="distance"> Distance(km) from MBSTU </label>
-            <input id="distance" type="text" placeholder="e.g: 160 (only for external teacher" th:field="*{distanceFromMBSTU}">
+            <input id="distance" class="form-control" type="text" placeholder="e.g: 160 (only for external teacher" th:field="*{distanceFromMBSTU}">
         </div>
     </div>
 

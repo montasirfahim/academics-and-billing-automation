@@ -133,12 +133,13 @@
 
 
 <div class="body-container flex-grow-1">
-    <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>
+<!--    <h1>Welcome, <span th:text="${user.name}">User</span>!</h1>-->
     <div class="at-a-glance d-flex flex-column flex-md-row justify-content-between gap-md-5">
         <div class="profile shadow text-dark">
             <div class="user-icon-container d-flex justify-content-center">
                 <i class="fas fa-user-alt me-2 user-icon"></i>
             </div>
+            <p><strong>Name:</strong> <span th:text="${user.name}">Name</span></p>
             <p class="d-flex flex-row gap-1"><strong>Designation:</strong> <span th:text="${user.designation}">Designation</span> <a class="edit-desig" th:href="@{/user/edit-designation/{id}(id=${user.userId})}"><i class="fas fa-edit"></i> </a> </p>
             <p><strong>Department:</strong> <span th:text="${user.department}">Department</span></p>
             <p><strong>University:</strong> <span th:text="${user.university}">University</span></p>

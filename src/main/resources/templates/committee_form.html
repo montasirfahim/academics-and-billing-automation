@@ -5,154 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Basic reset */
-        * {
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
         body {
-            background: #f9f9f9;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+            background-color: #f4f7f6;
+            padding-top: 50px;
+            padding-bottom: 50px;
         }
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-            margin-top: 5px;
-        }
-
-        form {
+        .form-container {
             background: white;
-            padding: 30px 40px;
-            border-radius: 8px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            width: max-content;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            max-width: 800px;
+            margin: auto;
+            padding: 40px;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            transition: transform 0.2s, filter 0.2s;
+        }
+
+        .btn-gradient:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            color: white;
         }
 
         label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #555;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        select {
-            width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 18px;
-            border: 1.5px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus,
-        select:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-
-        button[type="submit"] {
-            background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            font-size: 16px;
             font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-
+            color: #4b5563;
+            margin-bottom: 0.5rem;
         }
 
-        button[type="submit"]:hover {
-            background: black;
+        .add-new-link {
+            text-decoration: none;
+            font-size: 14px;
+            color: #6366f1;
+            transition: color 0.2s;
         }
 
-        /* Optional: spacing for hidden input */
-        input[type="hidden"] {
-            display: none;
-        }
-        a.add-new{
-           font-size: 13px;
-            text-align: center;
-            align-content: center;
-            margin-top: 10px;
+        .add-new-link:hover {
+            color: #4338ca;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-<form th:action="@{/committee/new/{id}(id=${semester.semesterId})}"  th:object="${committee}" method="post">
-    <h2>Create New Exam Committee</h2>
 
-    <label for="session"> Session:</label>
-    <input id="session" type="text" placeholder="e.g: 2021-22" th:field="*{session}" required>
+<div class="container">
+    <div class="form-container">
+        <h2 class="text-center mb-4 fw-bold">Create New Exam Committee</h2>
 
-    <label for="year">Year:</label>
-    <select id="year" th:field="*{semesterYearName}" required>
-        <option value="">-- Select Year --</option>
-       <option value="1st Year">1st Year</option>
-        <option value="2nd Year">2nd Year</option>
-        <option value="3rd Year">3rd Year</option>
-        <option value="4th Year">4th Year</option>
-        <option value="Msc">M.Sc</option>
-    </select>
+        <form th:action="@{/committee/new/{id}(id=${semester.semesterId})}" th:object="${committee}" method="post">
 
-    <label for="chairman">Committee Chairman:</label>
-    <select id="chairman" th:field="*{chairman}" required>
-        <option value="">-- Select Chairman --</option>
-        <option th:each="u : ${users}"
-                th:value="${u.userId}"
-                th:text="${u.name}">
-        </option>
-    </select>
+            <div class="mb-3">
+                <label for="session" class="form-label">Session</label>
+                <input id="session" type="text" class="form-control form-control-lg" placeholder="e.g: 2021-22" th:field="*{session}" required>
+            </div>
 
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="year" class="form-label">Year</label>
+                    <select id="year" class="form-select" th:field="*{semesterYearName}" required>
+                        <option value="">-- Select Year --</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                        <option value="Msc">M.Sc</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="chairman" class="form-label">Committee Chairman</label>
+                    <select id="chairman" class="form-select" th:field="*{chairman}" required>
+                        <option value="">-- Select Chairman --</option>
+                        <option th:each="u : ${users}" th:value="${u.userId}" th:text="${u.name}"></option>
+                    </select>
+                </div>
 
-    <label for="internal1">Internal Member1:</label>
-    <select id="internal1" th:field="*{internalMember1}" required>
-        <option value="">-- Select Internal1 --</option>
-        <option th:each="u : ${users}"
-                th:value="${u.userId}"
-                th:text="${u.name}">
-        </option>
-    </select>
+                <div class="col-md-6 mb-3">
+                    <label for="internal1" class="form-label">Internal Member 1</label>
+                    <select id="internal1" class="form-select" th:field="*{internalMember1}" required>
+                        <option value="">-- Select Internal 1 --</option>
+                        <option th:each="u : ${users}" th:value="${u.userId}" th:text="${u.name}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="internal2" class="form-label">Internal Member 2</label>
+                    <select id="internal2" class="form-select" th:field="*{internalMember2}" required>
+                        <option value="">-- Select Internal 2 --</option>
+                        <option th:each="u : ${users}" th:value="${u.userId}" th:text="${u.name}"></option>
+                    </select>
+                </div>
 
-    <label for="internal2">Internal Member2:</label>
-    <select id="internal2" th:field="*{internalMember2}" required>
-        <option value="">-- Select Internal2 --</option>
-        <option th:each="u : ${users}"
-                th:value="${u.userId}"
-                th:text="${u.name}">
-        </option>
-    </select>
+                <div class="col-md-6 mb-3">
+                    <label for="external1" class="form-label">External Member 1</label>
+                    <select id="external1" class="form-select" th:field="*{externalMember1}" required>
+                        <option value="">-- Select External --</option>
+                        <option th:each="u : ${externals}" th:value="${u.userId}" th:text="${u.name}"></option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label for="stu_count" class="form-label">Number of Students</label>
+                    <input type="number" id="stu_count" class="form-control" th:field="*{studentCount}" placeholder="Enter number of students e.g: 55" required>
+                </div>
+            </div>
 
-    <label for="external1">External Member1:</label>
-    <select id="external1" th:field="*{externalMember1}" required>
-        <option value="">-- Select External --</option>
-        <option th:each="u : ${externals}"
-                th:value="${u.userId}"
-                th:text="${u.name}">
-        </option>
-    </select>
+            <button type="submit" class="btn btn-gradient btn-lg w-100 fw-bold mb-3">Save Committee</button>
 
-    <label for="stu_count">Number of Students</label>
-    <input type="number" id="stu_count" class="form-control mb-4" th:field="*{studentCount}" required>
+            <div class="text-center">
+                <a href="/users/new" class="add-new-link">
+                    <i class="bi bi-person-plus"></i> Add user if not found
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
-    <button type="submit">Save Committee</button>
-    <a href="/users/new" class="add-new" style="display: block; margin-top: 10px">Add user if not found </a>
-</form>
 </body>
 </html>

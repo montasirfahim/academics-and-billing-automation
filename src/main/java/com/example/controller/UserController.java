@@ -34,6 +34,8 @@ public class UserController {
     private GratuityBillService gratuityBillService;
     @Autowired
     private EmailValidationService emailValidationService;
+    @Autowired
+    private BrevoEmailService brevoEmailService;
 
     @GetMapping("/")
     public String landingPage(HttpSession session) {
@@ -226,13 +228,13 @@ public class UserController {
             return "redirect:/login";
         }
         if(!loggedInUser.getRole().equals("admin") && !loggedInUser.getRole().equals("co-admin")) {
-            model.addAttribute("status", "Duplicate Email");
+            model.addAttribute("status", "Access Denied");
             model.addAttribute("error", "You are not allowed to perform this action.");
             return "error_page";
         }
 
         if(userService.getUserByEmail(user.getEmail()) != null) {
-            model.addAttribute("status", "Access Denied");
+            model.addAttribute("status", "Duplicate Email");
             model.addAttribute("error", "User with this email already exists.");
             return "error_page";
         }
@@ -252,7 +254,10 @@ public class UserController {
         if(user.getDistanceFromMBSTU() == null){
             user.setDistanceFromMBSTU(0);
         }
+
        userService.saveUser(user);
+       brevoEmailService.sendWelcomeEmail(user.getEmail());
+
        return "redirect:/all_users";
     }
 

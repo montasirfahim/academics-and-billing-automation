@@ -1,0 +1,76 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+    padding-top: 120px;
+    margin: 0;
+    color: #333;
+    min-height: 100vh;
+}
+
+.main-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 20px;
+    padding: 0 30px 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+#courses, #third-examination{
+    padding: 0 30px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+}
+.course-table{
+    width: 100%;
+}
+
+#card {
+    flex: 0 0 450px;
+    background: white;
+    padding: 0 15px 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-right: 50px;
+}
+
+.actions {
+    flex: 1;
+}
+
+.action-box {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    height: 100%;
+    padding-bottom: 15px;
+}
+
+#sem-info {
+    text-align: left;
+    padding: 15px;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+@media (max-width: 768px) {
+    .main-container { flex-direction: column; }
+    #card { flex: 1 1 100%; width: 100%; }
+}

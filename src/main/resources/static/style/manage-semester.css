@@ -1,0 +1,46 @@
+body{
+    width: 100%;
+    border: none;
+    margin: 0;
+    padding-top: 90px;
+    font-family: Arial, sans-serif;
+}
+.body-container{
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+a.new-btn{
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    background: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    padding: 12px 14px;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+}
+a.new-btn:hover{
+    background: black;
+    color: white;
+}
+
+.committee-card {
+    height: 200px;
+}
+.committee-card .card-header {
+    height: 120px;
+}
+.committee-card .card-body {
+    height: 100px;
+}
+
+.committee-card:hover{
+    transform: scale(1.03);
+}
+.committee-card:hover .card-header{
+    background: black !important;
+    color: white;
+}
