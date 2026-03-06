@@ -14,6 +14,10 @@
             background: #ffffff;
             border-left: 5px solid #764ba2;
         }
+        .shadow{
+            box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.1),
+            0 10px 20px -5px rgba(0, 0, 0, 0.2) !important;
+        }
         .body-container{
             padding: 30px;
         }
@@ -40,8 +44,7 @@
             background: white;
             padding: 25px 30px;
             border-radius: 8px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            border-top: 1px solid lightgray;
+            /*border-top: 1px solid lightgray;*/
 
         }
 
@@ -209,16 +212,16 @@
         <div style="max-height: 450px; overflow-y: auto; min-width: 100%">
         <table th:if="${user.role == 'admin' or user.role == 'co-admin'}" border="1" class="justify-content-center w-100">
             <thead>
-            <th>Task</th>
-            <th>Rate Parameter</th>
-            <th>Rate (BDT)</th>
-            <th class="text-center">Action</th>
+                <th>Task</th>
+                <th>Rate Parameter</th>
+                <th>Rate (BDT)</th>
+                <th class="text-center">Action</th>
             </thead>
             <tbody th:each="billRate : ${billRates}" class="justify-content-center text-center">
-            <td th:text="${billRate.task}">Task</td>
-            <td th:text="${billRate.rateParameter}">Rate Parameter</td>
-            <td th:text="${billRate.rate}">Rate</td>
-            <td class="text-center"><a th:href="@{/update-bill-rate/{id}(id=${billRate.id})}" class="btn btn-outline-primary btn-sm">Update Bill Rate<i class="fas fa-edit"></i> </a></td>
+                <td th:text="${billRate.task}">Task</td>
+                <td th:text="${billRate.rateParameter}">Rate Parameter</td>
+                <td th:text="${billRate.rate}">Rate</td>
+                <td class="text-center"><a th:href="@{/update-bill-rate/{id}(id=${billRate.id})}" class="btn btn-outline-primary btn-sm">Update Bill Rate<i class="fas fa-edit"></i> </a></td>
 
             </tbody>
         </table>
