@@ -1721,13 +1721,15 @@ public class PdfService {
         table.addHeaderCell(createStyledHeaderCell("Credit Hour"));
         table.addHeaderCell(createStyledHeaderCell("Course Teacher"));
 
-        //Collections.sort(courseList, course_name );
         for (int i = 0; i < courseList.size(); i++) {
             Course assignedCourse = courseList.get(i);
 
             table.addCell(createStyledCell(assignedCourse.getCourseCode()));
             table.addCell(createStyledCell(assignedCourse.getCourseName()));
-            table.addCell(createStyledCell(String.valueOf(assignedCourse.getCourseCredit())));
+
+            String credit = String.format("%.2f", assignedCourse.getCourseCredit());
+            table.addCell(createStyledCell(credit));
+
             table.addCell(createStyledCell((assignedCourse.getCourseTeacher() == null) ? "Not Assigned" : assignedCourse.getCourseTeacher().getName()));
         }
 

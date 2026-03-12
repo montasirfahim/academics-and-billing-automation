@@ -42,7 +42,7 @@ public class BrevoEmailService {
 
         SendSmtpEmailSender sender = new SendSmtpEmailSender();
         sender.setEmail(senderEmail);
-        sender.setName("Dept of ICT, MBSTU");
+        sender.setName("Dept of " + deptName + ", " + universityName);
 
         SendSmtpEmailTo mainTo = new SendSmtpEmailTo();
         mainTo.setEmail(senderEmail);
@@ -95,15 +95,15 @@ public class BrevoEmailService {
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
                 <div style="color: #666; font-size: 13px;">
                        <p style="margin: 0;"><b>Regards,</b></p>
-                       <p style="margin: 0;">Dept. of ICT, MBSTU</p>
-                       <p style="margin: 0;">Santosh, Tangail-1902</p>
+                       <p style="margin: 0;">Dept. of %3$s, %4$s</p>
+                       <p style="margin: 0;">%5$s</p>
                 </div>
             </div>
-            """.formatted(type, otp);
+            """.formatted(type, otp, deptName, universityName, universityLocation);
 
         SendSmtpEmailSender sender = new SendSmtpEmailSender();
         sender.setEmail(senderEmail);
-        sender.setName("Dept of ICT, MBSTU");
+        sender.setName("Dept of " + deptName + ", " + universityName);
 
         SendSmtpEmailTo recipient = new SendSmtpEmailTo();
         recipient.setEmail(toEmail);
@@ -140,7 +140,7 @@ public class BrevoEmailService {
                 <p style="margin: 5px 0 0 0; font-size: 16px; color: #111827; font-family: monospace;">%3$s</p>
             </div>
     
-            <p>Please <strong>ask for your temporary password</strong> from the Registrar of the mentioned department to login using the following URL:</p>
+            <p>Please ask the Registrar of the mentioned department <strong>for your temporary password</strong> to login at automation software following the given URL:</p>
             <a href="%4$s" style="display: inline-block; padding: 8px 18px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; margin-bottom: 10px;">Visit Automation Software</a>
            
              <p style="color: #059669; font-weight: 500;">&#9432; You are highly requested to reset a strong password after first login.</p>
